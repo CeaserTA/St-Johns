@@ -41,7 +41,7 @@
             <nav class="mt-6">
                 <ul>
                     <li>
-                        <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 bg-blue-700 rounded-r-lg">
+                        <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('dashboard') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
                             <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-10 0h3" />
                             </svg>
@@ -49,7 +49,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('members') }}" class="flex items-center px-6 py-3 hover:bg-blue-700 rounded-r-lg transition">
+                        <a href="{{ route('members') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('members*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
                             <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
@@ -57,7 +57,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('service.register') }}" class="flex items-center px-6 py-3 hover:bg-blue-700 rounded-r-lg transition">
+                        <a href="{{ route('service.register') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ (request()->routeIs('service.register') || request()->routeIs('service.registrations')) ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
                             <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>

@@ -78,49 +78,51 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar w-64 text-white flex flex-col">
-        <div class="flex flex-col h-full">
-            <div class="p-6 text-2xl font-bold border-b border-blue-700 flex items-center">
-                <div class="w-8 h-8 rounded-full bg-amber-400 mr-3 flex items-center justify-center">
-                    <span class="text-blue-900 font-black text-sm">SJ</span>
-                </div>
-                St. John's Admin
+     <!-- Sidebar -->
+        <aside class="w-64 bg-blue-800 text-white flex flex-col">
+            <div class="p-6 text-2xl font-bold border-b border-blue-900">
+                St. Johns Admin
             </div>
-            <nav class="mt-6 flex-1">
+            <nav class="mt-6">
                 <ul>
-                    <li class="mb-1 mx-2">
-                        <a href="{{ route('dashboard') }}" class="nav-item flex items-center px-4 py-3 rounded-r-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <li>
+                        <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('dashboard') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-10 0h3" />
                             </svg>
                             Dashboard
                         </a>
                     </li>
-                    <li class="mb-1 mx-2">
-                        <a href="{{ route('members') }}" class="nav-item active flex items-center px-4 py-3 rounded-r-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    <li>
+                        <a href="{{ route('members') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('members*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
                             Members
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('service.register') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ (request()->routeIs('service.register') || request()->routeIs('service.registrations')) ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            Services
+                        </a>
+                    </li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex w-full items-center px-6 py-3 hover:bg-blue-700 rounded-r-lg transition">
+                                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Logout
+                            </button>
+                        </form>
+                    </li>
                 </ul>
             </nav>
-            <div class="p-4 border-t border-blue-700">
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
-                    <button type="submit" class="nav-item flex items-center px-4 py-3 rounded-lg w-full text-left">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </aside>
-
+        </aside>
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Top Bar -->

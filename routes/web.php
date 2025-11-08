@@ -6,7 +6,7 @@ use App\Http\Controllers\ServiceRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
 
 // Serve the custom admin login page at /admin-login

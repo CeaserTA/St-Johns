@@ -89,6 +89,7 @@
         <div class="bg-white rounded-lg w-11/12 md:w-2/3 lg:w-1/2 p-6">
             <h3 class="text-lg font-bold mb-4">Edit Registration</h3>
             <form id="editForm" class="space-y-3">
+                @csrf
                 <input type="hidden" name="id" id="edit_id">
                 <div>
                     <label class="block text-sm">Full name</label>

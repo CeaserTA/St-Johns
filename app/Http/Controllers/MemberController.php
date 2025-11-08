@@ -39,16 +39,26 @@ class MemberController extends Controller
     /**
      * Display the members management page with table.
      */
-    public function members(Request $request)
-    {
-        $search = $request->query('search');
-        $members = Member::when($search, function ($query, $search) {
-            return $query->where('first_name', 'like', "%$search%")
-                         ->orWhere('last_name', 'like', "%$search%")
-                         ->orWhere('email', 'like', "%$search%");
-        })->paginate(10); // Changed to paginate for better performance
-        return view('members', compact('members'));
-    }
+       public function members(Request $request)
+        {
+            $search = $request->query('search');
+
+            $members = Member::query()
+                ->when($search, function ($query, $search) {
+                    $query->where('firstname', 'like', "%{$search}%")
+                        ->orWhere('lastname', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%");
+                })
+                ->orderBy('firstname') // fixed
+                ->paginate(10)
+                ->appends(['search' => $search]);
+
+            return view('members', compact('members', 'search'));
+        }
+
+
 
     /**
      * Show the form for creating a new resource.
