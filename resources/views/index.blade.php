@@ -409,24 +409,15 @@
                 <h2>Member Registration</h2>
                 <span class="close">&times;</span>
             </div>
-            <form id="registrationForm">
+            <form id="registrationForm" method="POST" action="{{ route('members.store') }}">
+                @csrf
                 <div class="form-group">
                     <label for="firstName">First Name *</label>
-                    <input type="text" id="firstName" name="firstName" required>
+                    <input type="text" id="firstName" name="first_name" required>
                 </div>
                 <div class="form-group">
                     <label for="lastName">Last Name *</label>
-                    <input type="text" id="lastName" name="lastName" required>
-                </div>
-                <div class="form-group">
-                    <label for="maritalStatus">Marital Status *</label>
-                    <select id="maritalStatus" name="maritalStatus" required>
-                        <option value="">Select marital status</option>
-                        <option value="single">Single</option>
-                        <option value="married">Married</option>
-                        <option value="divorced">Divorced</option>
-                        <option value="widowed">Widowed</option>
-                    </select>
+                    <input type="text" id="lastName" name="last_name" required>
                 </div>
                 <div class="form-group">
                     <label for="gender">Gender *</label>
@@ -434,41 +425,15 @@
                         <option value="">Select gender</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="yearJoined">Year Joined the Church *</label>
-                    <input type="number" id="yearJoined" name="yearJoined" min="1900" max="2024" required>
-                </div>
-                <div class="form-group">
-                    <label for="ageRange">Age Range *</label>
-                    <select id="ageRange" name="ageRange" required>
-                        <option value="">Select age range</option>
-                        <option value="18-25">18-25</option>
-                        <option value="26-35">26-35</option>
-                        <option value="36-45">36-45</option>
-                        <option value="46-55">46-55</option>
-                        <option value="56-65">56-65</option>
-                        <option value="66+">66+</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="contact">Contact *</label>
-                    <input type="tel" id="contact" name="contact" required>
+                    <input type="tel" id="contact" name="phone" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email Address *</label>
                     <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="serviceAttended">Service Attended *</label>
-                    <select id="serviceAttended" name="serviceAttended" required>
-                        <option value="">Select service</option>
-                        <option value="sunday-morning">Sunday Morning Service</option>
-                        <option value="evening-prayer">Evening Prayer Service</option>
-                        <option value="youth-service">Youth Service</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label for="address">Address *</label>

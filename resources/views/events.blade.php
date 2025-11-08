@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <link rel="stylesheet" href="styles.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
      <script>
         tailwind.config = {
             darkMode: "class",
@@ -54,54 +55,118 @@
             </nav>
             </header>
 
-            <!-- Main Content -->
+                        <!-- Main Content -->
             <main class="flex-grow px-4 py-8 sm:px-6 w-full">
                 <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-text-light mb-2">Upcoming Events</h1>
-                    <p class="text-text-muted-light">Discover and register for parish events, workshops, and gatherings.</p>
+                    <h1 class="text-3xl font-bold text-text-light dark:text-text-dark mb-2">Upcoming Events</h1>
+                    <p class="text-text-muted-light dark:text-text-muted-dark">Discover and register for parish events,
+                        workshops, and gatherings.</p>
                 </div>
 
-                <!-- Events Container - Will be populated from backend -->
-                <div id="eventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Events will be loaded here dynamically -->
-                            <div class="text-center py-12">
-                                <div class="loading mx-auto mb-4"></div>
-                                <p class="text-text-muted-light">Loading events...</p>
-                            </div>
-                        </div>
+                <section id="eventsSection" class="py-12 bg-gray-50 dark:bg-gray-900">
+                    <div class="container mx-auto px-4">
+                        <h2 class="text-3xl font-bold text-center text-text-light dark:text-text-dark mb-8">
+                            Upcoming Church Events
+                        </h2>
 
-                        <!-- Example Event Card Template (hidden, used as template) -->
-                        <template id="eventCardTemplate">
-                            <div class="event-card" data-id="">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Event Card 1 -->
+                            <div class="event-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                                 <div class="flex items-start justify-between mb-4">
-                                    <div class="text-primary">
+                                    <div class="text-primary dark:text-secondary">
                                         <span class="material-symbols-outlined !text-4xl">calendar_month</span>
                                     </div>
                                     <span class="material-symbols-outlined text-gray-400">check_circle</span>
                                 </div>
-                                <h3 class="text-xl font-bold text-text-light mb-2"></h3>
-                                <p class="text-text-muted-light text-sm mb-4"></p>
+                                <h3 class="text-xl font-bold text-text-light dark:text-text-dark mb-2">Sunday Worship
+                                </h3>
+                                <p class="text-text-muted-light dark:text-text-muted-dark text-sm mb-4">
+                                    Join us for uplifting worship and inspiring sermons every Sunday.
+                                </p>
                                 <div class="space-y-2 text-sm">
-                                    <div class="flex items-center text-text-muted-light">
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
                                         <span class="material-symbols-outlined !text-lg mr-2">event</span>
-                                        <span class="event-date"></span>
+                                        <span>Every Sunday</span>
                                     </div>
-                                    <div class="flex items-center text-text-muted-light">
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
                                         <span class="material-symbols-outlined !text-lg mr-2">schedule</span>
-                                        <span class="event-time"></span>
+                                        <span>8:00 AM - 10:00 AM</span>
                                     </div>
-                                    <div class="flex items-center text-text-muted-light">
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
                                         <span class="material-symbols-outlined !text-lg mr-2">location_on</span>
-                                        <span class="event-location"></span>
+                                        <span>St. John’s Church, Entebbe</span>
                                     </div>
                                 </div>
-                                <button class="mt-4 w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-colors event-select-btn">
-                                    Register for Event
-                                </button>
                             </div>
-                        </template>
-            </main>
 
+                            <!-- Event Card 2 -->
+                            <div class="event-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="text-primary dark:text-secondary">
+                                        <span class="material-symbols-outlined !text-4xl">calendar_month</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-gray-400">check_circle</span>
+                                </div>
+                                <h3 class="text-xl font-bold text-text-light dark:text-text-dark mb-2">Bible Study</h3>
+                                <p class="text-text-muted-light dark:text-text-muted-dark text-sm mb-4">
+                                    Deepen your faith and understanding of the scriptures in our weekly study group.
+                                </p>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
+                                        <span class="material-symbols-outlined !text-lg mr-2">event</span>
+                                        <span>Wednesdays</span>
+                                    </div>
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
+                                        <span class="material-symbols-outlined !text-lg mr-2">schedule</span>
+                                        <span>6:00 PM - 7:30 PM</span>
+                                    </div>
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
+                                        <span class="material-symbols-outlined !text-lg mr-2">location_on</span>
+                                        <span>Church Hall, Entebbe</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Event Card 3 -->
+                            <div class="event-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="text-primary dark:text-secondary">
+                                        <span class="material-symbols-outlined !text-4xl">calendar_month</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-gray-400">check_circle</span>
+                                </div>
+                                <h3 class="text-xl font-bold text-text-light dark:text-text-dark mb-2">Community
+                                    Outreach</h3>
+                                <p class="text-text-muted-light dark:text-text-muted-dark text-sm mb-4">
+                                    Participate in acts of service, helping the local community and those in need.
+                                </p>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
+                                        <span class="material-symbols-outlined !text-lg mr-2">event</span>
+                                        <span>Monthly</span>
+                                    </div>
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
+                                        <span class="material-symbols-outlined !text-lg mr-2">schedule</span>
+                                        <span>9:00 AM - 12:00 PM</span>
+                                    </div>
+                                    <div class="flex items-center text-text-muted-light dark:text-text-muted-dark">
+                                        <span class="material-symbols-outlined !text-lg mr-2">location_on</span>
+                                        <span>Community Center, Entebbe</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Central Register Button -->
+                        <div class="mt-8 text-center">
+                            <button id="openModalBtn"
+                                class="py-3 px-6 bg-primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors">
+                                Register for Event
+                            </button>
+                        </div>
+                    </div>
+
+            </main>
             <!-- Footer -->
             <footer class="navbar flex flex-col gap-8 px-5 py-10 text-center @container  w-full">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-10 sm:gap-6 w-full">
@@ -151,90 +216,133 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+       <!-- Modal -->
+    <div id="registrationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-text-light dark:text-text-dark">Event Registration</h3>
+            <form id="eventForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">First Name</label>
+                        <input type="text" name="first_name"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">Last Name</label>
+                        <input type="text" name="last_name"
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark"
+                            required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">Email</label>
+                    <input type="email" name="email"
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark"
+                        required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">Phone</label>
+                    <input type="tel" name="phone"
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">Select
+                        Event</label>
+                    <select name="event_name"
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-text-light dark:text-text-dark"
+                        required>
+                        <option value="">-- Choose an Event --</option>
+                        <option value="Sunday Worship">Sunday Worship</option>
+                        <option value="Bible Study">Bible Study</option>
+                        <option value="Community Outreach">Community Outreach</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="closeModalBtn"
+                        class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-primary text-white rounded hover:bg-opacity-90">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </section>
+
     <script>
-        // Load events from backend
-        document.addEventListener('DOMContentLoaded', async function() {
-            const container = document.getElementById('eventsContainer');
-            const template = document.getElementById('eventCardTemplate');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const registrationModal = document.getElementById('registrationModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        openModalBtn.addEventListener('click', () => {
+            registrationModal.classList.remove('hidden');
+            registrationModal.classList.add('flex');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            registrationModal.classList.add('hidden');
+            registrationModal.classList.remove('flex');
+        });
+
+        // Optional: close modal when clicking outside the modal content
+        registrationModal.addEventListener('click', (e) => {
+            if (e.target === registrationModal) {
+                registrationModal.classList.add('hidden');
+                registrationModal.classList.remove('flex');
+            }
+        });
+
+        // Handle form submission via AJAX
+        document.getElementById('eventForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const form = this;
+            const data = {
+                first_name: form.querySelector('[name="first_name"]').value,
+                email: form.querySelector('[name="email"]').value,
+                phone: form.querySelector('[name="phone"]').value || null,
+                event_name: form.querySelector('[name="event_name"]').value,
+            };
+
+            // Basic client-side check
+            if (!data.first_name || !data.event_name) {
+                alert('Please provide your name and select an event.');
+                return;
+            }
 
             try {
-                // Replace this URL with your actual backend endpoint
-                // const response = await fetch('/api/events');
-                // const events = await response.json();
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                // include last_name if present
+                data.last_name = form.querySelector('[name="last_name"]') ? form.querySelector('[name="last_name"]').value : '';
 
-                // For demonstration, using mock data - replace with actual API call
-                const events = [
-                    {
-                        id: 1,
-                        name: "Community Outreach Day",
-                        description: "Join us for a day of service in our local community. We'll be visiting homes, distributing food, and sharing the love of Christ.",
-                        date: "March 15, 2024",
-                        time: "9:00 AM - 3:00 PM",
-                        location: "Community Center"
+                const resp = await fetch('{{ route('event.registrations.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
                     },
-                    {
-                        id: 2,
-                        name: "Bible Study Workshop",
-                        description: "Deep dive into the Scriptures with our weekly Bible study workshop. All are welcome!",
-                        date: "March 20, 2024",
-                        time: "7:00 PM - 8:30 PM",
-                        location: "Fellowship Hall"
-                    },
-                    {
-                        id: 3,
-                        name: "Youth Retreat",
-                        description: "A weekend retreat for our youth community with worship, games, and spiritual growth activities.",
-                        date: "March 25-27, 2024",
-                        time: "Friday 5:00 PM - Sunday 2:00 PM",
-                        location: "Retreat Center"
-                    }
-                ];
-
-                // Clear loading message
-                container.innerHTML = '';
-
-                // Render events
-                events.forEach(event => {
-                    const card = template.content.cloneNode(true);
-                    const cardElement = card.querySelector('.event-card');
-                    cardElement.dataset.id = event.id;
-                    cardElement.querySelector('h3').textContent = event.name;
-                    cardElement.querySelector('p').textContent = event.description;
-                    cardElement.querySelector('.event-date').textContent = event.date;
-                    cardElement.querySelector('.event-time').textContent = event.time;
-                    cardElement.querySelector('.event-location').textContent = event.location;
-
-                    // Handle registration
-                    const registerBtn = cardElement.querySelector('.event-select-btn');
-                    registerBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        cardElement.classList.toggle('selected');
-                        const isRegistered = cardElement.classList.contains('selected');
-                        registerBtn.textContent = isRegistered ? 'Registered ✓' : 'Register for Event';
-                        registerBtn.style.backgroundColor = isRegistered ? '#22c55e' : '';
-
-                        // Send registration to backend
-                        fetch('/api/events/register', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                eventId: event.id,
-                                registered: isRegistered
-                            })
-                        }).catch(err => console.error('Error registering for event:', err));
-                    });
-
-                    container.appendChild(card);
+                    body: JSON.stringify(data)
                 });
+
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => null);
+                    alert((err && err.message) ? err.message : 'Registration failed.');
+                    return;
+                }
+
+                const json = await resp.json();
+                alert('Thank you for registering!');
+                registrationModal.classList.add('hidden');
+                registrationModal.classList.remove('flex');
+                form.reset();
             } catch (error) {
-                console.error('Error loading events:', error);
-                container.innerHTML = '<p class="text-red-500">Error loading events. Please try again later.</p>';
+                console.error('Event registration error', error);
+                alert('Registration failed. Please try again later.');
             }
         });
     </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
 

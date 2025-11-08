@@ -1,6 +1,8 @@
 <?php
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EventRegistrationController;
+use App\Http\Controllers\ServiceRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,10 +45,48 @@ Route::get('/services', function () {
 
 
 
-Route::get('/members', [MemberController::class, 'members'])->name('members');
-Route::get('/members/create', [MemberController::class, 'create'])->name('members.create');
+// Public endpoint: allow anyone to register (modal posts here)
 Route::post('/members', [MemberController::class, 'store'])->name('members.store');
-Route::get('/members/{member}', [MemberController::class, 'show'])->name('members.show');
-Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit');
-Route::put('/members/{member}', [MemberController::class, 'update'])->name('members.update');
-Route::delete('/members/{member}', [MemberController::class, 'destroy'])->name('members.destroy');
+
+// Protect member-management routes behind auth so only admins can view/manage members
+Route::middleware('auth')->group(function () {
+    Route::get('/members', [MemberController::class, 'members'])->name('members');
+    Route::get('/members/create', [MemberController::class, 'create'])->name('members.create');
+    Route::get('/members/{member}', [MemberController::class, 'show'])->name('members.show');
+    Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit');
+    Route::put('/members/{member}', [MemberController::class, 'update'])->name('members.update');
+    Route::delete('/members/{member}', [MemberController::class, 'destroy'])->name('members.destroy');
+});
+
+
+
+
+Route::get('/service-register', [ServiceRegistrationController::class, 'index'])
+    ->name('service.register');
+
+
+Route::post('/service-register', [ServiceRegistrationController::class, 'store'])
+    ->name('service.register');
+
+
+
+
+Route::post('/event-registrations', [EventRegistrationController::class, 'store'])
+    ->name('event.registrations.store');
+
+// Admin listing of event registrations (protected)
+Route::get('/admin/event-registrations', [EventRegistrationController::class, 'index'])
+    ->name('event.registrations')
+    ->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/service-registrations', [ServiceRegistrationController::class, 'index'])
+        ->name('service.registrations');
+
+    // import/export removed per rollback request
+});
+   
+
+
+
+

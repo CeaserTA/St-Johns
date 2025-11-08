@@ -46,49 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handle form submission
+    // Handle form submission - allow the browser to POST the form to the server
     if (registrationForm) {
         registrationForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(registrationForm);
-            const data = {};
-            
-            // Handle regular form fields
-            for (let [key, value] of formData.entries()) {
-                data[key] = value;
-            }
-            
-            // Here you would typically send this data to your backend
-            console.log('Registration data:', data);
-            
-            // Show success message (you can customize this)
-            alert('Registration submitted successfully! We will contact you soon.');
-            
-            // Reset form and close modal
-            registrationForm.reset();
-            closeModal();
-            
-            // In a real application, you would make an API call here:
-            // fetch('/api/register', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify(data)
-            // })
-            // .then(response => response.json())
-            // .then(result => {
-            //     console.log('Success:', result);
-            //     alert('Registration successful!');
-            //     registrationForm.reset();
-            //     closeModal();
-            // })
-            // .catch((error) => {
-            //     console.error('Error:', error);
-            //     alert('Registration failed. Please try again.');
-            // });
+            // Do not prevent default; let the form submit to the server (route: members.store)
+            // You can add client-side validation here if needed.
         });
     }
 

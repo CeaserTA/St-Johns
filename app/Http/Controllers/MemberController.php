@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\ServiceRegistration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class MemberController extends Controller
@@ -27,7 +29,11 @@ class MemberController extends Controller
             $count = Member::whereBetween('created_at', [$monthStart, $monthEnd])->count();
             $monthlyNewMembers[] = $count;
         }
-        return view('dashboard', compact('totalMembers', 'newRegistrations', 'activeMembers', 'monthlyNewMembers', 'monthLabels'));
+
+        // Get latest service registrations to show on the admin dashboard
+        $recentServiceRegistrations = ServiceRegistration::latest()->take(10)->get();
+
+        return view('dashboard', compact('totalMembers', 'newRegistrations', 'activeMembers', 'monthlyNewMembers', 'monthLabels', 'recentServiceRegistrations'));
     }
 
     /**
@@ -60,13 +66,23 @@ class MemberController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'gender' => 'required|in:Male,Female,Other',
+            // normalize to lowercase in the model; DB enum allows 'male' and 'female'
+            'gender' => 'required|in:male,female',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|unique:members,email',
             'address' => 'nullable|string|max:255',
         ]);
         Member::create($request->all());
-        return redirect()->route('members')->with('success', 'Member added successfully');
+
+        // If an admin (authenticated user) created the member from the admin UI,
+        // send them to the members listing. If the member was created from the
+        // public registration modal (guest), redirect back to the homepage with a
+        // friendly success message so the user is not taken to the admin area.
+        if (Auth::check()) {
+            return redirect()->route('members')->with('success', 'Member added successfully');
+        }
+
+        return redirect()->route('home')->with('success', 'Thank you for registering — we will contact you soon.');
     }
 
     /**
@@ -93,7 +109,7 @@ class MemberController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'gender' => 'required|in:Male,Female,Other',
+            'gender' => 'required|in:male,female',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|unique:members,email,' . $member->id,
             'address' => 'nullable|string|max:255',

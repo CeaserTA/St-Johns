@@ -43,7 +43,7 @@
                     <li>
                         <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 bg-blue-700 rounded-r-lg">
                             <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-10 0h3"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-10 0h3" />
                             </svg>
                             Dashboard
                         </a>
@@ -54,6 +54,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
                             Members
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('service.register') }}" class="flex items-center px-6 py-3 hover:bg-blue-700 rounded-r-lg transition">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            Services
                         </a>
                     </li>
                     <li>
@@ -97,40 +105,42 @@
                     </div>
                 </div>
 
-                <!-- Chart -->
+                <!-- Recent Service Registrations -->
                 <div class="bg-white p-6 rounded-lg shadow">
-                    <h2 class="text-lg font-semibold text-gray-700 mb-4">New Members Per Month</h2>
-                    <canvas id="newMembersChart" height="200"></canvas>
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Recent Service Registrations</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Name</th>
+                                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Email</th>
+                                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Phone</th>
+                                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Service</th>
+                                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Registered At</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100">
+                                @forelse($recentServiceRegistrations as $reg)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->full_name }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->email ?? '—' }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->phone_number ?? '—' }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->service }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->created_at->format('Y-m-d H:i') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-gray-700" colspan="5">No service registrations yet.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </main>
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('newMembersChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($monthLabels) !!},
-                datasets: [{
-                    label: 'New Members',
-                    data: {!! json_encode($monthlyNewMembers) !!},
-                    backgroundColor: 'rgba(30, 58, 138, 0.8)',
-                    borderColor: 'rgba(30, 58, 138, 1)',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    barPercentage: 0.6
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { backgroundColor: '#1e3a8a', titleColor: '#fff', bodyColor: '#fff' }
-                }
-            }
-        });
-    </script>
+    
 </body>
 </html>
