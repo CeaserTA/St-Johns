@@ -88,10 +88,10 @@
             @endif
 
             <!-- Members Table -->
-            <div class="table-container p-6">
-                <table class="w-full text-left">
+            <div class="table-container p-6 overflow-x-auto">
+                <table class="w-full min-w-[700px] text-left border-collapse">
                     <thead>
-                        <tr class="text-gray-600 border-b border-gray-200">
+                        <tr class="text-gray-600 border-b border-gray-200 bg-gray-50">
                             <th class="py-3 px-4">Name</th>
                             <th class="py-3 px-4">Gender</th>
                             <th class="py-3 px-4">Phone</th>
@@ -103,19 +103,21 @@
                     <tbody>
                         @forelse ($members as $member)
                             <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                <td class="py-3 px-4">{{ $member->first_name }} {{ $member->last_name }}</td>
+                                <td class="py-3 px-4 font-medium">{{ $member->first_name }} {{ $member->last_name }}</td>
                                 <td class="py-3 px-4">{{ $member->gender }}</td>
                                 <td class="py-3 px-4">{{ $member->phone ?? 'N/A' }}</td>
                                 <td class="py-3 px-4">{{ $member->email ?? 'N/A' }}</td>
                                 <td class="py-3 px-4">{{ $member->address ?? 'N/A' }}</td>
                                 <td class="py-3 px-4">
-                                    <a href="{{ route('members.show', $member->id) }}" class="text-blue-500 hover:underline mr-2">View</a>
-                                    <a href="{{ route('members.edit', $member->id) }}" class="text-yellow-500 hover:underline mr-2">Edit</a>
-                                    <form action="{{ route('members.destroy', $member->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:underline" onclick="return confirm('Are you sure?')">Delete</button>
-                                    </form>
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{{ route('members.show', $member->id) }}" class="text-blue-500 hover:underline px-2 py-1 rounded hover:bg-blue-50">View</a>
+                                        <a href="{{ route('members.edit', $member->id) }}" class="text-yellow-500 hover:underline px-2 py-1 rounded hover:bg-yellow-50">Edit</a>
+                                        <form action="{{ route('members.destroy', $member->id) }}" method="POST" onsubmit="return confirm('Are you sure?')" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:underline px-2 py-1 rounded hover:bg-red-50">Delete</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -125,6 +127,7 @@
                         @endforelse
                     </tbody>
                 </table>
+
                 <!-- Pagination Links -->
                 <div class="mt-4">
                     {{ $members->links() }}

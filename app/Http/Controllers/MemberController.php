@@ -13,6 +13,7 @@ class MemberController extends Controller
      */
     public function index()
     {
+        
         $totalMembers = Member::count();
         $newRegistrations = Member::where('created_at', '>=', Carbon::now()->startOfMonth())->count();
         $activeMembers = Member::where('created_at', '>=', Carbon::now()->subMonths(3))->count();
