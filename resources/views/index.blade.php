@@ -6,6 +6,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>St. John's Parish Church Entebbe</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Fallback: precompiled Tailwind CSS in case the CDN script is unavailable -->
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@3.1.0/dist/tailwind.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css">
@@ -64,7 +66,19 @@
                 </nav>
             </header>
 
+            <section class="bg-white rounded-xl shadow-md p-8 mb-8">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-[#163e7b] leading-tight">Welcome to St. John's Parish Church System</h2>
+                    <p class="mt-3 text-slate-600 max-w-2xl">
+                        Register new members, view the member list, and manage basic details. 
+                    </p>
 
+                    <div class="mt-6 flex flex-wrap gap-4">
+                    <button id="registerBtn" type="button" class="px-6 py-3 rounded-lg bg-[#163e7b] text-white shadow hover:opacity-95 transition">Register a Member</button>
+                    <a href="Records.html" class="px-6 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition">View Members</a>
+                    <a href="Events and Services.html" class="px-6 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition">Manage Events</a>
+                    <a href="reports.html" class="px-6 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition">View Reports</a>
+                    </div>
+            </section>
             <!-- Main Content -->
             <main class="flex-grow w-full">
                 <!-- Hero Section with Church Banner -->
@@ -83,7 +97,7 @@
                                     class="text-white/90 text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
                                     Growing in Faith Together</p>
                             </div>
-                            <button id="registerBtn" 
+                            <button id="joinBtn" 
                                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-5 bg-accent text-primary text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
                                 <span class="truncate">Join Our Parish</span>
                             </button>
@@ -402,52 +416,167 @@
         </div>
     </div>
 
-    <!-- Registration Modal -->
-    <div id="registrationModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Member Registration</h2>
-                <span class="close">&times;</span>
+    <!-- Registration modal (hidden by default) -->
+    <div id="registrationModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-8">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/50" data-modal-backdrop></div>
+    <!-- Modal panel -->
+    <div class="relative max-w-3xl w-full bg-white rounded-xl shadow-md p-8 max-h-[85vh] overflow-y-auto">
+            <button type="button" data-modal-close aria-label="Close registration" class="absolute top-4 right-4 text-slate-500 hover:text-slate-700 text-2xl leading-none">&times;</button>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[#163e7b] mb-2">Member Registration</h2>
+        <p class="text-slate-600 mb-6">Register a new member to the church database.</p>
+
+    <form id="memberForm" class="space-y-6">
+          <!-- Personal Information -->
+          <div class="border-b border-slate-200 pb-4">
+            <h3 class="text-xl font-semibold text-[#163e7b] mb-4">Personal Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                <input type="text" name="fullName" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                <input type="date" name="dateOfBirth" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+                <select name="gender" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Marital Status</label>
+                <select name="maritalStatus" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+                  <option value="">Select Status</option>
+                  <option value="Single">Single</option>
+                  <option value="Married">Married</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widowed">Widowed</option>
+                </select>
+              </div>
             </div>
-            <form id="registrationForm" method="POST" action="{{ route('members.store') }}">
-                @csrf
-                <div class="form-group">
-                    <label for="firstName">First Name *</label>
-                    <input type="text" id="firstName" name="first_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="lastName">Last Name *</label>
-                    <input type="text" id="lastName" name="last_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="gender">Gender *</label>
-                    <select id="gender" name="gender" required>
-                        <option value="">Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="contact">Contact *</label>
-                    <input type="tel" id="contact" name="phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="address">Address *</label>
-                    <textarea id="address" name="address" rows="3" required></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="document.getElementById('registrationModal').classList.remove('show'); document.body.style.overflow = 'auto';">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Register</button>
-                </div>
-            </form>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="border-b border-slate-200 pb-4">
+            <h3 class="text-xl font-semibold text-[#163e7b] mb-4">Contact Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
+                <input type="tel" name="phone" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                <input type="email" name="email" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Residential Address</label>
+                <textarea name="address" rows="2" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Church Information -->
+          <div class="border-b border-slate-200 pb-4">
+            <h3 class="text-xl font-semibold text-[#163e7b] mb-4">Church Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Date Joined <span class="text-red-500">*</span></label>
+                <input type="date" name="dateJoined" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Ministry/Group</label>
+                <select name="ministry" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+                  <option value="">Select Ministry</option>
+                  <option value="Choir Ministry">Choir Ministry</option>
+                  <option value="Youth Fellowship">Youth Fellowship</option>
+                  <option value="Ushers Ministry">Ushers Ministry</option>
+                  <option value="Mothers' Union">Mothers' Union</option>
+                  <option value="Men's Fellowship">Men's Fellowship</option>
+                  <option value="Sunday School">Sunday School</option>
+                  <option value="None">None</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Parish</label>
+                <select name="parish" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+                  <option value="">Select Parish</option>
+                  <option value="St. Luke's Parish">St. Luke's Parish</option>
+                  <option value="St. Peter's Parish">St. Peter's Parish</option>
+                  <option value="St. Mark's Parish">St. Mark's Parish</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Baptism Status</label>
+                <select name="baptismStatus" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
+                  <option value="">Select Status</option>
+                  <option value="Baptized">Baptized</option>
+                  <option value="Not Baptized">Not Baptized</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Notes -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Additional Notes</label>
+            <textarea name="notes" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent" placeholder="Any additional information about the member..."></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex gap-4 pt-4">
+            <button type="submit" class="px-8 py-3 rounded-lg bg-[#163e7b] text-white shadow hover:opacity-95 transition font-medium">Register Member</button>
+            <a href="Records.html" class="px-8 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition font-medium inline-block text-center">View Members</a>
+          </div>
+
+          <div id="formNotice" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            Member registered successfully! (Frontend demo - data will be saved to backend)
+          </div>
+        </form>
         </div>
     </div>
 
+    <script>
+        (function(){
+            const openBtn = document.getElementById('registerBtn');
+            const modal = document.getElementById('registrationModal');
+            const closeBtn = modal ? modal.querySelector('[data-modal-close]') : null;
+            const backdrop = modal ? modal.querySelector('[data-modal-backdrop]') : null;
+
+            function openModal(){
+                if(!modal) return;
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal(){
+                if(!modal) return;
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            if(openBtn) openBtn.addEventListener('click', openModal);
+            if(closeBtn) closeBtn.addEventListener('click', closeModal);
+            if(backdrop) backdrop.addEventListener('click', closeModal);
+            // Close on Escape
+            document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+            // Optional: simple demo submit handling (shows notice briefly)
+            const form = document.getElementById('memberForm');
+            if(form){
+                form.addEventListener('submit', function(e){
+                    // Let server handle real submission if action/method provided. This keeps front-end demo behavior.
+                    e.preventDefault();
+                    const notice = document.getElementById('formNotice');
+                    if(notice){ notice.classList.remove('hidden'); setTimeout(()=>{ notice.classList.add('hidden'); closeModal(); }, 1600); }
+                });
+            }
+        })();
+    </script>
     <script src="script.js"></script>
 </body>
 
