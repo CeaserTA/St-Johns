@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('email');
-            $table->string('address')->nullable();
             $table->string('phone_number')->nullable();
+            $table->string('address')->nullable();
             $table->enum('service', ['Counseling', 'Baptism', 'Youth Retreat']);
             $table->timestamps(); 
         });

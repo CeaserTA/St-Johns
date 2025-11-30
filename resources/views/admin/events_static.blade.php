@@ -53,9 +53,7 @@
                             <li>
                                 <a href="{{ route('admin.events') }}" class="flex items-center px-6 py-3 transition rounded-r-lg {{ request()->routeIs('admin.events*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">Events</a>
                             </li>
-                            <li>
-                                <a href="{{ url('/groups') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->is('groups*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">Groups</a>
-                            </li>
+                            <!-- Groups link removed per request -->
                             <li>
                                 <a href="{{ url('/announcements') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->is('announcements*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">Announcements</a>
                             </li>
@@ -100,7 +98,7 @@
                                         <span class="material-symbols-outlined text-gray-400">check_circle</span>
                                     </div>
                                     <h3 class="text-xl font-bold mb-2">Bible Study</h3>
-                                    <p class="text-text-muted-light text-sm mb-4">Deepen your faith and understanding of the scriptures in our weekly study group.</p>
+                                    <p class="text-text-muted-light text-sm mb-4">Deepen your faith and understanding of the scriptures.</p>
                                     <div class="space-y-2 text-sm">
                                         <div class="flex items-center text-text-muted-light"><span class="material-symbols-outlined !text-lg mr-2">event</span><span>Wednesdays</span></div>
                                         <div class="flex items-center text-text-muted-light"><span class="material-symbols-outlined !text-lg mr-2">schedule</span><span>6:00 PM - 7:30 PM</span></div>

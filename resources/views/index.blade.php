@@ -11,74 +11,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css">
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#0A2463",
-                        "background-light": "#F8F7F2",
-                        "background-dark": "#101922",
-                        "accent": "#D4AF37",
-                        "text-light-primary": "#111418",
-                        "text-light-secondary": "#8A8D91",
-                        "text-dark-primary": "#F8F7F2",
-                        "text-dark-secondary": "#8A8D91",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
+    @include('partials.theme-config')
 
 </head>
 
 <body class="bg-background-light font-display text-text-light">
     <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
         <div class="layout-container flex h-full grow flex-col">
-            <!-- Header - Full Width Navbar -->
-            <header
-                class="sticky top-0 z-50 flex items-center bg-background-light/80 p-4 pb-2 justify-between backdrop-blur-sm shadow-sm">
-                    <div class="flex items-center gap-3">
-                    <img src="assets/Logo Final.png" alt="St. John's Parish Church Logo"
-                        class="h-112 w-auto object-contain m-2" style="max-height: 50px;">
-                    <a href="{{ route('home') }}"
-                        class="text-lg font-bold leading-tight tracking-[-0.015em] text-gray-800">
-                        St. John's Parish Church Entebbe
-                    </a>
+            @include('partials.navbar')
+
+            @include('partials.announcement')
+
+            @if ($message = Session::get('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-4 rounded" role="alert">
+                    <p class="font-bold">Success</p>
+                    <p>{{ $message }}</p>
                 </div>
+            @endif
+            @if ($message = Session::get('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4 rounded" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>{{ $message }}</p>
+                </div>
+            @endif
 
-                <nav class="hidden sm:flex flex-1 justify-end gap-8">
-                    <div class="flex items-center gap-9">
-                        <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors"
-                            href="{{ route('home') }}">Home</a>
-                        <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors"
-                            href="{{ route('services') }}">Services</a>
-                        <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors"
-                            href="{{ route('events') }}">Events</a>
-                        <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors"
-                            href="{{ route('admin.login') }}">Admin Portal</a>
-                    </div>
-                </nav>
-            </header>
-
-            <section class="bg-white rounded-xl shadow-md p-8 mb-8">
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-[#163e7b] leading-tight">Welcome to St. John's Parish Church System</h2>
-                    <p class="mt-3 text-slate-600 max-w-2xl">
-                        Register new members, view the member list, and manage basic details. 
-                    </p>
-
-                    <div class="mt-6 flex flex-wrap gap-4">
-                    <button id="registerBtn" type="button" class="px-6 py-3 rounded-lg bg-[#163e7b] text-white shadow hover:opacity-95 transition">Register a Member</button>
-                    <a href="Records.html" class="px-6 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition">View Members</a>
-                    <a href="Events and Services.html" class="px-6 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition">Manage Events</a>
-                    <a href="reports.html" class="px-6 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition">View Reports</a>
-                    </div>
-            </section>
             <!-- Main Content -->
             <main class="flex-grow w-full">
                 <!-- Hero Section with Church Banner -->
@@ -97,7 +53,7 @@
                                     class="text-white/90 text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
                                     Growing in Faith Together</p>
                             </div>
-                            <button id="joinBtn" 
+                            <button id="joinBtn"
                                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-5 bg-accent text-primary text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
                                 <span class="truncate">Join Our Parish</span>
                             </button>
@@ -106,251 +62,84 @@
                 </div>
 
                 <!-- Welcome Introduction Section -->
-                <h3
-                    class="text-center mb-4 text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
-                    This Week at St. John's</h3>
-
-                <div class="mt-3 flex overflow-x-auto justify-center [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    <div class="flex items-stretch px-4 gap-4">
-
-                        <!-- Special Mass Schedule -->
-                        <div
-                            class="flex h-full w-72 flex-1 flex-col gap-3 rounded-xl bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] min-w-60">
-                            
-                            <!-- Image -->
-                            <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl flex flex-col"
-                                style='background-image: url("assets/prayer.webp");'>
-                            </div>
-
-                            <!-- Content -->
-                            <div class="flex flex-col flex-1 justify-between p-4 pt-1 gap-4">
-                                <div>
-                                    <p class="text-text-light-primary text-base font-bold leading-normal">
-                                        Special Service Schedule
-                                    </p>
-                                    <p class="text-text-light-secondary text-sm font-normal leading-normal">
-                                        Join us for a special Sunday service with uplifting worship and an inspiring sermon.
-                                        <br><strong>Day:</strong> Every Sunday at 10:00 AM
-                                    </p>
-
-                                    <!-- Hidden Extra Info -->
-                                    <div class="hidden mt-3 text-text-light-secondary text-sm leading-relaxed extra-info">
-                                        Our Sunday services include powerful worship sessions, engaging sermons, and a welcoming community atmosphere. 
-                                        Each week may feature guest speakers, choir performances, or youth-led worship experiences. 
-                                        Everyone is invited to participate and be blessed.
-                                    </div>
-                                </div>
-
-                                <!-- Read More Button -->
-                                <button
-                                    onclick="this.parentElement.querySelector('.extra-info').classList.toggle('hidden')"
-                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/20 transition">
-                                    <span class="truncate">Read More</span>
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <!-- Annual Community Drive -->
-                        <div
-                            class="flex h-full w-72 flex-1 flex-col gap-3 rounded-xl bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] min-w-60">
-                            
-                            <!-- Image -->
-                            <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl flex flex-col"
-                                style='background-image: url("assets/Community.webp");'>
-                            </div>
-
-                            <!-- Content -->
-                            <div class="flex flex-col flex-1 justify-between p-4 pt-1 gap-4">
-                                <div>
-                                    <p class="text-text-light-primary text-base font-bold leading-normal">
-                                        Annual Community Drive
-                                    </p>
-                                    <p class="text-text-light-secondary text-sm font-normal leading-normal">
-                                        Participate in our yearly community drive to support local families with food and essentials.
-                                        <br><strong>Day:</strong> Every first Saturday of the month
-                                    </p>
-
-                                    <!-- Hidden Extra Info -->
-                                    <div class="hidden mt-3 text-text-light-secondary text-sm leading-relaxed extra-info">
-                                        Each year, we gather as a parish to give back to our Entebbe community by collecting food, clothes, and supplies 
-                                        for families in need. Volunteers are welcome to help with sorting, packing, and distribution. 
-                                        Together, we make a lasting difference!
-                                    </div>
-                                </div>
-
-                                <!-- Read More Button -->
-                                <button
-                                    onclick="this.parentElement.querySelector('.extra-info').classList.toggle('hidden')"
-                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/20 transition">
-                                    <span class="truncate">Read More</span>
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <!-- Youth Fellowship Night -->
-                        <div
-                            class="flex h-full w-72 flex-1 flex-col gap-3 rounded-xl bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] min-w-60">
-                            
-                            <!-- Image -->
-                            <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl flex flex-col"
-                                style='background-image: url("assets/Youth fellowship.jpeg");'>
-                            </div>
-
-                            <!-- Content -->
-                            <div class="flex flex-col flex-1 justify-between p-4 pt-1 gap-4">
-                                <div>
-                                    <p class="text-text-light-primary text-base font-bold leading-normal">
-                                        Youth Fellowship Night
-                                    </p>
-                                    <p class="text-text-light-secondary text-sm font-normal leading-normal">
-                                        A fun and spiritual evening for teenagers and young adults with games, worship, and discussions.
-                                        <br><strong>Day:</strong> Every Friday at 6:30 PM
-                                    </p>
-
-                                    <!-- Hidden Extra Info -->
-                                    <div class="hidden mt-3 text-text-light-secondary text-sm leading-relaxed extra-info">
-                                        Join us for a vibrant night of fellowship filled with music, laughter, and meaningful conversations.
-                                        It’s a safe space to grow in faith, build friendships, and strengthen your walk with God.
-                                    </div>
-                                </div>
-
-                                <!-- Read More Button -->
-                                <button
-                                    onclick="this.parentElement.querySelector('.extra-info').classList.toggle('hidden')"
-                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/20 transition">
-                                    <span class="truncate">Read More</span>
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <!-- Bible Study Session (New Card) -->
-                        <div
-                            class="flex h-full w-72 flex-1 flex-col gap-3 rounded-xl bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] min-w-60">
-                            <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl flex flex-col"
-                                style='background-image: url("assets/Discipline-of-Bible-Study.jpg");'>
-                            </div>
-
-                            <div class="flex flex-col flex-1 justify-between p-4 pt-1 gap-4">
-                                <div>
-                                    <p class="text-text-light-primary text-base font-bold leading-normal">
-                                        Bible Study Session
-                                    </p>
-                                    <p class="text-text-light-secondary text-sm font-normal leading-normal">
-                                        Weekly Bible study group for all ages, exploring Scripture and sharing reflections.
-                                        <br><strong>Day:</strong> Every Wednesday at 7:00 PM
-                                    </p>
-
-                                    <!-- Hidden details -->
-                                    <div id="bible-study-info" class="hidden mt-3 text-text-light-secondary text-sm leading-relaxed">
-                                        Each session includes guided discussions, group prayers, and practical lessons to deepen
-                                        understanding of God's Word. All are welcome — bring your Bible and an open heart.
-                                    </div>
-                                </div>
-
-                                <!-- Read More Button -->
-                                <button
-                                    onclick="document.getElementById('bible-study-info').classList.toggle('hidden')"
-                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/20 transition">
-                                    <span class="truncate">Read More</span>
-                                </button>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
                 <section
-                    class="w-full bg-gradient-to-b from-background-light via-white to-[#f4f6fb] py-16">
-                    <div class="w-full px-6 lg:px-10">
-                        <!-- 3 columns layout -->
-                        <div class="grid gap-10 lg:grid-cols-3 items-start">
+                    class="w-full py-12 lg:py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+                    <div class="w-full px-6 lg:px-8 max-w-7xl mx-auto">
 
-                            <!-- Column 1: Intro -->
-                            <div class="space-y-6">
-                                <span
-                                    class="inline-block uppercase tracking-[0.3em] text-xs font-semibold text-primary mb-3">Who
-                                    We Are</span>
-                                <h2
-                                    class="text-4xl font-bold text-text-light sm:text-5xl leading-tight">
-                                    A welcoming parish for every stage of faith</h2>
-                                <p class="text-lg text-text-muted-light leading-relaxed">
-                                    St. John's Parish Church Entebbe is more than a Sunday gathering. We are a home for
-                                    seekers, families, students, and long-time believers who desire a deeper connection
-                                    with God and one another.
-                                </p>
-                                <p class="text-base text-text-muted-light leading-relaxed">
-                                    Whether you're visiting for the very first time or looking for a parish to call
-                                    home, we want your experience to feel warm, welcoming, and meaningful.
-                                </p>
+                        <div class="grid gap-8 lg:grid-cols-3 items-start">
+
+                            <!-- Column 1: Intro (tightened) -->
+                            <div class="space-y-5">
+                                <span class="inline-block uppercase tracking-widest text-xs font-bold text-primary">
+                                    Who We Are
+                                </span>
+                                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                                    A welcoming parish for every stage of faith
+                                </h2>
+                                <div class="space-y-4 text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+                                    <p>
+                                        St. John's Parish Church Entebbe is more than a Sunday gathering.
+                                        We are a home for seekers, families, students, and long-time believers.
+                                    </p>
+                                    <p>
+                                        Whether you're visiting for the first time or looking for a place to belong,
+                                        you’ll find warmth and meaning here.
+                                    </p>
+                                </div>
                             </div>
 
-                            <!-- Column 2: Heartbeat Card -->
-                            <aside
-                                class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-primary/10 overflow-hidden">
-                                <div class="bg-secondary bg-sky-700 text-white px-6 py-5">
+                            <!-- Column 2: Heartbeat Card (compact & beautiful) -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-primary/10 overflow-hidden">
+                                <div class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-4">
                                     <h3 class="text-2xl font-bold">Our Heartbeat</h3>
-                                    <p class="text-sm text-white/80 mt-1">The vision that shapes every gathering and
-                                        ministry effort.</p>
                                 </div>
-                                <div class="p-6 space-y-6">
+                                <div class="p-6 space-y-5 text-sm">
                                     <div>
-                                        <h4 class="text-lg font-semibold text-text-light mb-2">
-                                            Mission</h4>
-                                        <p
-                                            class="text-sm text-text-muted-light leading-relaxed">
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">Mission</h4>
+                                        <p class="text-gray-600 dark:text-gray-300">
                                             To proclaim Christ, nurture believers, and serve our community with
-                                            compassion, generosity, and grace.
+                                            compassion.
                                         </p>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-semibold text-text-light mb-2">
-                                            Vision</h4>
-                                        <p
-                                            class="text-sm text-text-muted-light leading-relaxed">
-                                            To be a lighthouse of hope in Entebbe — equipping disciples, strengthening
-                                            families, and reaching new generations for Jesus.
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">Vision</h4>
+                                        <p class="text-gray-600 dark:text-gray-300">
+                                            To be a lighthouse of hope in Entebbe — equipping disciples and reaching new
+                                            generations.
                                         </p>
                                     </div>
                                     <div
-                                        class="grid grid-cols-2 gap-4 pt-2 border-t border-gray-200">
-                                        <div>
-                                            <span
-                                                class="block text-3xl font-bold text-primary">1948</span>
-                                            <span
-                                                class="text-xs uppercase tracking-wide text-text-muted-light">Founded</span>
+                                        class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <div class="text-center">
+                                            <div class="text-3xl font-bold text-primary">1948</div>
+                                            <div class="text-xs uppercase tracking-wider text-gray-500">Founded</div>
                                         </div>
-                                        <div>
-                                            <span
-                                                class="block text-3xl font-bold text-primary">600+</span>
-                                            <span
-                                                class="text-xs uppercase tracking-wide text-text-muted-light">Active
-                                                members</span>
+                                        <div class="text-center">
+                                            <div class="text-3xl font-bold text-primary">600+</div>
+                                            <div class="text-xs uppercase tracking-wider text-gray-500">Members</div>
                                         </div>
                                     </div>
                                 </div>
-                            </aside>
+                            </div>
 
-                            <!-- Column 3: Stacked Cards -->
-                            <div class="space-y-6">
+                            <!-- Column 3: Two small cards (tight & clean) -->
+                            <div class="space-y-5">
                                 <div
-                                    class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                                    <h3 class="text-xl font-semibold text-text-light mb-3">What to
-                                        Expect</h3>
-                                    <p class="text-sm text-text-muted-light leading-relaxed">
-                                        Friendly greeters, uplifting worship, and a message that connects Scripture to
-                                        everyday life. Come as you are—we'll save you a seat.
+                                    class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow border border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">What to Expect</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        Friendly greeters, uplifting worship, and practical biblical teaching.
+                                        Come as you are — we’ll save you a seat.
                                     </p>
                                 </div>
+
                                 <div
-                                    class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                                    <h3 class="text-xl font-semibold text-text-light mb-3">Ways to
-                                        Connect</h3>
-                                    <p class="text-sm text-text-muted-light leading-relaxed">
-                                        Join a small group, serve with our outreach teams, or participate in youth and
-                                        adult discipleship programs. There's room for your gifts and story.
+                                    class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow border border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Ways to Connect
+                                    </h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        Small groups, outreach teams, youth & adult programs — there’s a place for you.
                                     </p>
                                 </div>
                             </div>
@@ -358,225 +147,472 @@
                         </div>
                     </div>
                 </section>
+                
+                <!-- church ministeries and groups -->
+                <section class="py-16 bg-gray-50 dark:bg-gray-900">
+                    <div class="container mx-auto px-6 lg:px-8">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                                Church Groups & Ministries
+                            </h2>
+                            <p class="mt-3 text-gray-600 dark:text-gray-400">
+                                Find your place to belong, grow, and serve
+                            </p>
+                        </div>
 
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
+                            <!-- Fathers Union -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary text-2xl">group</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Fathers Union</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                            A community of men committed to leadership, fellowship and spiritual growth.
+                                        </p>
 
+                                        <!-- CLEAR BUTTON - impossible to miss -->
+                                        <button
+                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                            data-group="Fathers Union">
+                                            Join Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mothers Union -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-xl flex items-center justify-center">
+                                        <span
+                                            class="material-symbols-outlined text-pink-600 dark:text-pink-400 text-2xl">diversity_3</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Mothers Union</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                            Women united in prayer, service, and building strong Christian homes.
+                                        </p>
+                                        <button
+                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                            data-group="Mothers Union">
+                                            Join Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Worship / Choir -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                                        <span
+                                            class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">music_note</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Worship (Choir)</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                            Leading the church in worship through music, praise and joyful singing.
+                                        </p>
+                                        <button
+                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                            data-group="Worship (Choir)">
+                                            Join Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Prayer & Spiritual Growth -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                                        <span
+                                            class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">volunteer_activism</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Prayer & Spiritual
+                                            Growth</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                            Intercessors committed to deepening faith through prayer.
+                                        </p>
+                                        <button
+                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                            data-group="Prayer & Spiritual Growth">
+                                            Join Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Service & Outreach -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                                        <span
+                                            class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">travel_explore</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Service & Outreach
+                                        </h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                            Bringing hope through community service, charity, and missions.
+                                        </p>
+                                        <button
+                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                            data-group="Service & Outreach">
+                                            Join Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Church Administration & Support -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                                        <span
+                                            class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-2xl">admin_panel_settings</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Church
+                                            Administration & Support</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                            Ushers, media team, protocol, and workers supporting church operations.
+                                        </p>
+                                        <button
+                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                            data-group="Church Administration & Support">
+                                            Join Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
             </main>
 
-            <!-- Footer -->
-            <footer class="navbar flex flex-col gap-8 px-5 py-10 text-center @container  w-full">
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-10 sm:gap-6 w-full">
-
-                    <!-- Left: Logo -->
-                    <div class="flex items-center gap-3">
-                        <img src="assets/Logo Final.png" alt="St. John's Parish Church Logo"
-                            class="h-12 w-auto object-contain">
-                        <h2 class="text-lg sm:text-xl font-semibold text-gray-300 ">St. John's Parish Church Entebbe
-                        </h2>
-                    </div>
-
-                    <!-- Center: Social Media Icons -->
-                    <div class="flex items-center gap-6">
-                        <a href="#" aria-label="Facebook" class="hover:text-blue-400 transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path clip-rule="evenodd" fill-rule="evenodd"
-                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                            </svg>
-                        </a>
-                        <a href="#" aria-label="Twitter" class="hover:text-blue-400 transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743A11.65 11.65 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                            </svg>
-                        </a>
-                        <a href="#" aria-label="YouTube" class="hover:text-blue-400 transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path clip-rule="evenodd" fill-rule="evenodd"
-                                    d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.418-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.194V8.806L15.194 12Z" />
-                            </svg>
-                        </a>
-                    </div>
-
-                    <!-- Right: Navigation Links -->
-                    <div class="flex flex-wrap justify-center sm:justify-end gap-6 text-sm font-medium">
-                        <a href="{{ route('home') }}" class="hover:text-blue-400 transition-colors">Home</a>
-                        <a href="{{ route('services') }}" class="hover:text-blue-400 transition-colors">Services</a>
-                        <a href="{{ route('events') }}" class="hover:text-blue-400 transition-colors">Events</a>
-                        <a href="contact.html" class="hover:text-blue-400 transition-colors">Contact</a>
-                    </div>
-                </div>
-
-                <!-- Bottom Section -->
-                <div class="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-300">
-                    <p>© 2025 St. John's Parish Church Entebbe. All Rights Reserved.</p>
-                </div>
-            </footer>
+            @include('partials.footer')
 
 
         </div>
     </div>
 
     <!-- Registration modal (hidden by default) -->
-    <div id="registrationModal" class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-8">
+    <div id="registrationModal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 py-8 overflow-y-auto bg-black/40 backdrop-blur-sm">
+
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-black/50" data-modal-backdrop></div>
-    <!-- Modal panel -->
-    <div class="relative max-w-3xl w-full bg-white rounded-xl shadow-md p-8 max-h-[85vh] overflow-y-auto">
-            <button type="button" data-modal-close aria-label="Close registration" class="absolute top-4 right-4 text-slate-500 hover:text-slate-700 text-2xl leading-none">&times;</button>
-        <h2 class="text-3xl md:text-4xl font-extrabold text-[#163e7b] mb-2">Member Registration</h2>
-        <p class="text-slate-600 mb-6">Register a new member to the church database.</p>
 
-    <form id="memberForm" class="space-y-6">
-          <!-- Personal Information -->
-          <div class="border-b border-slate-200 pb-4">
-            <h3 class="text-xl font-semibold text-[#163e7b] mb-4">Personal Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-red-500">*</span></label>
-                <input type="text" name="fullName" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
-                <input type="date" name="dateOfBirth" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Gender</label>
-                <select name="gender" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Marital Status</label>
-                <select name="maritalStatus" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-                  <option value="">Select Status</option>
-                  <option value="Single">Single</option>
-                  <option value="Married">Married</option>
-                  <option value="Divorced">Divorced</option>
-                  <option value="Widowed">Widowed</option>
-                </select>
-              </div>
+        <!-- Modal Panel -->
+        <div
+            class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+
+            <!-- Close Button -->
+            <button type="button" data-modal-close
+                class="absolute top-5 right-6 text-gray-400 hover:text-gray-600 text-3xl font-light transition">
+                ×
+            </button>
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-[#163e7b] to-[#1e56a0] text-white px-10 py-8 text-center">
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">
+                    Member Registration
+                </h2>
+                <p class="mt-3 text-white/90 text-lg font-medium">
+                    Become a part of St. John’s family today
+                </p>
             </div>
-          </div>
 
-          <!-- Contact Information -->
-          <div class="border-b border-slate-200 pb-4">
-            <h3 class="text-xl font-semibold text-[#163e7b] mb-4">Contact Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-                <input type="tel" name="phone" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                <input type="email" name="email" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-              </div>
-              <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-slate-700 mb-1">Residential Address</label>
-                <textarea name="address" rows="2" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent"></textarea>
-              </div>
+            <div class="p-8 lg:p-10 max-h-[75vh] overflow-y-auto">
+                <form id="memberForm" class="space-y-8" method="POST" action="{{ route('members.store') }}"
+                    enctype="multipart/form-data">
+                    @csrf
+
+                    <!-- Personal Information -->
+                    <div class="bg-gray-50/70 rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-2xl font-bold text-[#163e7b] mb-5 flex items-center">
+                            <span class="material-symbols-outlined mr-3 text-[#163e7b]">person</span>
+                            Personal Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="fullname" required
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth <span
+                                        class="text-red-500">*</span></label>
+                                <input type="date" name="dateOfBirth" required max="2024-12-31" min="1900-01-01"
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Gender <span
+                                        class="text-red-500">*</span></label>
+                                <select name="gender" required
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Marital Status <span
+                                        class="text-red-500">*</span></label>
+                                <select name="maritalStatus" required
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                                    <option value="">Select Status</option>
+                                    <option value="single">Single</option>
+                                    <option value="married">Married</option>
+                                    <option value="divorced">Divorced</option>
+                                    <option value="widowed">Widowed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="bg-gray-50/70 rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-2xl font-bold text-[#163e7b] mb-5 flex items-center">
+                            <span class="material-symbols-outlined mr-3 text-[#163e7b]">contact_phone</span>
+                            Contact Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number <span
+                                        class="text-red-500">*</span></label>
+                                <input type="tel" name="phone" required
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                                <input type="email" name="email"
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Residential Address
+                                    (Village & Zone)</label>
+                                <textarea name="address" rows="3"
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Church Information -->
+                    <div class="bg-gray-50/70 rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-2xl font-bold text-[#163e7b] mb-5 flex items-center">
+                            <span class="material-symbols-outlined mr-3 text-[#163e7b]">church</span>
+                            Church Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date Joined <span
+                                        class="text-red-500">*</span></label>
+                                <input type="date" name="dateJoined" required
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Cell (Zone) <span
+                                        class="text-red-500">*</span></label>
+                                <select name="cell" required
+                                    class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition">
+                                    <option value="">Select Your Cell</option>
+                                    <option value="north">North Cell</option>
+                                    <option value="east">East Cell</option>
+                                    <option value="south">South Cell</option>
+                                    <option value="west">West Cell</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Image -->
+                    <div class="bg-gray-50/70 rounded-xl p-6 border border-gray-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Upload Photo (Optional)</label>
+                        <input type="file" name="profileImage" accept="image/*"
+                            class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:bg-[#163e7b] file:text-white hover:file:bg-[#1e56a0] transition cursor-pointer">
+                    </div>
+
+                    <!-- Success Notice -->
+                    <div id="formNotice"
+                        class="hidden p-5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-center font-bold text-lg">
+                        Member registered successfully! Redirecting...
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="flex justify-end pt-6">
+                        <button type="submit"
+                            class="px-10 py-4 bg-[#163e7b] hover:bg-[#1e56a0] text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                            Complete Registration
+                        </button>
+                    </div>
+                </form>
             </div>
-          </div>
-
-          <!-- Church Information -->
-          <div class="border-b border-slate-200 pb-4">
-            <h3 class="text-xl font-semibold text-[#163e7b] mb-4">Church Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Date Joined <span class="text-red-500">*</span></label>
-                <input type="date" name="dateJoined" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Ministry/Group</label>
-                <select name="ministry" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-                  <option value="">Select Ministry</option>
-                  <option value="Choir Ministry">Choir Ministry</option>
-                  <option value="Youth Fellowship">Youth Fellowship</option>
-                  <option value="Ushers Ministry">Ushers Ministry</option>
-                  <option value="Mothers' Union">Mothers' Union</option>
-                  <option value="Men's Fellowship">Men's Fellowship</option>
-                  <option value="Sunday School">Sunday School</option>
-                  <option value="None">None</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Parish</label>
-                <select name="parish" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-                  <option value="">Select Parish</option>
-                  <option value="St. Luke's Parish">St. Luke's Parish</option>
-                  <option value="St. Peter's Parish">St. Peter's Parish</option>
-                  <option value="St. Mark's Parish">St. Mark's Parish</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Baptism Status</label>
-                <select name="baptismStatus" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent">
-                  <option value="">Select Status</option>
-                  <option value="Baptized">Baptized</option>
-                  <option value="Not Baptized">Not Baptized</option>
-                  <option value="Pending">Pending</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Additional Notes -->
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Additional Notes</label>
-            <textarea name="notes" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#163e7b] focus:border-transparent" placeholder="Any additional information about the member..."></textarea>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="flex gap-4 pt-4">
-            <button type="submit" class="px-8 py-3 rounded-lg bg-[#163e7b] text-white shadow hover:opacity-95 transition font-medium">Register Member</button>
-            <a href="Records.html" class="px-8 py-3 rounded-lg bg-white text-[#163e7b] border border-[#163e7b] shadow hover:bg-[#f1f5f9] transition font-medium inline-block text-center">View Members</a>
-          </div>
-
-          <div id="formNotice" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-            Member registered successfully! (Frontend demo - data will be saved to backend)
-          </div>
-        </form>
         </div>
     </div>
 
+    <!-- registration javacsript -->
     <script>
-        (function(){
-            const openBtn = document.getElementById('registerBtn');
+        (function () {
+            const openBtn = document.getElementById('joinBtn');
             const modal = document.getElementById('registrationModal');
             const closeBtn = modal ? modal.querySelector('[data-modal-close]') : null;
             const backdrop = modal ? modal.querySelector('[data-modal-backdrop]') : null;
 
-            function openModal(){
-                if(!modal) return;
+            function openModal() {
+                if (!modal) return;
                 modal.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
             }
 
-            function closeModal(){
-                if(!modal) return;
+            function closeModal() {
+                if (!modal) return;
                 modal.classList.add('hidden');
                 document.body.style.overflow = '';
             }
 
-            if(openBtn) openBtn.addEventListener('click', openModal);
-            if(closeBtn) closeBtn.addEventListener('click', closeModal);
-            if(backdrop) backdrop.addEventListener('click', closeModal);
+            if (openBtn) openBtn.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (backdrop) backdrop.addEventListener('click', closeModal);
             // Close on Escape
-            document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
             // Optional: simple demo submit handling (shows notice briefly)
             const form = document.getElementById('memberForm');
-            if(form){
-                form.addEventListener('submit', function(e){
-                    // Let server handle real submission if action/method provided. This keeps front-end demo behavior.
-                    e.preventDefault();
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    // Show the success notice before form submits to server
                     const notice = document.getElementById('formNotice');
-                    if(notice){ notice.classList.remove('hidden'); setTimeout(()=>{ notice.classList.add('hidden'); closeModal(); }, 1600); }
+                    if (notice) {
+                        notice.classList.remove('hidden');
+                        // Allow form to submit naturally to server after a short delay for UX
+                        setTimeout(() => {
+                            form.submit();
+                        }, 500);
+                    }
                 });
             }
         })();
     </script>
+
+
+    <!-- JOIN GROUP MODAL -->
+    <div id="joinGroupModal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+        <div
+            class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+
+            <!-- Close Button -->
+            <button type="button" id="closeModalBtn"
+                class="absolute top-4 right-5 text-3xl text-gray-400 hover:text-gray-700 z-10">
+                ×
+            </button>
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-primary to-secondary text-white px-8 py-10 text-center">
+                <h3 id="modalGroupName" class="text-2xl font-bold">Join Group</h3>
+                <p class="mt-2 text-white/90">We’re so excited to have you!</p>
+            </div>
+
+            <!-- Form: only ask for email to match members lookup in DB -->
+            <form id="joinGroupForm" action="{{ route('groups.join') }}" method="POST" class="p-6 space-y-5">
+                @csrf
+                <input type="hidden" name="group" id="groupInput">
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email <span
+                            class="text-red-500">*</span></label>
+                    <input type="email" name="email" required
+                        class="w-full px-5 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary transition">
+                    <p class="text-xs text-gray-500 mt-2">Enter your registration email. If you are not yet a member,
+                        please complete full registration first.</p>
+                </div>
+
+                <!-- Success Message (hidden by default) -->
+                <div id="successMessage"
+                    class="hidden p-4 bg-emerald-50 border border-emerald-300 text-emerald-700 rounded-xl text-center font-bold">
+                    Thank you! You’ve successfully joined <span id="successGroup"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <button type="button" id="cancelBtn"
+                        class="flex-1 py-3 border border-gray-300 dark:border-gray-600 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 py-3 bg-primary hover:bg-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition">
+                        Join Group
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- join javacsrip -->
+    <script>
+        const modal = document.getElementById('joinGroupModal');
+        const groupTitle = document.getElementById('modalGroupName');
+        const groupInput = document.getElementById('groupInput');
+        const successGroup = document.getElementById('successGroup');
+        const form = document.getElementById('joinGroupForm');
+
+        // Open modal when any "Join Group" button is clicked
+        document.querySelectorAll('.joinGroupBtn').forEach(button => {
+            button.addEventListener('click', function () {
+                const groupName = (this.getAttribute('data-group') || '').trim();
+
+                groupTitle.textContent = `Join ${groupName}`;
+                groupInput.value = groupName;
+                successGroup.textContent = groupName;
+
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Close modal
+        document.getElementById('closeModalBtn').onclick = () => modal.classList.add('hidden');
+        document.getElementById('cancelBtn').onclick = () => modal.classList.add('hidden');
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
+
+        // Optional: Show success & auto-close after submit (safely attach only if form exists)
+        const joinForm = document.getElementById('joinGroupForm');
+        if (joinForm) {
+            joinForm.addEventListener('submit', function (e) {
+                // allow normal submit to backend which will handle member lookup/create and pivot attach
+                // show a quick success state for UX while the request completes
+                setTimeout(() => {
+                    const success = document.getElementById('successMessage');
+                    if (success) success.classList.remove('hidden');
+                    document.querySelectorAll('#joinGroupForm input, #joinGroupForm button[type="submit"]').forEach(el => el.disabled = true);
+                    setTimeout(() => modal.classList.add('hidden'), 1500);
+                }, 300);
+            });
+        }
+    </script>
+
     <script src="script.js"></script>
 </body>
 

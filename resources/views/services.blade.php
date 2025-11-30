@@ -1,260 +1,219 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Services - St. John's Parish Church Entebbe</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <link rel="stylesheet" href="styles.css">
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#3A5C83",
-                        "secondary": "#F2C94C",
-                        "background-light": "#F8F9FA",
-                        "background-dark": "#101922",
-                        "text-light": "#333333",
-                        "text-dark": "#F8F9FA",
-                        "text-muted-light": "#4c739a",
-                        "text-muted-dark": "#a0aec0",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                },
-            },
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet" />
+
+    @include('partials.theme-config')
 </head>
-<body class="bg-background-light font-display text-text-light">
-    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
-        <div class="layout-container flex h-full grow flex-col">
-            <!-- Header - Full Width Navbar -->
-            <!-- Header - Full Width Navbar -->
-            <header class="sticky top-0 z-50 flex items-center bg-background-light/80 p-4 pb-2 justify-between backdrop-blur-sm shadow-sm">
-                <div class="flex items-center gap-3">
-                <img src="assets/Logo Final.png" alt="St. John's Parish Church Logo" class="h-112 w-auto object-contain" style="max-height: 50px;">
-                <a href="{{ route('home') }}" class="text-lg font-bold leading-tight tracking-[-0.015em] text-gray-800">
-                St. John's Parish Church Entebbe
-                </a>
-            </div>
-            
-                <nav class="hidden sm:flex flex-1 justify-end gap-8">
-                <div class="flex items-center gap-9">
-                <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors" href="{{ route('home') }}">Home</a>
-                <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors" href="{{ route('services') }}">Services</a>
-                <a class="text-sm font-medium leading-normal text-gray-800 hover:text-primary transition-colors" href="{{ route('events') }}">Events</a>
-                    <a class="text-sm font-medium leading-normal text-gray-800 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors" href="{{ route('admin.login') }}">Admin Portal</a>
-                </div>
-            </nav>
-            </header>
- <!-- Main Content -->
-            <main>
-                <section
-                    class="text-center py-16 bg-gradient-to-b from-primary/10 to-white dark:from-background-dark dark:to-background-dark">
-                    <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-4">Our Services</h1>
-                    <p class="max-w-2xl mx-auto text-text-muted-light dark:text-text-muted-dark">
-                        We gather to worship, grow, and serve together as one family in Christ. Join us throughout the
-                        week for uplifting worship, prayer, and fellowship.
-                    </p>
-                </section>
 
-                <!-- SERVICES SECTION -->
-                <section class="py-16 bg-gray-50 dark:bg-background-dark/40">
-                    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-                        <h2 class="text-3xl font-bold text-text-light dark:text-text-dark mb-3">
-                            Church Services & Ministries
-                        </h2>
-                        <p class="text-text-muted-light dark:text-text-muted-dark max-w-2xl mx-auto">
-                            Find your place to belong — our church offers uplifting services and ministries for
-                            everyone.
-                        </p>
-                    </div>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark min-h-screen">
 
-                    <div class="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
-                        <!-- Counseling -->
-                        <div
-                            class="group-card bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-4xl text-primary dark:text-secondary mb-3">psychology</span>
-                            <h3 class="text-lg font-semibold mb-2 text-text-light dark:text-text-dark">Counseling</h3>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-3">
-                                Spiritual and emotional guidance sessions designed to bring peace and clarity to your
-                                life.
-                            </p>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark"><strong>Tuesday:</strong>
-                                10:00 AM</p>
-                        </div>
+    @include('partials.navbar')
 
-                        <!-- Baptism -->
-                        <div
-                            class="group-card bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-4xl text-primary dark:text-secondary mb-3">water_drop</span>
-                            <h3 class="text-lg font-semibold mb-2 text-text-light dark:text-text-dark">Baptism</h3>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-3">
-                                Celebrate your faith and renewal through this sacred baptism ceremony.
-                            </p>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark">
-                                <strong>Saturday:</strong> 2:00 PM</p>
-                        </div>
+    @include('partials.announcement')
 
-                        <!-- Youth Retreat -->
-                        <div
-                            class="group-card bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-4xl text-primary dark:text-secondary mb-3">hiking</span>
-                            <h3 class="text-lg font-semibold mb-2 text-text-light dark:text-text-dark">Youth Retreat
-                            </h3>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-3">
-                                A weekend getaway for youth to grow in faith, unity, and spiritual strength.
-                            </p>
-                            <p class="text-sm text-text-muted-light dark:text-text-muted-dark"><strong>2nd
-                                    Saturday:</strong> 9:00 AM</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- REGISTRATION FORM SECTION -->
-                <section class="py-20 bg-gradient-to-r from-primary to-secondary text-white">
-                    <div
-                        class="max-w-6xl mx-auto px-4 sm:px-4 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <!-- LEFT TEXT -->
-                        <div>
-                            <h2 class="text-4xl font-bold mb-4">Register for a Church Service</h2>
-                            <p class="text-white/90 mb-6">
-                                We’d love to welcome you to St. John’s Parish Church Entebbe! Fill out this form to let
-                                us know which service you’d like to attend — our team will prepare everything for your
-                                visit.
-                            </p>
-                            <p class="text-white/80">
-                                Whether you’re new to the community or just visiting, your presence means a lot to us.
-                                Choose your service, and we’ll be ready to receive you warmly.
-                            </p>
-                        </div>
-
-                        <!-- RIGHT FORM -->
-                        <div class="bg-white rounded-2xl shadow-lg p-8 sm:p-10 text-gray-800">
-                            <form class="space-y-6"action="{{ route('service.register') }}" method="POST">
-                                @csrf
-                            <!-- Full Name -->
-                                <div>
-                                    <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Full
-                                        Name</label>
-                                    <input id="fullname" name="fullname" type="text" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                                </div>
-
-                                <!-- Email -->
-                                <div>
-                                    <label for="email"
-                                        class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <input id="email" name="email" type="email" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                                </div>
-
-                                <!-- Address -->
-                                <div>
-                                    <label for="address"
-                                        class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <input id="address" name="address" type="text"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                                </div>
-
-                                <!-- Contact -->
-                                <div>
-                                    <label for="contact"
-                                        class="block text-sm font-medium text-gray-700 mb-1">Contact</label>
-                                    <input id="contact" name="contact" type="tel"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                                </div>
-
-                               
-                                <!-- Service Dropdown -->
-                                <div>
-                                    <label for="service" class="block text-sm font-medium text-gray-700 mb-1">Select a
-                                        Service</label>
-                                    <select id="service" name="service" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                                        <option value="" disabled selected>Select a service</option>
-                                        <option value="Counseling">Counseling</option>
-                                        <option value="Baptism">Baptism</option>
-                                        <option value="Youth Retreat">Youth Retreat</option>
-                                    </select>
-                                </div>
-
-                                <!-- Submit -->
-                                <div class="pt-2">
-                                    <button type="submit"
-                                        class="w-full bg-primary hover:bg-secondary text-white font-semibold py-3 px-6 rounded-lg shadow-md transition">
-                                        Submit Your Registration
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-
-
-            </main>
-
-
-            <!-- Footer -->
-            <footer class="navbar flex flex-col gap-8 px-5 py-10 text-center @container  w-full">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-10 sm:gap-6 w-full">
-                
-                <!-- Left: Logo -->
-                <div class="flex items-center gap-3">
-                <img src="assets/Logo Final.png" alt="St. John's Parish Church Logo" class="h-12 w-auto object-contain">
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-300 ">St. John's Parish Church Entebbe</h2>
-                </div>
-
-                <!-- Center: Social Media Icons -->
-                <div class="flex items-center gap-6">
-                <a href="#" aria-label="Facebook" class="hover:text-blue-400 transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path clip-rule="evenodd" fill-rule="evenodd"
-                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                    </svg>
-                </a>
-                <a href="#" aria-label="Twitter" class="hover:text-blue-400 transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743A11.65 11.65 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                    </svg>
-                </a>
-                <a href="#" aria-label="YouTube" class="hover:text-blue-400 transition-colors">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path clip-rule="evenodd" fill-rule="evenodd"
-                        d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.418-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.194V8.806L15.194 12Z" />
-                    </svg>
-                </a>
-                </div>
-
-                <!-- Right: Navigation Links -->
-                <div class="flex flex-wrap justify-center sm:justify-end gap-6 text-sm font-medium">
-                <a href="{{ route('home') }}" class="hover:text-blue-400 transition-colors">Home</a>
-                <a href="{{ route('services') }}" class="hover:text-blue-400 transition-colors">Services</a>
-                <a href="{{ route('events') }}" class="hover:text-blue-400 transition-colors">Events</a>
-                <a href="contact.html" class="hover:text-blue-400 transition-colors">Contact</a>
+    {{-- Success Message --}}
+    @if ($message = Session::get('success'))
+        <div class="mb-6 max-w-7xl mx-auto px-6">
+            <div
+                class="bg-green-50 border-l-4 border-green-500 text-green-800 p-5 rounded-r-lg shadow-md flex items-start gap-4">
+                <svg class="w-7 h-7 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="font-bold text-lg text-green-900">Success!</p>
+                    <p class="mt-1">{{ $message }}</p>
                 </div>
             </div>
+        </div>
+    @endif
 
-            <!-- Bottom Section -->
-            <div class="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-300">
-                <p>© 2025 St. John's Parish Church Entebbe. All Rights Reserved.</p>
+    {{-- Error Message --}}
+    @if ($message = Session::get('error'))
+        <div class="mb-6 max-w-7xl mx-auto px-6">
+            <div
+                class="bg-red-50 border-l-4 border-secondary text-secondary p-5 rounded-r-lg shadow-md flex items-start gap-4">
+                <svg class="w-7 h-7 text-secondary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="font-bold text-lg">Error</p>
+                    <p class="mt-1">{{ $message }}</p>
+                </div>
             </div>
-            </footer>
+        </div>
+    @endif
+
+<!-- Services Page Hero – Shorter & Cleaner -->
+<section class="py-16 bg-white relative overflow-hidden"> <!-- Reduced from py-32+ -->
+    <div class="max-w-5xl mx-auto px-6 text-center">
+        <p class="text-accent font-bold uppercase tracking-widest text-xs mb-3">
+            Worship • Sacraments • Community
+        </p>
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-primary leading-tight mb-6">
+            Our Services
+        </h1>
+        <div class="w-20 h-1 bg-accent mx-auto mb-8"></div>
+
+        <div class="space-y-4 text-base md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            <p>
+                At <span class="text-primary font-semibold">St. John’s Parish Church Entebbe</span>, every service
+                is an invitation to encounter the living God.
+            </p>
+            <p class="text-gray-600">
+                Whether through the beauty of the Holy Eucharist, the joy of baptism and marriage, the comfort of
+                reconciliation, or the hope of Christian burial — we are here to walk with you in every season of faith and life.
+            </p>
+            <p class="italic text-secondary font-medium">
+                "Come to me, all you who are weary and burdened, and I will give you rest." — Matthew 11:28
+            </p>
         </div>
     </div>
+</section>
 
-    <script src="script.js"></script>
+<!-- Church Services Grid – Tighter & Faster -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900"> <!-- Reduced padding -->
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="text-center mb-10">
+            <p class="text-accent font-bold uppercase tracking-widest text-xs mb-2">
+                Sacraments & Spiritual Care
+            </p>
+            <h2 class="text-4xl font-black text-primary mb-3">Our Services</h2>
+            <div class="w-20 h-1 bg-accent mx-auto"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"> <!-- Reduced gap-8 → gap-6 -->
+
+            <!-- Confirmation -->
+            <div class="bg-white rounded-3xl p-6 shadow hover:shadow-xl transition-all border border-gray-100 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-accent/10 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-primary mb-3">Confirmation</h3>
+                <p class="text-sm text-gray-600 leading-snug">
+                    A powerful moment of personal commitment as young people and adults affirm their baptismal vows
+                    and receive the strengthening gift of the Holy Spirit.
+                </p>
+            </div>
+
+            <!-- Baptism -->
+            <div class="bg-white rounded-3xl p-6 shadow hover:shadow-xl transition-all border border-gray-100 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 13l-7 8-7-8m14 0v-2a4 4 0 00-4-4h-2a4 4 0 00-4 4v2"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-primary mb-3">Baptism</h3>
+                <p class="text-sm text-gray-600 leading-snug">
+                    The joyous beginning of Christian life — welcoming infants, children, and adults into God’s
+                    family through water and the Holy Spirit.
+                </p>
+            </div>
+
+            <!-- Holy Matrimony -->
+            <div class="bg-white rounded-3xl p-6 shadow hover:shadow-xl transition-all border border-gray-100 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-secondary/10 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-primary mb-3">Holy Matrimony</h3>
+                <p class="text-sm text-gray-600 leading-snug">
+                    Celebrating the sacred covenant of marriage — two lives becoming one under God’s blessing,
+                    surrounded by family and prayer.
+                </p>
+            </div>
+
+            <!-- Counseling -->
+            <div class="bg-white rounded-3xl p-6 shadow hover:shadow-xl transition-all border border-gray-100 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-accent/10 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L4 20V4a2 2 0 012-2h8a2 2 0 012 2v2"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-primary mb-3">Counseling</h3>
+                <p class="text-sm text-gray-600 leading-snug">
+                    Compassionate, confidential guidance from our clergy and trained counselors for life’s
+                    challenges, marriage preparation, grief, and spiritual growth.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICE REGISTRATION – EVEN SHORTER -->
+<section class="py-12 bg-white"> <!-- Reduced from py-20 → py-12 -->
+    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-10 items-center">
+
+        <div class="space-y-6">
+            <p class="text-secondary font-bold uppercase tracking-widest text-xs mb-2">
+                You Are Welcome Here
+            </p>
+            <h2 class="text-4xl md:text-5xl font-black leading-tight text-primary">
+                Register for a<br>
+                <span class="text-secondary">Church Service</span>
+            </h2>
+
+            <div class="space-y-4 text-base text-gray-800">
+                <p>
+                    We are overjoyed that you’re considering joining us at
+                    <strong>St. John’s Parish Church Entebbe</strong>.
+                </p>
+                <p>
+                    Whether it’s baptism, confirmation, holy matrimony, or spiritual counseling — 
+                    we are here to walk with you every step of the way.
+                </p>
+                <p class="italic text-secondary font-medium">
+                    “Where two or three are gathered in my name, there am I among them.” — Matthew 18:20
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-lg p-8 border border-gray-100">
+            <h3 class="text-2xl font-bold text-center mb-6 text-primary">
+                Let Us Know You're Coming
+            </h3>
+
+            <form action="{{ route('service.register') }}" method="POST" class="space-y-5">
+                @csrf
+                <!-- All your fields – same as before, just tighter spacing -->
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <input name="fullname" type="text" required placeholder="Full Name *" class="px-5 py-3 border border-gray-300 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
+                    <input name="email" type="email" required placeholder="Email *" class="px-5 py-3 border border-gray-300 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
+                </div>
+                <input name="address" type="text" placeholder="Address" class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
+                <input name="contact" type="tel" placeholder="Contact Number" class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
+                <select name="service" required class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
+                    <option value="" disabled selected>Choose a service...</option>
+                    <option value="Confirmation">Confirmation</option>
+                    <option value="Baptism">Baptism</option>
+                    <option value="Holy Matrimony">Holy Matrimony</option>
+                    <option value="Counseling">Counseling</option>
+                    <option value="Sunday Service Visit">Sunday Service Visit</option>
+                </select>
+
+                <button type="submit" class="w-full bg-secondary hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                    Submit Registration →
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+    @include('partials.footer')
 </body>
-</html>
 
+</html>

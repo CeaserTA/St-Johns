@@ -75,47 +75,63 @@
     </header>
 
     <div class="w-full max-w-4xl bg-white rounded-lg shadow p-6 mx-auto">
-        <form action="{{ route('members.store') }}" method="POST">
+        <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @if(request()->query('join_group'))
+                <input type="hidden" name="join_group" value="{{ request()->query('join_group') }}">
+            @endif
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700">First Name</label>
-                    <input type="text" name="first_name" value="{{ old('first_name') }}"
-                           class="w-full p-2 border rounded @error('first_name') border-red-500 @enderror" required>
-                    @error('first_name')
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700">Full Name</label>
+                    <input type="text" name="fullname" value="{{ old('fullname') }}"
+                           class="w-full p-2 border rounded @error('fullname') border-red-500 @enderror" required>
+                    @error('fullname')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
                 <div>
-                    <label class="block text-gray-700">Last Name</label>
-                    <input type="text" name="last_name" value="{{ old('last_name') }}"
-                           class="w-full p-2 border rounded @error('last_name') border-red-500 @enderror" required>
-                    @error('last_name')
+                    <label class="block text-gray-700">Date of Birth</label>
+                    <input type="date" name="dateOfBirth" value="{{ old('dateOfBirth') }}"
+                           class="w-full p-2 border rounded @error('dateOfBirth') border-red-500 @enderror" required>
+                    @error('dateOfBirth')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
                 <div>
                     <label class="block text-gray-700">Gender</label>
                     <select name="gender" class="w-full p-2 border rounded @error('gender') border-red-500 @enderror" required>
-                        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                        <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                        <option value="">-- Select Gender --</option>
+                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
                     </select>
                     @error('gender')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
                 <div>
+                    <label class="block text-gray-700">Marital Status</label>
+                    <select name="maritalStatus" class="w-full p-2 border rounded @error('maritalStatus') border-red-500 @enderror" required>
+                        <option value="">-- Select Status --</option>
+                        <option value="single" {{ old('maritalStatus') == 'single' ? 'selected' : '' }}>Single</option>
+                        <option value="married" {{ old('maritalStatus') == 'married' ? 'selected' : '' }}>Married</option>
+                        <option value="divorced" {{ old('maritalStatus') == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                        <option value="widowed" {{ old('maritalStatus') == 'widowed' ? 'selected' : '' }}>Widowed</option>
+                    </select>
+                    @error('maritalStatus')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
                     <label class="block text-gray-700">Phone</label>
                     <input type="text" name="phone" value="{{ old('phone') }}"
-                           class="w-full p-2 border rounded @error('phone') border-red-500 @enderror">
+                           class="w-full p-2 border rounded @error('phone') border-red-500 @enderror" required>
                     @error('phone')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="md:col-span-2">
+                <div>
                     <label class="block text-gray-700">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}"
+                          <input type="email" name="email" value="{{ old('email', request()->query('email')) }}"
                            class="w-full p-2 border rounded @error('email') border-red-500 @enderror">
                     @error('email')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -126,6 +142,35 @@
                     <input type="text" name="address" value="{{ old('address') }}"
                            class="w-full p-2 border rounded @error('address') border-red-500 @enderror">
                     @error('address')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700">Date Joined</label>
+                    <input type="date" name="dateJoined" value="{{ old('dateJoined', date('Y-m-d')) }}"
+                           class="w-full p-2 border rounded @error('dateJoined') border-red-500 @enderror" required>
+                    @error('dateJoined')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="block text-gray-700">Cell (Zone)</label>
+                    <select name="cell" class="w-full p-2 border rounded @error('cell') border-red-500 @enderror" required>
+                        <option value="">-- Select Cell --</option>
+                        <option value="north" {{ old('cell') == 'north' ? 'selected' : '' }}>North</option>
+                        <option value="east" {{ old('cell') == 'east' ? 'selected' : '' }}>East</option>
+                        <option value="south" {{ old('cell') == 'south' ? 'selected' : '' }}>South</option>
+                        <option value="west" {{ old('cell') == 'west' ? 'selected' : '' }}>West</option>
+                    </select>
+                    @error('cell')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700">Profile Image</label>
+                    <input type="file" name="profileImage" accept="image/*"
+                           class="w-full p-2 border rounded @error('profileImage') border-red-500 @enderror">
+                    @error('profileImage')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>

@@ -7,17 +7,17 @@ use App\Http\Controllers\EventController as PublicEventController;
 use App\Http\Controllers\ServiceController as PublicServiceController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ServiceController;
-use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Models\Event;
 use App\Models\Service;
-use App\Models\Group;
 use App\Models\Announcement;
 use App\Models\ServiceRegistration;
+use App\Models\Member;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('index');
+    $groups = [];
+    return view('index', compact('groups'));
 });
 
 // Serve the custom admin login page at /admin-login
@@ -38,12 +38,16 @@ require __DIR__.'/auth.php';
 
 // Public site pages: index/home, events and services
 Route::get('/index', function () {
-    return view('index');
+    $groups = [];
+    return view('index', compact('groups'));
 })->name('index');
 
 Route::get('/home', function () {
-    return view('index');
+    $groups = [];
+    return view('index', compact('groups'));
 })->name('home');
+
+// Group join endpoints removed — group management deleted per request
 
 Route::get('/events', [PublicEventController::class, 'index'])->name('events');
 
@@ -53,17 +57,23 @@ Route::post('/admin/events', [EventController::class, 'store'])->name('admin.eve
 Route::put('/admin/events/{event}', [EventController::class, 'update'])->name('admin.events.update');
 Route::delete('/admin/events/{event}', [EventController::class, 'destroy'])->name('admin.events.destroy');
 
+// Groups dashboard and management (public - no auth required)
+Route::get('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'index'])
+    ->name('admin.groups');
+
+Route::post('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'store'])->name('admin.groups.store');
+Route::put('/admin/groups/{group}', [\App\Http\Controllers\Admin\GroupController::class, 'update'])->name('admin.groups.update');
+Route::delete('/admin/groups/{group}', [\App\Http\Controllers\Admin\GroupController::class, 'destroy'])->name('admin.groups.destroy');
+Route::post('/admin/groups/{group}/members', [\App\Http\Controllers\Admin\GroupController::class, 'addMember'])->name('admin.groups.members.store');
+Route::delete('/admin/groups/{group}/members/{member}', [\App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('admin.groups.members.destroy');
+
 // Admin dashboard-specific services page (rendered as section within dashboard)
 Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services');
 Route::post('/admin/services', [ServiceController::class, 'store'])->name('admin.services.store');
 Route::put('/admin/services/{service}', [ServiceController::class, 'update'])->name('admin.services.update');
 Route::delete('/admin/services/{service}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
 
-// Admin dashboard-specific groups page (rendered as section within dashboard)
-Route::get('/admin/groups', [GroupController::class, 'index'])->name('admin.groups');
-Route::post('/admin/groups', [GroupController::class, 'store'])->name('admin.groups.store');
-Route::put('/admin/groups/{group}', [GroupController::class, 'update'])->name('admin.groups.update');
-Route::delete('/admin/groups/{group}', [GroupController::class, 'destroy'])->name('admin.groups.destroy');
+// Admin groups routes removed
 
 // Admin dashboard-specific announcements page (rendered as section within dashboard)
 Route::get('/admin/announcements', [AnnouncementController::class, 'index'])->name('admin.announcements');
@@ -73,8 +83,8 @@ Route::delete('/admin/announcements/{announcement}', [AnnouncementController::cl
 
 // Admin dashboard-specific members page (rendered as section within dashboard)
 Route::get('/admin/members', function () {
-    // If you'd prefer to fetch real members from DB, replace this with Member::all()
-    return view('admin.members_dashboard');
+    $members = Member::orderBy('fullname')->get();
+    return view('admin.members_dashboard', compact('members'));
 })->name('admin.members');
 
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services');
@@ -83,6 +93,9 @@ Route::get('/services', [PublicServiceController::class, 'index'])->name('servic
 
 // Public endpoint: allow anyone to register (modal posts here)
 Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+
+// Public: join a group by email (if member exists) or redirect to registration
+Route::post('/groups/join', [\App\Http\Controllers\GroupJoinController::class, 'store'])->name('groups.join');
 
 // Protect member-management routes behind auth so only admins can view/manage members
 Route::middleware('auth')->group(function () {
@@ -122,7 +135,6 @@ Route::middleware('auth')->group(function () {
     // import/export removed per rollback request
 });
    
-
 
 
 

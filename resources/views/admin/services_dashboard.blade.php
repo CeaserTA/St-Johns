@@ -22,9 +22,9 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Title</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Day</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Time</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Location</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Schedule</th>
+                        <!-- <th class="px-4 py-3 text-sm font-medium text-gray-700">Time</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Location</th> -->
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Description</th>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Actions</th>
                     </tr>
@@ -33,9 +33,9 @@
                     @foreach($services as $service)
                         <tr>
                             <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $service->name ?? $service->title ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $service->time ?? $service->day ?? '' }}</td>
+                            <!-- <td class="px-4 py-3 text-sm text-gray-700">{{ $service->time ?? $service->day ?? '' }}</td> -->
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $service->schedule ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $service->location ?? '' }}</td>
+                            <!-- <td class="px-4 py-3 text-sm text-gray-700">{{ $service->location ?? '' }}</td> -->
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $service->description ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">
                                 <button class="px-3 py-1 bg-yellow-500 text-white rounded edit-btn mr-2" data-id="{{ $service->id }}" data-title="{{ $service->name ?? $service->title ?? '' }}" data-time="{{ $service->time ?? $service->day ?? '' }}" data-schedule="{{ $service->schedule ?? '' }}" data-location="{{ $service->location ?? '' }}" data-description="{{ $service->description ?? '' }}">Edit</button>
@@ -64,21 +64,23 @@
             <table class="min-w-full text-left divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Member Name</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Full Name</th>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Email</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Phone</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Address</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Phone Number</th>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Service</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Registered At</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Registered On</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($serviceRegistrations as $reg)
+                    @foreach($serviceRegistrations ?? [] as $reg)
                         <tr>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $reg->member_name ?? $reg->name ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $reg-> full_name ?? $reg->name ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->email ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->phone ?? '' }}</td>
+                            <th class="px-4 py-3 text-sm text-gray-700">{{ $reg->address ?? ''}}</th>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->phone_number??  ''}}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->service ?? ($reg->service_name ?? '') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->registered_at ?? (optional($reg->created_at)->format('Y-m-d') ?? '') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->registered_on ?? (optional($reg->created_at)->format('Y-m-d') ?? '') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -86,6 +88,8 @@
         </div>
     </div>
 </div>
+
+
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-xl">
         <h3 class="text-xl font-bold mb-4" id="modalTitle">Edit Service</h3>

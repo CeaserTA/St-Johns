@@ -10,6 +10,11 @@ class Group extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'description', 'meeting_day', 'meeting_time',
+        'name', 'description', 'meeting_day', 'location',
     ];
+
+    public function members()
+    {
+        return $this->belongsToMany(Member::class, 'group_member')->withTimestamps();
+    }
 }

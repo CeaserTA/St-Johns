@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\EventRegistration;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -11,7 +12,10 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::orderBy('date', 'desc')->get();
-        return view('admin.events_dashboard', compact('events'));
+        // fetch recent event registrations so admin can view them in the dashboard
+        $registrations = EventRegistration::latest()->take(200)->get();
+
+        return view('admin.events_dashboard', compact('events', 'registrations'));
     }
 
     public function store(Request $request)

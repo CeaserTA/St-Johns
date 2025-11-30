@@ -5,30 +5,7 @@
 
 @section('content')
 @php
-    // Static members data (client-side demo)
-    $members = [
-        [
-            'full_name' => 'Jane Doe',
-            'email' => 'jane.doe@example.com',
-            'phone' => '+256700000001',
-            'status' => 'Active',
-            'joined_at' => '2024-09-12',
-        ],
-        [
-            'full_name' => 'John Smith',
-            'email' => 'john.smith@example.com',
-            'phone' => '+256700000002',
-            'status' => 'Inactive',
-            'joined_at' => '2023-05-21',
-        ],
-        [
-            'full_name' => 'Mercy K',
-            'email' => 'mercy.k@example.com',
-            'phone' => '+256700000003',
-            'status' => 'Active',
-            'joined_at' => '2025-01-15',
-        ],
-    ];
+    // Members collection provided by the route/controller
 @endphp
 
 <div class="max-w-full mx-auto">
@@ -43,27 +20,41 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Full Name</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Email</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Gender</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">DOB</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Marital Status</th>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Phone</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Status</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Email</th>
+                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Cell</th>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Joined</th>
                         <th class="px-4 py-3 text-sm font-medium text-gray-700">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($members as $m)
+                    @forelse($members as $m)
                         <tr>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $m['full_name'] }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $m['email'] }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $m['phone'] }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $m['status'] }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $m['joined_at'] }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $m->fullname ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->gender ?? '') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ optional($m->dateOfBirth)->format('Y-m-d') ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->maritalStatus ?? '') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $m->phone ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $m->email ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->cell ?? '') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ optional($m->dateJoined)->format('Y-m-d') ?? optional($m->created_at)->format('Y-m-d') ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">
-                                <button class="px-3 py-1 bg-yellow-500 text-white rounded edit-btn mr-2" data-name="{{ $m['full_name'] }}" data-email="{{ $m['email'] }}" data-phone="{{ $m['phone'] }}" data-status="{{ $m['status'] }}" data-joined="{{ $m['joined_at'] }}">Edit</button>
-                                <button class="px-3 py-1 bg-red-600 text-white rounded delete-btn" onclick="alert('Delete simulated (static).')">Delete</button>
+                                <a href="{{ route('members.edit', $m->id) }}" class="px-3 py-1 bg-yellow-500 text-white rounded mr-2">Edit</a>
+                                <form method="POST" action="{{ route('members.destroy', $m->id) }}" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="9" class="px-4 py-3 text-center text-gray-500">No members registered yet.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

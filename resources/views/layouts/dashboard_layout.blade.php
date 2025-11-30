@@ -8,28 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <link rel="stylesheet" href="/styles.css">
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#3A5C83",
-                        "secondary": "#F2C94C",
-                        "background-light": "#F8F9FA",
-                        "background-dark": "#101922",
-                        "text-light": "#333333",
-                        "text-dark": "#F8F9FA",
-                        "text-muted-light": "#4c739a",
-                        "text-muted-dark": "#a0aec0",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                },
-            },
-        }
-    </script>
+     @include('partials.theme-config')
 </head>
 <body class="bg-background-light font-display text-text-light">
     <div class="flex h-screen overflow-hidden bg-gray-100">
@@ -105,6 +84,16 @@
 
             <!-- Main Area -->
             <main class="flex-1 p-6 overflow-y-auto bg-gray-50">
+                @if ($message = Session::get('success'))
+                    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded" role="alert">
+                        <span>{{ $message }}</span>
+                    </div>
+                @endif
+                @if ($message = Session::get('error'))
+                    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded" role="alert">
+                        <span>{{ $message }}</span>
+                    </div>
+                @endif
                 @yield('content')
             </main>
         </div>

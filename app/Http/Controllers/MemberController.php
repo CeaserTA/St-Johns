@@ -45,13 +45,9 @@ class MemberController extends Controller
 
             $members = Member::query()
                 ->when($search, function ($query, $search) {
-                    $query->where('firstname', 'like', "%{$search}%")
-                        ->orWhere('lastname', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('address', 'like', "%{$search}%");
+                    $query->where('fullname', 'like', '%' . $search . '%');
                 })
-                ->orderBy('firstname') // fixed
+                ->orderBy('fullname') // fixed
                 ->paginate(10)
                 ->appends(['search' => $search]);
 
@@ -74,19 +70,47 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'fullname' => 'required|string|max:255',
             // normalize to lowercase in the model; DB enum allows 'male' and 'female'
+            'dateOfBirth' => 'required|date|before:today',
             'gender' => 'required|in:male,female',
+            // maritalstatus
+            'maritalStatus' => 'required|in:single,married,divorced,widowed',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|unique:members,email',
             'address' => 'nullable|string|max:255',
+            // date joined
+            'dateJoined' => 'required|date|before_or_equal:today',
+            // cell
+            'cell' => 'required|in:north,east,south,west',
+            // image upload validation
+            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        Member::create($request->all());
+        $data = $request->except('_token');
+
+        // Handle profile image upload if provided
+        if ($request->hasFile('profileImage')) {
+            $file = $request->file('profileImage');
+            // store in storage/app/public/members
+            $path = $file->store('members', 'public');
+            $data['profileImage'] = $path;
+        }
+
+        Member::create($data);
+        $member = Member::where('email', $data['email'] ?? null)->first();
+
+        // If the registration was initiated from a join flow, attach the member to the group
+        if ($request->filled('join_group')) {
+            $groupId = $request->input('join_group');
+            $group = \App\Models\Group::find($groupId);
+            if ($group && $member) {
+                $group->members()->syncWithoutDetaching([$member->id]);
+            }
+        }
 
         // If an admin (authenticated user) created the member from the admin UI,
         // send them to the members listing. If the member was created from the
-        // public registration modal (guest), redirect back to the homepage with a
+        // public registration form (guest), redirect back to the homepage with a
         // friendly success message so the user is not taken to the admin area.
         if (Auth::check()) {
             return redirect()->route('members')->with('success', 'Member added successfully');
@@ -117,14 +141,26 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'fullname' => 'required|string|max:255',
+            'dateOfBirth' => 'required|date|before:today',  
             'gender' => 'required|in:male,female',
+            'maritalStatus' => 'required|in:single,married,divorced,widowed',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|unique:members,email,' . $member->id,
             'address' => 'nullable|string|max:255',
+            'dateJoined' => 'required|date|before_or_equal:today',      
+            'cell' => 'required|in:north,east,south,west',
+            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $member->update($request->all());
+        $data = $request->except('_token', '_method');
+
+        if ($request->hasFile('profileImage')) {
+            $file = $request->file('profileImage');
+            $path = $file->store('members', 'public');
+            $data['profileImage'] = $path;
+        }
+
+        $member->update($data);
         return redirect()->route('members')->with('success', 'Member updated successfully');
     }
 

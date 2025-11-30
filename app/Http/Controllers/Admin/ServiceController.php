@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\ServiceRegistration;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -11,7 +12,10 @@ class ServiceController extends Controller
     public function index()
     {
         $services = Service::orderBy('name')->get();
-        return view('admin.services_dashboard', compact('services'));
+        // fetch recent service registrations to display in the admin table
+        $serviceRegistrations = ServiceRegistration::latest()->take(100)->get();
+
+        return view('admin.services_dashboard', compact('services', 'serviceRegistrations'));
     }
 
     public function store(Request $request)
