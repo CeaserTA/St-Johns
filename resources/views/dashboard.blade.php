@@ -23,36 +23,5 @@
     </div>
 </div>
 
-<!-- Recent Service Registrations -->
-<div class="bg-white p-6 rounded-lg shadow">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">Recent Service Registrations</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full text-left divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Name</th>
-                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Email</th>
-                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Phone</th>
-                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Service</th>
-                    <th class="px-4 py-2 text-sm font-medium text-gray-700">Registered At</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
-                @forelse($recentServiceRegistrations as $reg)
-                    <tr>
-                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->full_name }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->email ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->phone_number ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->service }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->created_at->format('Y-m-d H:i') }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td class="px-4 py-3 text-sm text-gray-700" colspan="5">No service registrations yet.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
+
 @endsection

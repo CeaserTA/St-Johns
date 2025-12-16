@@ -18,8 +18,8 @@
       </div>
     </a>
 
-    <!-- Desktop Navigation -->
-    <nav class="hidden md:flex items-center gap-10">
+    <!-- Desktop Navigation: primary links only -->
+    <nav class="hidden md:flex items-center gap-6">
       <a href="{{ route('home') }}" 
          class="text-sm font-medium text-gray-700 hover:text-secondary transition">
         Home
@@ -32,11 +32,26 @@
          class="text-sm font-medium text-gray-700 hover:text-secondary transition">
         Events
       </a>
-      <a href="{{ route('admin.login') }}" 
-         class="px-6 py-2.5 bg-secondary text-white text-sm font-bold rounded-full hover:bg-secondary/90 transition shadow-sm">
-        Admin Portal
-      </a>
     </nav>
+
+    <!-- Actions (Admin Portal only) -->
+    <div class="hidden md:flex items-center gap-4">
+      @guest
+        <a href="{{ route('admin.login') }}" 
+           class="px-4 py-2 bg-secondary text-white text-sm font-bold rounded-full hover:bg-secondary/90 transition shadow-sm">
+          Admin Portal
+        </a>
+      @endguest
+
+      @auth
+        @if(auth()->user() && auth()->user()->role === 'admin')
+          <a href="{{ route('dashboard') }}" 
+             class="px-4 py-2 bg-secondary text-white text-sm font-bold rounded-full hover:bg-secondary/90 transition shadow-sm">
+            Admin Portal
+          </a>
+        @endif
+      @endauth
+    </div>
 
     <!-- Mobile Menu Button -->
     <button class="md:hidden p-2 hover:bg-gray-100 rounded-lg transition">
