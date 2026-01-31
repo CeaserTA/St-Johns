@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Member;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Faker\Factory; 
 
 class MembersTableSeeder extends Seeder
 {
@@ -14,22 +13,9 @@ class MembersTableSeeder extends Seeder
      */
     public function run(): void
     {
-      $faker = Factory::create();
-
-        $members = [];
-
-        for ($i = 0; $i < 50; $i++) {
-            $members[] = [
-                'firstname' => $faker->firstname,
-                'lastname'  => $faker->lastname,
-                'gender'    => $faker->randomElement(['Male', 'Female']),
-                'phone'     => $faker->phoneNumber,
-                'email'     => $faker->unique()->safeEmail,
-                'address'   => $faker->address,
-                'created_at'=> now(),
-                'updated_at'=> now(),
-            ];
-        }
-         DB::table('members')->insert($members);
+        // Create 50 members using the factory
+        Member::factory()->count(50)->create();
+        
+        $this->command->info('Created 50 members successfully!');
     }
 }

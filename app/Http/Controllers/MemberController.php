@@ -45,9 +45,9 @@ class MemberController extends Controller
 
             $members = Member::query()
                 ->when($search, function ($query, $search) {
-                    $query->where('fullname', 'like', '%' . $search . '%');
+                    $query->where('full_name', 'like', '%' . $search . '%');
                 })
-                ->orderBy('fullname') // fixed
+                ->orderBy('full_name') // fixed
                 ->paginate(10)
                 ->appends(['search' => $search]);
 
@@ -86,14 +86,26 @@ class MemberController extends Controller
             // image upload validation
             'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $data = $request->except('_token');
+        
+        // Map old field names to new database column names
+        $data = [
+            'full_name' => $request->fullname,
+            'date_of_birth' => $request->dateOfBirth,
+            'gender' => $request->gender,
+            'marital_status' => $request->maritalStatus,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address' => $request->address,
+            'date_joined' => $request->dateJoined,
+            'cell' => $request->cell,
+        ];
 
         // Handle profile image upload if provided
         if ($request->hasFile('profileImage')) {
             $file = $request->file('profileImage');
             // store in storage/app/public/members
             $path = $file->store('members', 'public');
-            $data['profileImage'] = $path;
+            $data['profile_image'] = $path;
         }
 
         Member::create($data);
@@ -152,12 +164,24 @@ class MemberController extends Controller
             'cell' => 'required|in:north,east,south,west',
             'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $data = $request->except('_token', '_method');
+        
+        // Map old field names to new database column names
+        $data = [
+            'full_name' => $request->fullname,
+            'date_of_birth' => $request->dateOfBirth,
+            'gender' => $request->gender,
+            'marital_status' => $request->maritalStatus,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address' => $request->address,
+            'date_joined' => $request->dateJoined,
+            'cell' => $request->cell,
+        ];
 
         if ($request->hasFile('profileImage')) {
             $file = $request->file('profileImage');
             $path = $file->store('members', 'public');
-            $data['profileImage'] = $path;
+            $data['profile_image'] = $path;
         }
 
         $member->update($data);

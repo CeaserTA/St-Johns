@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('address');
             $table->date('dateJoined');
+            
             $table->enum('cell', ['north', 'east', 'south', 'west']);
             // image upload field
             $table->string('profileImage')->nullable();
@@ -28,6 +29,7 @@ return new class extends Migration
         });
     }
 
+    
     /**
      * Reverse the migrations.
      */

@@ -82,7 +82,7 @@
                                                 <tbody class="divide-y divide-gray-300">
                                                     @foreach($group->members as $member)
                                                         <tr>
-                                                            <td class="px-3 py-2 text-gray-800">{{ $member->fullname }}</td>
+                                                            <td class="px-3 py-2 text-gray-800">{{ $member->full_name }}</td>
                                                             <td class="px-3 py-2 text-gray-600">{{ $member->email }}</td>
                                                             <td class="px-3 py-2 text-gray-600">{{ $member->phone ?? 'N/A' }}</td>
                                                             <td class="px-3 py-2 text-gray-600">{{ ucfirst($member->cell ?? 'N/A') }}</td>
@@ -304,7 +304,7 @@
                                                     <option value="">-- Select a member --</option>
                                                     @foreach($members as $member)
                                                         @if(!$group->members->contains($member->id))
-                                                            <option value="{{ $member->id }}">{{ $member->fullname }}</option>
+                                                            <option value="{{ $member->id }}">{{ $member->full_name }}</option>
                                                         @endif
                                                     @endforeach
                                                 </select>
@@ -319,7 +319,7 @@
                                                     @foreach($group->members as $member)
                                                         <div class="flex items-center justify-between bg-white p-3 rounded border border-gray-200">
                                                             <div>
-                                                                <div class="text-sm text-gray-900 font-medium">{{ $member->fullname }}</div>
+                                                                <div class="text-sm text-gray-900 font-medium">{{ $member->full_name }}</div>
                                                                 <div class="text-xs text-gray-500">Joined: {{ optional($member->pivot->created_at)->format('Y-m-d H:i') }}</div>
                                                             </div>
                                                             <form method="POST" action="{{ route('admin.groups.members.destroy', [$group->id, $member->id]) }}" style="display:inline;">
@@ -370,7 +370,7 @@
                             @php $hasMembers = true; @endphp
                             <tr>
                                 <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $group->name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ $member->fullname }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700">{{ $member->full_name }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700">{{ $member->email ?? '—' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700">{{ $member->phone ?? '—' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700">{{ optional($member->pivot->created_at)->format('Y-m-d H:i') ?? '—' }}</td>

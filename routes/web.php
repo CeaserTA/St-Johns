@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceController as PublicServiceController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\GivingController;
 use App\Models\Event;
 use App\Models\Service;
 use App\Models\Announcement;
@@ -57,6 +58,24 @@ Route::get('/home', function () {
 
 Route::get('/events', [PublicEventController::class, 'index'])->name('events');
 
+// GIVING/TITHE ROUTES
+// Public giving page (accessible to everyone, including via QR codes)
+Route::get('/give', [GivingController::class, 'index'])->name('giving.index');
+Route::post('/give', [GivingController::class, 'store'])->name('giving.store');
+
+// Member giving history (requires authentication)
+Route::middleware('auth')->group(function () {
+    Route::get('/my-giving', [GivingController::class, 'history'])->name('giving.history');
+});
+
+// Admin giving management (requires admin role)
+Route::middleware('admin')->group(function () {
+    Route::get('/admin/givings', [GivingController::class, 'adminIndex'])->name('admin.givings');
+    Route::post('/admin/givings/{giving}/confirm', [GivingController::class, 'confirm'])->name('admin.givings.confirm');
+    Route::post('/admin/givings/{giving}/fail', [GivingController::class, 'markFailed'])->name('admin.givings.fail');
+    Route::get('/admin/giving-reports', [GivingController::class, 'reports'])->name('admin.giving.reports');
+});
+
 // Admin dashboard-specific events page (rendered as section within dashboard)
 Route::middleware('admin')->group(function () {
     Route::get('/admin/events', [EventController::class, 'index'])->name('admin.events');
@@ -87,7 +106,7 @@ Route::middleware('admin')->group(function () {
 
     // Admin dashboard-specific members page
     Route::get('/admin/members', function () {
-        $members = Member::orderBy('fullname')->get();
+        $members = Member::orderBy('full_name')->get();
         return view('admin.members_dashboard', compact('members'));
     })->name('admin.members');
 });

@@ -59,13 +59,13 @@ class GroupJoinController extends Controller
         $member = Member::firstOrCreate([
             'email' => $data['email'],
         ], [
-            'fullname' => $data['full_name'],
+            'full_name' => $data['full_name'],
             'phone' => $data['contact'],
-            'dateOfBirth' => now()->subYears(18)->format('Y-m-d'),
+            'date_of_birth' => now()->subYears(18)->format('Y-m-d'),
             'gender' => 'male',
-            'maritalStatus' => 'single',
+            'marital_status' => 'single',
             'address' => 'Not provided',
-            'dateJoined' => now()->format('Y-m-d'),
+            'date_joined' => now()->format('Y-m-d'),
             'cell' => 'north',
         ]);
 

@@ -11,7 +11,7 @@ class GroupController extends Controller
     public function index()
     {
         $groups = Group::with('members')->orderBy('name')->get();
-        $members = \App\Models\Member::orderBy('fullname')->get();
+        $members = \App\Models\Member::orderBy('full_name')->get();
         return view('admin.groups_dashboard', compact('groups', 'members'));
     }
 

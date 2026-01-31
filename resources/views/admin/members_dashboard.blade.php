@@ -33,14 +33,14 @@
                 <tbody class="bg-white divide-y divide-gray-100">
                     @forelse($members as $m)
                         <tr>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $m->fullname ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $m->full_name ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->gender ?? '') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ optional($m->dateOfBirth)->format('Y-m-d') ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->maritalStatus ?? '') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ optional($m->date_of_birth)->format('Y-m-d') ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->marital_status ?? '') }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $m->phone ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $m->email ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ ucfirst($m->cell ?? '') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ optional($m->dateJoined)->format('Y-m-d') ?? optional($m->created_at)->format('Y-m-d') ?? '' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ optional($m->date_joined)->format('Y-m-d') ?? optional($m->created_at)->format('Y-m-d') ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">
                                 <a href="{{ route('members.edit', $m->id) }}" class="px-3 py-1 bg-yellow-500 text-white rounded mr-2">Edit</a>
                                 <form method="POST" action="{{ route('members.destroy', $m->id) }}" style="display:inline;">
