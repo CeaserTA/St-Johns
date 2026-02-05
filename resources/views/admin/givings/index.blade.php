@@ -17,6 +17,7 @@
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Total This Month</p>
                     <p class="text-2xl font-bold text-gray-900" id="total-month">Loading...</p>
+                    <p class="text-xs text-gray-500" id="current-month">{{ now()->format('F Y') }}</p>
                 </div>
             </div>
         </div>
@@ -45,6 +46,7 @@
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Tithes This Month</p>
                     <p class="text-2xl font-bold text-gray-900" id="tithes-month">Loading...</p>
+                    <p class="text-xs text-gray-500">{{ now()->format('F Y') }}</p>
                 </div>
             </div>
         </div>
@@ -68,17 +70,20 @@
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+            <div class="text-sm text-gray-500" id="last-updated">
+                <!-- Last updated time will be shown here -->
+            </div>
         </div>
         <div class="flex flex-wrap gap-4">
             <a href="{{ route('admin.giving.reports') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200">
                 📊 View Reports
             </a>
-            <a href="{{ route('giving.index') }}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                ❤️ Public Giving Page
-            </a>
-            <button onclick="refreshData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200">
+            <button onclick="refreshData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200" id="refresh-btn">
                 🔄 Refresh Data
             </button>
+            <a href="{{ route('giving.index') }}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                ❤️ Public Giving Page
+            </a>
         </div>
     </div>
 
@@ -215,17 +220,23 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
                                 @if($giving->status == 'pending')
-                                    <button onclick="confirmGiving({{ $giving->id }})" 
-                                            class="text-green-600 hover:text-green-900 transition duration-200">
+                                    <button onclick="showConfirmModal({{ $giving->id }}, '{{ $giving->giver_name }}', {{ $giving->amount }}, '{{ $giving->currency }}')" 
+                                            class="text-green-600 hover:text-green-900 transition duration-200 text-xs px-2 py-1 bg-green-50 rounded">
                                         ✓ Confirm
                                     </button>
-                                    <button onclick="failGiving({{ $giving->id }})" 
-                                            class="text-red-600 hover:text-red-900 transition duration-200">
+                                    <button onclick="showFailModal({{ $giving->id }}, '{{ $giving->giver_name }}')" 
+                                            class="text-red-600 hover:text-red-900 transition duration-200 text-xs px-2 py-1 bg-red-50 rounded">
                                         ✗ Fail
                                     </button>
                                 @endif
+                                @if($giving->status == 'completed' && $giving->giver_email)
+                                    <button onclick="resendReceipt({{ $giving->id }}, '{{ $giving->giver_email }}')" 
+                                            class="text-blue-600 hover:text-blue-900 transition duration-200 text-xs px-2 py-1 bg-blue-50 rounded">
+                                        📧 Resend
+                                    </button>
+                                @endif
                                 <button onclick="viewDetails({{ $giving->id }})" 
-                                        class="text-blue-600 hover:text-blue-900 transition duration-200">
+                                        class="text-gray-600 hover:text-gray-900 transition duration-200 text-xs px-2 py-1 bg-gray-50 rounded">
                                     👁 View
                                 </button>
                             </div>
@@ -253,32 +264,137 @@
 <!-- Giving Details Modal -->
 <div id="giving-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
-            <div class="px-6 py-4 border-b border-gray-200">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full modal-enter">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-gray-900">Giving Details</h3>
-                <button onclick="closeModal()" class="float-right text-gray-400 hover:text-gray-600">
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div id="modal-content" class="p-6">
-                <!-- Content will be loaded here -->
+            <div id="modal-content" class="giving-modal-content p-6">
+                <div class="flex justify-center items-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-2 text-gray-600">Loading giving details...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Giving Modal -->
+<div id="confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Confirm Giving</h3>
+            </div>
+            <div class="p-6">
+                <div id="confirm-details" class="mb-4">
+                    <!-- Details will be populated here -->
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label for="verified_amount" class="block text-sm font-medium text-gray-700 mb-1">
+                            Verified Amount (optional)
+                        </label>
+                        <input type="number" id="verified_amount" name="verified_amount" step="0.01" min="0"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                               placeholder="Leave blank to use original amount">
+                        <p class="text-xs text-gray-500 mt-1">Only enter if the verified amount differs from the original</p>
+                    </div>
+                    <div>
+                        <label for="confirm_notes" class="block text-sm font-medium text-gray-700 mb-1">
+                            Admin Notes (optional)
+                        </label>
+                        <textarea id="confirm_notes" name="confirm_notes" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                  placeholder="Add any verification notes..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+                <button onclick="confirmGiving()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">
+                    Confirm Giving
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fail Giving Modal -->
+<div id="fail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Mark Giving as Failed</h3>
+            </div>
+            <div class="p-6">
+                <div id="fail-details" class="mb-4">
+                    <!-- Details will be populated here -->
+                </div>
+                <div>
+                    <label for="failure_reason" class="block text-sm font-medium text-gray-700 mb-1">
+                        Failure Reason
+                    </label>
+                    <textarea id="failure_reason" name="failure_reason" rows="3" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                              placeholder="Explain why this giving failed (e.g., insufficient funds, invalid transaction reference)"></textarea>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="closeFailModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+                <button onclick="failGiving()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                    Mark as Failed
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+// Global variables for modal state
+let currentGivingId = null;
+
 // Load summary data on page load
 document.addEventListener('DOMContentLoaded', function() {
     refreshData();
 });
 
 function refreshData() {
-    fetch('{{ route("admin.giving.reports") }}')
-        .then(response => response.json())
+    // Show loading state on button and cards
+    const refreshBtn = document.getElementById('refresh-btn');
+    const originalBtnText = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '⏳ Loading...';
+    refreshBtn.disabled = true;
+
+    document.getElementById('total-month').innerHTML = '<span class="text-gray-500">Loading...</span>';
+    document.getElementById('pending-count').innerHTML = '<span class="text-gray-500">Loading...</span>';
+    document.getElementById('tithes-month').innerHTML = '<span class="text-gray-500">Loading...</span>';
+    document.getElementById('transaction-count').innerHTML = '<span class="text-gray-500">Loading...</span>';
+
+    fetch('{{ route("admin.givings.dashboard-summary") }}')
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Response text:', text);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                });
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Dashboard data received:', data);
+            
             if (data.success) {
                 document.getElementById('total-month').textContent = 
                     new Intl.NumberFormat().format(data.summary.total_amount) + ' UGX';
@@ -288,14 +404,160 @@ function refreshData() {
                     new Intl.NumberFormat().format(data.summary.total_tithes) + ' UGX';
                 document.getElementById('transaction-count').textContent = 
                     data.summary.transaction_count || '0';
+                
+                // Update last refreshed time
+                const now = new Date();
+                document.getElementById('last-updated').textContent = 
+                    'Last updated: ' + now.toLocaleTimeString();
+                
+                // Show debug info if available
+                if (data.debug) {
+                    console.log('Debug info:', data.debug);
+                    document.getElementById('last-updated').textContent += 
+                        ` (DB: ${data.debug.total_givings_in_db} total, ${data.debug.completed_givings_in_db} completed)`;
+                }
+                
+                // Show success message briefly (only if manually refreshed)
+                if (refreshBtn.disabled) {
+                    showAlert('success', 'Dashboard data refreshed successfully');
+                }
+            } else {
+                throw new Error(data.message || 'Server returned success=false');
             }
         })
-        .catch(error => console.error('Error loading data:', error));
+        .catch(error => {
+            console.error('Error loading dashboard data:', error);
+            
+            // Show error state with more details
+            const errorMsg = error.message.includes('HTTP') ? 'Server Error' : 'Network Error';
+            document.getElementById('total-month').innerHTML = `<span class="text-red-500" title="${error.message}">${errorMsg}</span>`;
+            document.getElementById('pending-count').innerHTML = `<span class="text-red-500" title="${error.message}">${errorMsg}</span>`;
+            document.getElementById('tithes-month').innerHTML = `<span class="text-red-500" title="${error.message}">${errorMsg}</span>`;
+            document.getElementById('transaction-count').innerHTML = `<span class="text-red-500" title="${error.message}">${errorMsg}</span>`;
+            
+            showAlert('error', 'Failed to load dashboard data. Check console for details.');
+        })
+        .finally(() => {
+            // Reset button state
+            refreshBtn.innerHTML = originalBtnText;
+            refreshBtn.disabled = false;
+        });
 }
 
-function confirmGiving(givingId) {
-    if (confirm('Are you sure you want to confirm this giving?')) {
-        fetch(`/admin/givings/${givingId}/confirm`, {
+function showConfirmModal(givingId, giverName, amount, currency) {
+    currentGivingId = givingId;
+    document.getElementById('confirm-details').innerHTML = `
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h4 class="font-semibold text-green-800">Confirming Giving</h4>
+            <p class="text-green-700"><strong>Giver:</strong> ${giverName}</p>
+            <p class="text-green-700"><strong>Amount:</strong> ${new Intl.NumberFormat().format(amount)} ${currency}</p>
+        </div>
+    `;
+    document.getElementById('verified_amount').value = '';
+    document.getElementById('confirm_notes').value = '';
+    document.getElementById('confirm-modal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirm-modal').classList.add('hidden');
+    currentGivingId = null;
+}
+
+function confirmGiving() {
+    if (!currentGivingId) return;
+
+    const verifiedAmount = document.getElementById('verified_amount').value;
+    const notes = document.getElementById('confirm_notes').value;
+
+    const requestData = {
+        notes: notes
+    };
+
+    if (verifiedAmount && verifiedAmount !== '') {
+        requestData.verified_amount = parseFloat(verifiedAmount);
+    }
+
+    fetch(`/admin/givings/${currentGivingId}/confirm`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', data.message);
+            closeConfirmModal();
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('error', data.message || 'Error confirming giving');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'An error occurred while confirming the giving.');
+    });
+}
+
+function showFailModal(givingId, giverName) {
+    currentGivingId = givingId;
+    document.getElementById('fail-details').innerHTML = `
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h4 class="font-semibold text-red-800">Marking Giving as Failed</h4>
+            <p class="text-red-700"><strong>Giver:</strong> ${giverName}</p>
+            <p class="text-red-700 text-sm mt-2">This action will mark the giving as failed and cannot be undone.</p>
+        </div>
+    `;
+    document.getElementById('failure_reason').value = '';
+    document.getElementById('fail-modal').classList.remove('hidden');
+}
+
+function closeFailModal() {
+    document.getElementById('fail-modal').classList.add('hidden');
+    currentGivingId = null;
+}
+
+function failGiving() {
+    if (!currentGivingId) return;
+
+    const failureReason = document.getElementById('failure_reason').value.trim();
+    
+    if (!failureReason) {
+        showAlert('error', 'Please provide a failure reason.');
+        return;
+    }
+
+    fetch(`/admin/givings/${currentGivingId}/fail`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            failure_reason: failureReason
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', data.message);
+            closeFailModal();
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('error', data.message || 'Error marking giving as failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'An error occurred while updating the giving.');
+    });
+}
+
+function resendReceipt(givingId, email) {
+    if (confirm(`Resend receipt email to ${email}?`)) {
+        fetch(`/admin/givings/${givingId}/resend-receipt`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -305,52 +567,415 @@ function confirmGiving(givingId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload();
+                showAlert('success', data.message);
             } else {
-                alert('Error confirming giving: ' + data.message);
+                showAlert('error', data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while confirming the giving.');
+            showAlert('error', 'An error occurred while resending the receipt.');
         });
     }
 }
 
-function failGiving(givingId) {
-    if (confirm('Are you sure you want to mark this giving as failed?')) {
-        fetch(`/admin/givings/${givingId}/fail`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error marking giving as failed: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while updating the giving.');
-        });
+function exportCsv() {
+    // Get current filter values
+    const params = new URLSearchParams();
+    
+    const status = document.getElementById('status').value;
+    const givingType = document.getElementById('giving_type').value;
+    const paymentMethod = document.getElementById('payment_method').value;
+    const startDate = document.getElementById('start_date').value;
+    
+    if (status) params.append('status', status);
+    if (givingType) params.append('giving_type', givingType);
+    if (paymentMethod) params.append('payment_method', paymentMethod);
+    if (startDate) params.append('start_date', startDate);
+    
+    // Add end date as today if start date is provided but end date isn't
+    if (startDate && !document.querySelector('input[name="end_date"]')) {
+        params.append('end_date', new Date().toISOString().split('T')[0]);
     }
+
+    const url = `/admin/givings/export-csv?${params.toString()}`;
+    
+    // Create a temporary link and click it to download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showAlert('success', 'CSV export started. Your download should begin shortly.');
 }
 
 function viewDetails(givingId) {
-    // For now, just show a simple alert. You can enhance this to show a detailed modal
-    alert('Viewing details for giving ID: ' + givingId + '\n\nThis feature can be enhanced to show full giving details, transaction history, and receipt information.');
+    // Show modal with loading state
+    document.getElementById('giving-modal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden'); // Prevent body scroll
+    document.getElementById('modal-content').innerHTML = `
+        <div class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span class="ml-2 text-gray-600">Loading giving details...</span>
+        </div>
+    `;
+
+    // Fetch detailed giving information
+    fetch(`/admin/givings/${givingId}`, {
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            displayGivingDetails(data);
+        } else {
+            throw new Error(data.message || 'Failed to load giving details');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading giving details:', error);
+        document.getElementById('modal-content').innerHTML = `
+            <div class="text-center py-8">
+                <div class="text-red-600 mb-4">
+                    <svg class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Error Loading Details</h3>
+                <p class="text-gray-600 mb-4">${error.message}</p>
+                <div class="space-x-3">
+                    <button onclick="viewDetails(${givingId})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                        Try Again
+                    </button>
+                    <button onclick="closeModal()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function displayGivingDetails(data) {
+    const giving = data.giving;
+    const history = data.history;
+    const financialSummary = data.financial_summary;
+    const giverInfo = data.giver_info;
+
+    const content = `
+        <div class="space-y-6">
+            <!-- Header with Status -->
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Giving #${giving.id}</h2>
+                    <p class="text-gray-600">${giving.receipt_number || 'No receipt number'}</p>
+                </div>
+                <div class="text-right">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeClass(giving.status)}">
+                        ${giving.status.charAt(0).toUpperCase() + giving.status.slice(1)}
+                    </span>
+                    <p class="text-sm text-gray-500 mt-1">Created: ${formatDateTime(giving.created_at)}</p>
+                </div>
+            </div>
+
+            <!-- Main Details Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Giver Information -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Giver Information</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Name:</span>
+                            <span class="font-medium">${giverInfo.name}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Type:</span>
+                            <span class="font-medium">${giverInfo.type}</span>
+                        </div>
+                        ${giverInfo.email ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Email:</span>
+                            <span class="font-medium">${giverInfo.email}</span>
+                        </div>
+                        ` : ''}
+                        ${giverInfo.phone ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Phone:</span>
+                            <span class="font-medium">${giverInfo.phone}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Financial Summary -->
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Financial Summary</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Gross Amount:</span>
+                            <span class="font-bold text-green-600">${formatCurrency(financialSummary.gross_amount, financialSummary.currency)}</span>
+                        </div>
+                        ${financialSummary.processing_fee > 0 ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Processing Fee:</span>
+                            <span class="font-medium text-red-600">-${formatCurrency(financialSummary.processing_fee, financialSummary.currency)}</span>
+                        </div>
+                        <hr class="border-gray-300">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Net Amount:</span>
+                            <span class="font-bold text-green-600">${formatCurrency(financialSummary.net_amount, financialSummary.currency)}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Giving Details -->
+            <div class="bg-white border rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Giving Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Type:</span>
+                            <span class="font-medium">${giving.giving_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Payment Method:</span>
+                            <span class="font-medium">${giving.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                        </div>
+                        ${giving.payment_provider ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Provider:</span>
+                            <span class="font-medium">${giving.payment_provider}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="space-y-2">
+                        ${giving.transaction_reference ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Transaction Ref:</span>
+                            <span class="font-medium font-mono text-sm">${giving.transaction_reference}</span>
+                        </div>
+                        ` : ''}
+                        ${giving.purpose ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Purpose:</span>
+                            <span class="font-medium">${giving.purpose}</span>
+                        </div>
+                        ` : ''}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Receipt Sent:</span>
+                            <span class="font-medium ${giving.receipt_sent ? 'text-green-600' : 'text-gray-500'}">
+                                ${giving.receipt_sent ? 'Yes' : 'No'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                ${giving.notes ? `
+                <div class="mt-4 pt-4 border-t">
+                    <h4 class="font-medium text-gray-900 mb-2">Notes:</h4>
+                    <p class="text-gray-700 text-sm whitespace-pre-line">${giving.notes}</p>
+                </div>
+                ` : ''}
+            </div>
+
+            <!-- Transaction History -->
+            <div class="bg-white border rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Transaction History</h3>
+                <div class="space-y-0">
+                    ${history.map((item, index) => `
+                        <div class="timeline-item flex items-start space-x-3 pb-4 ${index < history.length - 1 ? 'mb-3' : ''}">
+                            <div class="flex-shrink-0 w-3 h-3 bg-blue-600 rounded-full mt-1.5 relative z-10"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-medium text-gray-900">${item.action}</p>
+                                        <p class="text-sm text-gray-600 mt-1">${item.description}</p>
+                                        ${item.user ? `<p class="text-xs text-blue-600 mt-1">by ${item.user}</p>` : ''}
+                                    </div>
+                                    <div class="text-right flex-shrink-0 ml-4">
+                                        <p class="text-sm text-gray-500">${formatDateTime(item.timestamp)}</p>
+                                    </div>
+                                </div>
+                                ${Object.keys(item.details).length > 0 ? `
+                                <div class="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                                    ${Object.entries(item.details).map(([key, value]) => 
+                                        `<div class="flex justify-between"><span class="font-medium">${key.replace('_', ' ')}:</span><span>${value}</span></div>`
+                                    ).join('')}
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-3 pt-4 border-t">
+                ${giving.status === 'completed' && giving.giver_email ? `
+                <button onclick="resendReceipt(${giving.id}, '${giving.giver_email}')" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
+                    📧 Resend Receipt
+                </button>
+                ` : ''}
+                <button onclick="closeModal()" 
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('modal-content').innerHTML = content;
+}
+
+function getStatusBadgeClass(status) {
+    switch(status) {
+        case 'completed':
+            return 'bg-green-100 text-green-800';
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-800';
+        case 'failed':
+            return 'bg-red-100 text-red-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+}
+
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function formatCurrency(amount, currency) {
+    return new Intl.NumberFormat().format(amount) + ' ' + currency;
 }
 
 function closeModal() {
     document.getElementById('giving-modal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden'); // Re-enable body scroll
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('giving-modal');
+        if (!modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('giving-modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeModal();
+    }
+});
+
+function showAlert(type, message) {
+    // Create alert element
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 ${
+        type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'
+    }`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center">
+            <span class="flex-1">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-gray-400 hover:text-gray-600">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentElement) {
+            alertDiv.style.opacity = '0';
+            alertDiv.style.transform = 'translateX(100%)';
+            setTimeout(() => alertDiv.remove(), 300);
+        }
+    }, 5000);
 }
 </script>
 
 <!-- Add CSRF token to head for AJAX requests -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
+<style>
+/* Custom styles for the giving details modal */
+.giving-modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.giving-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.giving-modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.giving-modal-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.giving-modal-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animation for modal */
+.modal-enter {
+    animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Timeline styles for transaction history */
+.timeline-item {
+    position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 24px;
+    bottom: -12px;
+    width: 2px;
+    background: #e5e7eb;
+}
+</style>
 @endsection

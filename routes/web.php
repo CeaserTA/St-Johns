@@ -71,8 +71,12 @@ Route::middleware('auth')->group(function () {
 // Admin giving management (requires admin role)
 Route::middleware('admin')->group(function () {
     Route::get('/admin/givings', [GivingController::class, 'adminIndex'])->name('admin.givings');
+    Route::get('/admin/givings/dashboard-summary', [GivingController::class, 'dashboardSummary'])->name('admin.givings.dashboard-summary');
+    Route::get('/admin/givings/export-csv', [GivingController::class, 'exportCsv'])->name('admin.givings.export-csv');
+    Route::get('/admin/givings/{giving}', [GivingController::class, 'show'])->name('admin.givings.show');
     Route::post('/admin/givings/{giving}/confirm', [GivingController::class, 'confirm'])->name('admin.givings.confirm');
     Route::post('/admin/givings/{giving}/fail', [GivingController::class, 'markFailed'])->name('admin.givings.fail');
+    Route::post('/admin/givings/{giving}/resend-receipt', [GivingController::class, 'resendReceipt'])->name('admin.givings.resend-receipt');
     Route::get('/admin/giving-reports', [GivingController::class, 'reports'])->name('admin.giving.reports');
 });
 
@@ -105,10 +109,8 @@ Route::middleware('admin')->group(function () {
     Route::delete('/admin/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
 
     // Admin dashboard-specific members page
-    Route::get('/admin/members', function () {
-        $members = Member::orderBy('full_name')->get();
-        return view('admin.members_dashboard', compact('members'));
-    })->name('admin.members');
+    Route::get('/admin/members', [\App\Http\Controllers\Admin\MemberController::class, 'index'])->name('admin.members');
+    Route::get('/admin/members/{member}', [\App\Http\Controllers\Admin\MemberController::class, 'show'])->name('admin.members.show');
 });
 
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services');
@@ -117,6 +119,34 @@ Route::get('/services', [PublicServiceController::class, 'index'])->name('servic
 
 // Public endpoint: allow anyone to register (modal posts here)
 Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+
+// API endpoint for recent members (for testing)
+Route::get('/api/recent-members', function() {
+    try {
+        $members = \App\Models\Member::latest()->take(5)->get();
+        
+        $membersData = $members->map(function($member) {
+            return [
+                'id' => $member->id,
+                'full_name' => $member->full_name,
+                'email' => $member->email,
+                'profile_image' => $member->profile_image,
+                'profile_image_url' => $member->profile_image_url,
+                'created_at' => $member->created_at->format('Y-m-d H:i:s')
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'members' => $membersData
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+});
 
 // Public: join a group by email (if member exists) or redirect to registration
 Route::post('/groups/join', [\App\Http\Controllers\GroupJoinController::class, 'store'])->name('groups.join');
@@ -129,6 +159,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit');
     Route::put('/members/{member}', [MemberController::class, 'update'])->name('members.update');
     Route::delete('/members/{member}', [MemberController::class, 'destroy'])->name('members.destroy');
+    
+    // Test route for Supabase connection
+    Route::get('/test-supabase', [MemberController::class, 'testSupabaseConnection'])->name('test.supabase');
+    
+    // Test page for image upload
+    Route::get('/test-image-upload', function() {
+        return view('test-image-upload');
+    })->name('test.image.upload');
+    
+    // Simple debug page
+    Route::get('/debug-info', function() {
+        return response()->json([
+            'csrf_token' => csrf_token(),
+            'storage_path_exists' => file_exists(storage_path('app/public/members')),
+            'storage_writable' => is_writable(storage_path('app/public')),
+            'php_upload_max' => ini_get('upload_max_filesize'),
+            'php_post_max' => ini_get('post_max_size'),
+            'recent_members' => \App\Models\Member::latest()->take(3)->get(['id', 'full_name', 'profile_image', 'created_at'])
+        ]);
+    });
 });
 
 

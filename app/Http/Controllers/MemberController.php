@@ -69,23 +69,41 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'fullname' => 'required|string|max:255',
-            // normalize to lowercase in the model; DB enum allows 'male' and 'female'
-            'dateOfBirth' => 'required|date|before:today',
-            'gender' => 'required|in:male,female',
-            // maritalstatus
-            'maritalStatus' => 'required|in:single,married,divorced,widowed',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|unique:members,email',
-            'address' => 'nullable|string|max:255',
-            // date joined
-            'dateJoined' => 'required|date|before_or_equal:today',
-            // cell
-            'cell' => 'required|in:north,east,south,west',
-            // image upload validation
-            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        // Debug: Log the incoming request
+        \Log::info('Member store request received', [
+            'has_file' => $request->hasFile('profileImage'),
+            'all_data' => $request->all(),
+            'files' => $request->allFiles()
         ]);
+
+        try {
+            $request->validate([
+                'fullname' => 'required|string|max:255',
+                // normalize to lowercase in the model; DB enum allows 'male' and 'female'
+                'dateOfBirth' => 'required|date|before:today',
+                'gender' => 'required|in:male,female',
+                // maritalstatus
+                'maritalStatus' => 'required|in:single,married,divorced,widowed',
+                'phone' => 'nullable|string|max:20',
+                'email' => 'nullable|email|unique:members,email',
+                'address' => 'nullable|string|max:255',
+                // date joined
+                'dateJoined' => 'required|date|before_or_equal:today',
+                // cell
+                'cell' => 'required|in:north,east,south,west',
+                // image upload validation - simplified and more permissive
+                'profileImage' => 'nullable|image|max:5120', // Just use 'image' rule
+            ]);
+            
+            \Log::info('Validation passed successfully');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed', [
+                'errors' => $e->errors(),
+                'input' => $request->all()
+            ]);
+            throw $e;
+        }
         
         // Map old field names to new database column names
         $data = [
@@ -103,13 +121,62 @@ class MemberController extends Controller
         // Handle profile image upload if provided
         if ($request->hasFile('profileImage')) {
             $file = $request->file('profileImage');
-            // store in storage/app/public/members
-            $path = $file->store('members', 'public');
-            $data['profile_image'] = $path;
+            
+            \Log::info('Processing profile image upload', [
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+                'is_valid' => $file->isValid()
+            ]);
+            
+            if (!$file->isValid()) {
+                \Log::error('Uploaded file is not valid', [
+                    'error' => $file->getError(),
+                    'error_message' => $file->getErrorMessage()
+                ]);
+            } else {
+                try {
+                    // First try local storage to isolate Supabase issues
+                    $filename = 'member_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->store('members', 'public');
+                    $data['profile_image'] = $path;
+                    
+                    \Log::info('Image uploaded to local storage successfully', ['path' => $path]);
+                    
+                } catch (\Exception $e) {
+                    \Log::error('Error uploading profile image', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'file' => $file->getClientOriginalName()
+                    ]);
+                    
+                    // Don't fail the entire member creation, just skip the image
+                    \Log::warning('Skipping image upload due to error, creating member without image');
+                }
+            }
+        } else {
+            \Log::info('No profile image uploaded');
         }
 
-        Member::create($data);
-        $member = Member::where('email', $data['email'] ?? null)->first();
+        \Log::info('Creating member with data', $data);
+
+        try {
+            $member = Member::create($data);
+            \Log::info('Member created successfully', ['member_id' => $member->id, 'member_name' => $member->full_name]);
+        } catch (\Exception $e) {
+            \Log::error('Error creating member', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'data' => $data
+            ]);
+            
+            // Return with error message
+            if (Auth::check()) {
+                return redirect()->back()->withErrors(['error' => 'Failed to create member: ' . $e->getMessage()])->withInput();
+            }
+            
+            return redirect()->route('home')->withErrors(['error' => 'Registration failed. Please try again.']);
+        }
 
         // If the registration was initiated from a join flow, attach the member to the group
         if ($request->filled('join_group')) {
@@ -180,8 +247,25 @@ class MemberController extends Controller
 
         if ($request->hasFile('profileImage')) {
             $file = $request->file('profileImage');
-            $path = $file->store('members', 'public');
-            $data['profile_image'] = $path;
+            
+            try {
+                // Generate unique filename
+                $filename = 'member_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                // Store in Supabase
+                $path = $file->storeAs('members', $filename, 'supabase');
+                $data['profile_image'] = $path;
+                
+            } catch (\Exception $e) {
+                \Log::error('Error uploading profile image to Supabase', [
+                    'error' => $e->getMessage(),
+                    'file' => $file->getClientOriginalName()
+                ]);
+                
+                // Fall back to local storage if Supabase fails
+                $path = $file->store('members', 'public');
+                $data['profile_image'] = $path;
+            }
         }
 
         $member->update($data);
@@ -195,5 +279,40 @@ class MemberController extends Controller
     {
         $member->delete();
         return redirect()->route('members')->with('success', 'Member deleted successfully');
+    }
+
+    /**
+     * Test Supabase connection and image upload functionality
+     */
+    public function testSupabaseConnection()
+    {
+        try {
+            $disk = \Storage::disk('supabase');
+            
+            // Test basic connection by trying to list files
+            $files = $disk->files('members');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Supabase connection successful',
+                'files_count' => count($files),
+                'config' => [
+                    'endpoint' => config('filesystems.disks.supabase.endpoint'),
+                    'bucket' => config('filesystems.disks.supabase.bucket'),
+                    'url' => config('filesystems.disks.supabase.url'),
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Supabase connection failed: ' . $e->getMessage(),
+                'config' => [
+                    'endpoint' => config('filesystems.disks.supabase.endpoint'),
+                    'bucket' => config('filesystems.disks.supabase.bucket'),
+                    'url' => config('filesystems.disks.supabase.url'),
+                ]
+            ], 500);
+        }
     }
 }

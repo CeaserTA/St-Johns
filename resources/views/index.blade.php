@@ -55,7 +55,7 @@
                             </div>
                             <button id="joinBtn"
                                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-5 bg-accent text-primary text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
-                                <span class="truncate">Join Our Parish</span>
+                                <span class="truncate">Join Our Church</span>
                             </button>
                         </div>
                     </div>

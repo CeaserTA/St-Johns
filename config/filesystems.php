@@ -30,6 +30,18 @@ return [
 
     'disks' => [
 
+        'supabase' => [
+            'driver' => 's3',
+            'key' => env('SUPABASE_ACCESS_KEY_ID'),
+            'secret' => env('SUPABASE_SECRET_ACCESS_KEY'),
+            'region' => 'auto',             
+            'bucket' => 'profiles',          
+            'endpoint' => env('SUPABASE_ENDPOINT'),   // https://xyz.supabase.co/storage/v1/s3
+            'use_path_style_endpoint' => true,
+            'throw' => true,
+            'url' => env('SUPABASE_PUBLIC_URL'),      // optional, base URL
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),

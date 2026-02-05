@@ -390,19 +390,47 @@
                 .then(data => {
                     if (data.success) {
                         showMessage('success', data.message);
+                        
+                        // Show next steps if available
+                        if (data.next_steps) {
+                            setTimeout(() => {
+                                showMessage('info', data.next_steps);
+                            }, 2000);
+                        }
+                        
                         form.reset();
                         paymentDetails.classList.add('hidden');
+                        
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
                         let errorMessage = data.message || 'An error occurred. Please try again.';
+                        
+                        // Handle validation errors
                         if (data.errors) {
-                            errorMessage += '\n\nValidation Errors: ' + JSON.stringify(data.errors);
+                            const errorList = Object.entries(data.errors)
+                                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                                .join('\n');
+                            errorMessage += '\n\nValidation Errors:\n' + errorList;
                         }
+                        
                         showMessage('error', errorMessage);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showMessage('error', 'An error occurred. Please try again.');
+                    let errorMessage = 'An error occurred while processing your giving. Please try again.';
+                    
+                    // Provide more specific error messages based on error type
+                    if (error.message.includes('422')) {
+                        errorMessage = 'Please check your input and try again. Some required fields may be missing or invalid.';
+                    } else if (error.message.includes('500')) {
+                        errorMessage = 'A server error occurred. Please try again in a few moments or contact support if the problem persists.';
+                    } else if (error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Network error. Please check your internet connection and try again.';
+                    }
+                    
+                    showMessage('error', errorMessage);
                 })
                 .finally(() => {
                     // Reset button state
@@ -425,10 +453,15 @@
 
                 // Show appropriate message
                 if (type === 'success') {
-                    successText.textContent = message;
+                    successText.innerHTML = message.replace(/\n/g, '<br>');
                     successDiv.classList.remove('hidden');
+                } else if (type === 'info') {
+                    // Show info messages as success style but with blue color
+                    successText.innerHTML = message.replace(/\n/g, '<br>');
+                    successDiv.classList.remove('hidden');
+                    successDiv.className = successDiv.className.replace('bg-green-100 border-green-400 text-green-700', 'bg-blue-100 border-blue-400 text-blue-700');
                 } else {
-                    errorText.textContent = message;
+                    errorText.innerHTML = message.replace(/\n/g, '<br>');
                     errorDiv.classList.remove('hidden');
                 }
 
@@ -436,6 +469,13 @@
                 
                 // Scroll to message
                 container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Auto-hide success messages after 8 seconds
+                if (type === 'success' || type === 'info') {
+                    setTimeout(() => {
+                        container.classList.add('hidden');
+                    }, 8000);
+                }
             }
         });
     </script>

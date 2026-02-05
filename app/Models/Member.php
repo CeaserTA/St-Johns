@@ -29,10 +29,10 @@ class Member extends Model
     ];
 
     // Cast date fields to Carbon instances
-    protected $dates = [
-        'date_of_birth',
-        'date_joined',
-        'deleted_at',
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'date_joined' => 'date',
+        'deleted_at' => 'datetime',
     ];
 
     // Relationships
@@ -103,6 +103,93 @@ class Member extends Model
     public function setMaritalStatusAttribute($value)
     {
         $this->attributes['marital_status'] = is_string($value) ? strtolower($value) : $value;
+    }
+
+    // Helper method to safely format dates
+    public function getFormattedDateJoinedAttribute()
+    {
+        try {
+            if (!$this->date_joined) {
+                return $this->created_at ? $this->created_at->format('M d, Y') : 'N/A';
+            }
+            
+            if (is_string($this->date_joined)) {
+                return \Carbon\Carbon::parse($this->date_joined)->format('M d, Y');
+            }
+            
+            return $this->date_joined->format('M d, Y');
+        } catch (\Exception $e) {
+            return $this->created_at ? $this->created_at->format('M d, Y') : 'N/A';
+        }
+    }
+
+    // Helper method to safely calculate age
+    public function getAgeAttribute()
+    {
+        try {
+            if (!$this->date_of_birth) {
+                return null;
+            }
+            
+            if (is_string($this->date_of_birth)) {
+                return now()->diffInYears(\Carbon\Carbon::parse($this->date_of_birth));
+            }
+            
+            return now()->diffInYears($this->date_of_birth);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    // Image URL accessor methods
+    public function getProfileImageUrlAttribute()
+    {
+        if (!$this->profile_image) {
+            return $this->getDefaultProfileImageUrl();
+        }
+
+        try {
+            // For now, always use local storage since we're storing locally
+            // Check if it's a Supabase path (starts with 'members/')
+            if (str_starts_with($this->profile_image, 'members/')) {
+                // Use local storage URL for now
+                return asset('storage/' . $this->profile_image);
+                
+                /* Uncomment when Supabase is working properly
+                // Get Supabase public URL
+                $supabaseUrl = config('filesystems.disks.supabase.url');
+                $bucket = config('filesystems.disks.supabase.bucket');
+                
+                if ($supabaseUrl && $bucket) {
+                    return $supabaseUrl . '/object/public/' . $bucket . '/' . $this->profile_image;
+                }
+                */
+            }
+            
+            // Fall back to local storage URL
+            return asset('storage/' . $this->profile_image);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error generating profile image URL', [
+                'member_id' => $this->id,
+                'profile_image' => $this->profile_image,
+                'error' => $e->getMessage()
+            ]);
+            
+            return $this->getDefaultProfileImageUrl();
+        }
+    }
+
+    public function getDefaultProfileImageUrl()
+    {
+        // Generate a default avatar based on initials
+        $initials = $this->full_name ? substr($this->full_name, 0, 1) : '?';
+        return "https://ui-avatars.com/api/?name=" . urlencode($initials) . "&background=3B82F6&color=ffffff&size=200";
+    }
+
+    public function hasProfileImage()
+    {
+        return !empty($this->profile_image);
     }
 }
 

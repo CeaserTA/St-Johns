@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Image Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-6">Debug Image Upload Issue</h1>
+        
+        <div class="space-y-6">
+            <!-- Step 1: Test without image -->
+            <div class="p-4 bg-green-50 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">✅ Step 1: Test Member Creation WITHOUT Image</h2>
+                <p class="text-sm text-gray-600 mb-4">This should work (we tested it and it works)</p>
+                <form action="http://127.0.0.1:8000/members" method="POST" class="space-y-3">
+                    <input type="hidden" name="_token" value="REPLACE_WITH_CSRF_TOKEN">
+                    <input type="text" name="fullname" value="Test User No Image" class="w-full p-2 border rounded" required>
+                    <input type="date" name="dateOfBirth" value="1990-01-01" class="w-full p-2 border rounded" required>
+                    <select name="gender" class="w-full p-2 border rounded" required>
+                        <option value="male">Male</option>
+                    </select>
+                    <select name="maritalStatus" class="w-full p-2 border rounded" required>
+                        <option value="single">Single</option>
+                    </select>
+                    <input type="text" name="phone" value="+256700000000" class="w-full p-2 border rounded">
+                    <input type="email" name="email" value="noimage@example.com" class="w-full p-2 border rounded">
+                    <input type="text" name="address" value="Test Address" class="w-full p-2 border rounded">
+                    <input type="date" name="dateJoined" value="2026-02-03" class="w-full p-2 border rounded" required>
+                    <select name="cell" class="w-full p-2 border rounded" required>
+                        <option value="north">North</option>
+                    </select>
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Create Member (No Image)</button>
+                </form>
+            </div>
+
+            <!-- Step 2: Test with image -->
+            <div class="p-4 bg-yellow-50 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">⚠️ Step 2: Test Member Creation WITH Image</h2>
+                <p class="text-sm text-gray-600 mb-4">This is where the issue occurs</p>
+                <form action="http://127.0.0.1:8000/members" method="POST" enctype="multipart/form-data" class="space-y-3">
+                    <input type="hidden" name="_token" value="REPLACE_WITH_CSRF_TOKEN">
+                    <input type="text" name="fullname" value="Test User With Image" class="w-full p-2 border rounded" required>
+                    <input type="date" name="dateOfBirth" value="1990-01-01" class="w-full p-2 border rounded" required>
+                    <select name="gender" class="w-full p-2 border rounded" required>
+                        <option value="male">Male</option>
+                    </select>
+                    <select name="maritalStatus" class="w-full p-2 border rounded" required>
+                        <option value="single">Single</option>
+                    </select>
+                    <input type="text" name="phone" value="+256700000001" class="w-full p-2 border rounded">
+                    <input type="email" name="email" value="withimage@example.com" class="w-full p-2 border rounded">
+                    <input type="text" name="address" value="Test Address" class="w-full p-2 border rounded">
+                    <input type="date" name="dateJoined" value="2026-02-03" class="w-full p-2 border rounded" required>
+                    <select name="cell" class="w-full p-2 border rounded" required>
+                        <option value="north">North</option>
+                    </select>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Profile Image (Select a small image)</label>
+                        <input type="file" name="profileImage" accept="image/*" class="w-full p-2 border rounded">
+                    </div>
+                    <button type="submit" class="bg-yellow-600 text-white px-4 py-2 rounded">Create Member (With Image)</button>
+                </form>
+            </div>
+
+            <!-- Instructions -->
+            <div class="p-4 bg-blue-50 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">📋 Instructions</h2>
+                <ol class="list-decimal list-inside space-y-2 text-sm">
+                    <li>First, you need to get a CSRF token. Go to <code>http://127.0.0.1:8000/members/create</code> and inspect the form to get the token value.</li>
+                    <li>Replace "REPLACE_WITH_CSRF_TOKEN" in both forms above with the actual token.</li>
+                    <li>Try Step 1 first - it should work and create a member without an image.</li>
+                    <li>Then try Step 2 with a small image file (under 1MB).</li>
+                    <li>Check the Laravel logs at <code>storage/logs/laravel.log</code> for detailed error messages.</li>
+                    <li>If Step 2 fails, the logs will show exactly what's going wrong.</li>
+                </ol>
+            </div>
+
+            <!-- Log Checking -->
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">🔍 Check Logs</h2>
+                <p class="text-sm text-gray-600 mb-2">After testing, check the logs with this command:</p>
+                <code class="bg-gray-800 text-green-400 p-2 rounded block">Get-Content storage/logs/laravel.log -Tail 20</code>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

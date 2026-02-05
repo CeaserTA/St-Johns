@@ -94,23 +94,23 @@
                 <div class="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Update Member Information</h2>
 
-                    <form action="{{ route('members.update', $member->id) }}" method="POST">
+                    <form action="{{ route('members.update', $member->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1">First Name</label>
-                                <input type="text" name="first_name" value="{{ old('first_name', $member->first_name) }}" class="w-full p-2 border rounded @error('first_name') border-red-500 @enderror" required>
-                                @error('first_name')
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-700 font-medium mb-1">Full Name</label>
+                                <input type="text" name="fullname" value="{{ old('fullname', $member->full_name) }}" class="w-full p-2 border rounded @error('fullname') border-red-500 @enderror" required>
+                                @error('fullname')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="block text-gray-700 font-medium mb-1">Last Name</label>
-                                <input type="text" name="last_name" value="{{ old('last_name', $member->last_name) }}" class="w-full p-2 border rounded @error('last_name') border-red-500 @enderror" required>
-                                @error('last_name')
+                                <label class="block text-gray-700 font-medium mb-1">Date of Birth</label>
+                                <input type="date" name="dateOfBirth" value="{{ old('dateOfBirth', $member->date_of_birth ? $member->date_of_birth->format('Y-m-d') : '') }}" class="w-full p-2 border rounded @error('dateOfBirth') border-red-500 @enderror" required>
+                                @error('dateOfBirth')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -118,11 +118,25 @@
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1">Gender</label>
                                 <select name="gender" class="w-full p-2 border rounded @error('gender') border-red-500 @enderror" required>
-                                    <option value="Male" {{ old('gender', $member->gender) == 'Male' ? 'selected' : '' }}>Male</option>
-                                    <option value="Female" {{ old('gender', $member->gender) == 'Female' ? 'selected' : '' }}>Female</option>
-                                    <option value="Other" {{ old('gender', $member->gender) == 'Other' ? 'selected' : '' }}>Other</option>
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="male" {{ old('gender', $member->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender', $member->gender) == 'female' ? 'selected' : '' }}>Female</option>
                                 </select>
                                 @error('gender')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-1">Marital Status</label>
+                                <select name="maritalStatus" class="w-full p-2 border rounded @error('maritalStatus') border-red-500 @enderror" required>
+                                    <option value="">-- Select Status --</option>
+                                    <option value="single" {{ old('maritalStatus', $member->marital_status) == 'single' ? 'selected' : '' }}>Single</option>
+                                    <option value="married" {{ old('maritalStatus', $member->marital_status) == 'married' ? 'selected' : '' }}>Married</option>
+                                    <option value="divorced" {{ old('maritalStatus', $member->marital_status) == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                    <option value="widowed" {{ old('maritalStatus', $member->marital_status) == 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                </select>
+                                @error('maritalStatus')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -143,10 +157,61 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <div class="md:col-span-2">
                                 <label class="block text-gray-700 font-medium mb-1">Address</label>
                                 <input type="text" name="address" value="{{ old('address', $member->address) }}" class="w-full p-2 border rounded @error('address') border-red-500 @enderror">
                                 @error('address')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-1">Date Joined</label>
+                                <input type="date" name="dateJoined" value="{{ old('dateJoined', $member->date_joined ? $member->date_joined->format('Y-m-d') : '') }}" class="w-full p-2 border rounded @error('dateJoined') border-red-500 @enderror" required>
+                                @error('dateJoined')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-1">Cell (Zone)</label>
+                                <select name="cell" class="w-full p-2 border rounded @error('cell') border-red-500 @enderror" required>
+                                    <option value="">-- Select Cell --</option>
+                                    <option value="north" {{ old('cell', $member->cell) == 'north' ? 'selected' : '' }}>North</option>
+                                    <option value="east" {{ old('cell', $member->cell) == 'east' ? 'selected' : '' }}>East</option>
+                                    <option value="south" {{ old('cell', $member->cell) == 'south' ? 'selected' : '' }}>South</option>
+                                    <option value="west" {{ old('cell', $member->cell) == 'west' ? 'selected' : '' }}>West</option>
+                                </select>
+                                @error('cell')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-700 font-medium mb-1">Profile Image</label>
+                                
+                                @if($member->hasProfileImage())
+                                    <div class="mb-3 flex items-center space-x-4">
+                                        <img src="{{ $member->profile_image_url }}" 
+                                             alt="{{ $member->full_name }}" 
+                                             class="h-16 w-16 rounded-full object-cover border-2 border-gray-300"
+                                             onerror="this.onerror=null; this.src='{{ $member->default_profile_image_url }}';">
+                                        <div>
+                                            <p class="text-sm text-gray-600">Current profile image</p>
+                                            <p class="text-xs text-gray-500">Upload a new image to replace it</p>
+                                        </div>
+                                    </div>
+                                @endif
+                                
+                                <input type="file" name="profileImage" accept="image/*" id="profileImageInput" class="w-full p-2 border rounded @error('profileImage') border-red-500 @enderror">
+                                <p class="text-xs text-gray-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF. Max size: 2MB</p>
+                                
+                                <!-- New Image Preview -->
+                                <div id="newImagePreview" class="mt-3 hidden">
+                                    <p class="text-sm text-gray-600 mb-2">New image preview:</p>
+                                    <img id="newPreviewImg" src="" alt="New Preview" class="h-16 w-16 rounded-full object-cover border-2 border-blue-300">
+                                </div>
+                                @error('profileImage')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -161,5 +226,44 @@
             </main>
         </div>
     </div>
+
+<script>
+// Image preview functionality for edit form
+document.getElementById('profileImageInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('newImagePreview');
+    const previewImg = document.getElementById('newPreviewImg');
+    
+    if (file) {
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, or GIF)');
+            event.target.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+        
+        // Validate file size (2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File size must be less than 2MB');
+            event.target.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.classList.add('hidden');
+    }
+});
+</script>
+
 </body>
 </html>

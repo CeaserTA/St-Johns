@@ -75,6 +75,25 @@
     </header>
 
     <div class="w-full max-w-4xl bg-white rounded-lg shadow p-6 mx-auto">
+        <!-- Display validation errors -->
+        @if ($errors->any())
+            <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                <h4 class="font-bold">Please fix the following errors:</h4>
+                <ul class="mt-2 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Display success message -->
+        @if (session('success'))
+            <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @if(request()->query('join_group'))
@@ -168,8 +187,16 @@
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-gray-700">Profile Image</label>
-                    <input type="file" name="profileImage" accept="image/*"
+                    <input type="file" name="profileImage" accept="image/*" id="profileImageInput"
                            class="w-full p-2 border rounded @error('profileImage') border-red-500 @enderror">
+                    <p class="text-xs text-gray-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF. Max size: 2MB</p>
+                    
+                    <!-- Image Preview -->
+                    <div id="imagePreview" class="mt-3 hidden">
+                        <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                        <img id="previewImg" src="" alt="Preview" class="h-20 w-20 rounded-full object-cover border-2 border-gray-300">
+                    </div>
+                    
                     @error('profileImage')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -183,6 +210,81 @@
         </form>
     </div>
 </main>
+
+<script>
+// Image preview functionality
+document.getElementById('profileImageInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    
+    if (file) {
+        // More permissive file type validation
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        const fileName = file.name.toLowerCase();
+        const isValidExtension = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || 
+                                fileName.endsWith('.png') || fileName.endsWith('.gif') || 
+                                fileName.endsWith('.webp');
+        
+        if (!validTypes.includes(file.type) && !isValidExtension) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, GIF, or WebP)');
+            event.target.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+        
+        // Validate file size (5MB for testing)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB');
+            event.target.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+        
+        console.log('File selected:', {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            sizeInMB: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+        });
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.classList.add('hidden');
+    }
+});
+
+// Prevent double form submission
+let formSubmitted = false;
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (formSubmitted) {
+        e.preventDefault();
+        return false;
+    }
+    
+    formSubmitted = true;
+    const submitButton = this.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Creating Member...';
+    }
+    
+    // Re-enable after 10 seconds in case of error
+    setTimeout(() => {
+        formSubmitted = false;
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Save';
+        }
+    }, 10000);
+});
+</script>
 
 </body>
 </html>

@@ -8,26 +8,36 @@
     <!-- Date Range Selector -->
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Report Period</h2>
+        @if(!request('start_date') && !request('end_date'))
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-blue-800 text-sm">
+                    <strong>Showing all-time data.</strong> Use the date filters below to view specific periods.
+                </p>
+            </div>
+        @endif
         <form method="GET" action="{{ route('admin.giving.reports') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                 <input type="date" name="start_date" id="start_date" 
-                       value="{{ request('start_date', now()->startOfMonth()->format('Y-m-d')) }}" 
+                       value="{{ request('start_date') }}" 
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
                 <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
                 <input type="date" name="end_date" id="end_date" 
-                       value="{{ request('end_date', now()->format('Y-m-d')) }}" 
+                       value="{{ request('end_date') }}" 
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-            <div class="flex items-end">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
+            <div class="flex items-end space-x-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
                     Generate Report
                 </button>
+                <a href="{{ route('admin.giving.reports') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition duration-200">
+                    Clear Filters
+                </a>
             </div>
             <div class="flex items-end">
-                <button type="button" onclick="exportReport()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200">
+                <button type="button" onclick="exportReportCsv()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200">
                     📄 Export CSV
                 </button>
             </div>
@@ -272,12 +282,51 @@ function updateBreakdownTable(data) {
     });
 }
 
-function exportReport() {
+function exportReportCsv() {
     const startDate = document.getElementById('start_date').value;
     const endDate = document.getElementById('end_date').value;
     
-    // For now, just show an alert. You can implement actual CSV export
-    alert(`Exporting report for ${startDate} to ${endDate}\n\nThis feature can be implemented to generate and download a CSV file with detailed giving data.`);
+    const params = new URLSearchParams();
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+    
+    const url = `/admin/givings/export-csv?${params.toString()}`;
+    
+    // Create a temporary link and click it to download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Show success message
+    showAlert('CSV export started. Your download should begin shortly.');
+}
+
+function showAlert(message) {
+    // Create alert element
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm bg-green-100 border border-green-400 text-green-700';
+    alertDiv.innerHTML = `
+        <div class="flex items-center">
+            <span class="flex-1">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-gray-400 hover:text-gray-600">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentElement) {
+            alertDiv.remove();
+        }
+    }, 5000);
 }
 
 // Auto-refresh when date inputs change

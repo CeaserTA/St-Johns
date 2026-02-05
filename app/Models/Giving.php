@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\GivingReceiptMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -168,9 +169,37 @@ class Giving extends Model
 
     public function sendReceipt(): bool
     {
-        // This would integrate with your email/SMS service
-        // For now, just mark as sent
-        $this->update(['receipt_sent' => true]);
-        return true;
+        $email = $this->giver_email;
+
+        if (!$email) {
+            \Log::warning('Cannot send receipt - no email address', [
+                'giving_id' => $this->id,
+                'giver_name' => $this->giver_name
+            ]);
+            return false;
+        }
+
+        try {
+            Mail::to($email)->queue(new GivingReceiptMail($this));
+
+            $this->update(['receipt_sent' => true]);
+
+            \Log::info('Giving receipt queued successfully', [
+                'giving_id' => $this->id,
+                'email' => $email,
+                'receipt_number' => $this->receipt_number
+            ]);
+
+            return true;
+
+        } catch (\Throwable $e) {
+            \Log::error('Giving receipt failed', [
+                'giving_id' => $this->id,
+                'email' => $email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return false;
+        }
     }
 }
