@@ -12,7 +12,14 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::orderBy('date', 'asc')->get();
+        // Get all published events and announcements
+        $events = Event::published()
+            ->with('creator')
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('starts_at', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
         return view('events', compact('events'));
     }
 
@@ -21,6 +28,9 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+        // Increment view count
+        $event->incrementViewCount();
+        
         return view('events.show', compact('event'));
     }
 }

@@ -8,18 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Improve events table
-        Schema::table('events', function (Blueprint $table) {
-            // Add soft deletes (Issue #6)
-            $table->softDeletes();
-        });
-        
-        // Add indexes to events (Issue #5)
-        Schema::table('events', function (Blueprint $table) {
-            $table->index('date');
-            $table->index(['date', 'time']); // Composite index for datetime queries
-            $table->index('title');
-        });
+        // Note: Events table improvements moved to 2026_02_07_000001_merge_announcements_into_events.php
+        // This migration now only handles services and groups improvements
         
         // Improve services table
         Schema::table('services', function (Blueprint $table) {
@@ -41,31 +31,13 @@ return new class extends Migration
             $table->index('meeting_day');
         });
         
-        // Improve announcements table
-        Schema::table('announcements', function (Blueprint $table) {
-            // Add foreign key constraint (Issue #1)
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
-            // Add soft deletes (Issue #6)
-            $table->softDeletes();
-        });
-        
-        // Add indexes to announcements (Issue #5)
-        Schema::table('announcements', function (Blueprint $table) {
-            $table->index('created_by');
-            $table->index('created_at');
-            $table->index('title');
-        });
+        // Note: Announcements table improvements removed - announcements merged into events table
+        // See migration: 2026_02_07_000001_merge_announcements_into_events.php
     }
 
     public function down(): void
     {
-        // Remove indexes from events
-        Schema::table('events', function (Blueprint $table) {
-            $table->dropIndex(['date']);
-            $table->dropIndex(['date', 'time']);
-            $table->dropIndex(['title']);
-            $table->dropSoftDeletes();
-        });
+        // Note: Events rollback moved to 2026_02_07_000001_merge_announcements_into_events.php
         
         // Remove improvements from services
         Schema::table('services', function (Blueprint $table) {
@@ -80,13 +52,6 @@ return new class extends Migration
             $table->dropSoftDeletes();
         });
         
-        // Remove improvements from announcements
-        Schema::table('announcements', function (Blueprint $table) {
-            $table->dropIndex(['created_by']);
-            $table->dropIndex(['created_at']);
-            $table->dropIndex(['title']);
-            $table->dropSoftDeletes();
-            $table->dropForeign(['created_by']);
-        });
+        // Note: Announcements rollback removed - see 2026_02_07_000001_merge_announcements_into_events.php
     }
 };

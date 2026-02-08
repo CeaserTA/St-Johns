@@ -82,10 +82,24 @@ Route::middleware('admin')->group(function () {
 
 // Admin dashboard-specific events page (rendered as section within dashboard)
 Route::middleware('admin')->group(function () {
+    // Events & Announcements Management
     Route::get('/admin/events', [EventController::class, 'index'])->name('admin.events');
     Route::post('/admin/events', [EventController::class, 'store'])->name('admin.events.store');
+    Route::get('/admin/events/{event}', [EventController::class, 'show'])->name('admin.events.show');
     Route::put('/admin/events/{event}', [EventController::class, 'update'])->name('admin.events.update');
     Route::delete('/admin/events/{event}', [EventController::class, 'destroy'])->name('admin.events.destroy');
+    
+    // Event Actions
+    Route::post('/admin/events/{event}/toggle-pin', [EventController::class, 'togglePin'])->name('admin.events.toggle-pin');
+    Route::post('/admin/events/{event}/toggle-active', [EventController::class, 'toggleActive'])->name('admin.events.toggle-active');
+    Route::post('/admin/events/{event}/set-expiration', [EventController::class, 'setExpiration'])->name('admin.events.set-expiration');
+    Route::post('/admin/events/{event}/remove-expiration', [EventController::class, 'removeExpiration'])->name('admin.events.remove-expiration');
+    
+    // Bulk Operations
+    Route::post('/admin/events/bulk-delete', [EventController::class, 'bulkDelete'])->name('admin.events.bulk-delete');
+    Route::post('/admin/events/bulk-activate', [EventController::class, 'bulkActivate'])->name('admin.events.bulk-activate');
+    Route::post('/admin/events/bulk-deactivate', [EventController::class, 'bulkDeactivate'])->name('admin.events.bulk-deactivate');
+    Route::post('/admin/events/bulk-pin', [EventController::class, 'bulkPin'])->name('admin.events.bulk-pin');
 
     // Groups dashboard and management
     Route::get('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'index'])
@@ -111,7 +125,18 @@ Route::middleware('admin')->group(function () {
     // Admin dashboard-specific members page
     Route::get('/admin/members', [\App\Http\Controllers\Admin\MemberController::class, 'index'])->name('admin.members');
     Route::get('/admin/members/{member}', [\App\Http\Controllers\Admin\MemberController::class, 'show'])->name('admin.members.show');
+
+    // QR Code Management
+    Route::get('/admin/qr-codes', [\App\Http\Controllers\QRCodeController::class, 'index'])->name('admin.qr-codes');
+    Route::post('/admin/qr-codes/member-registration', [\App\Http\Controllers\QRCodeController::class, 'generateMemberRegistration'])->name('qr-codes.generate.member');
+    Route::post('/admin/qr-codes/event-registration', [\App\Http\Controllers\QRCodeController::class, 'generateEventRegistration'])->name('qr-codes.generate.event');
+    Route::post('/admin/qr-codes/giving', [\App\Http\Controllers\QRCodeController::class, 'generateGiving'])->name('qr-codes.generate.giving');
+    Route::post('/admin/qr-codes/custom', [\App\Http\Controllers\QRCodeController::class, 'generateCustom'])->name('qr-codes.generate.custom');
+    Route::get('/admin/qr-codes/cleanup', [\App\Http\Controllers\QRCodeController::class, 'cleanup'])->name('qr-codes.cleanup');
 });
+
+// QR Code download (public access)
+Route::get('/qr-codes/download/{filename}', [\App\Http\Controllers\QRCodeController::class, 'download'])->name('qr-codes.download');
 
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services');
 
@@ -177,6 +202,28 @@ Route::middleware('auth')->group(function () {
             'php_upload_max' => ini_get('upload_max_filesize'),
             'php_post_max' => ini_get('post_max_size'),
             'recent_members' => \App\Models\Member::latest()->take(3)->get(['id', 'full_name', 'profile_image', 'created_at'])
+        ]);
+    });
+    
+    // Test member API response
+    Route::get('/test-member-api/{id}', function($id) {
+        $member = \App\Models\Member::findOrFail($id);
+        
+        // Simulate the same response as the show method
+        $memberData = $member->toArray();
+        $memberData['profile_image_url'] = $member->profile_image_url;
+        $memberData['has_profile_image'] = $member->hasProfileImage();
+        
+        return response()->json([
+            'success' => true,
+            'member' => $memberData,
+            'debug_info' => [
+                'profile_image_raw' => $member->profile_image,
+                'profile_image_url_method' => $member->profile_image_url,
+                'has_profile_image_method' => $member->hasProfileImage(),
+                'app_url' => config('app.url'),
+                'storage_url' => asset('storage/' . $member->profile_image)
+            ]
         ]);
     });
 });

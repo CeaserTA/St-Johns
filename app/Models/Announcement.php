@@ -2,14 +2,45 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Announcement extends Model
+/**
+ * @deprecated This model is deprecated. Use Event model with type='announcement' instead.
+ * 
+ * The Announcement functionality has been merged into the Event model.
+ * Use Event::announcements() scope to query announcements.
+ * 
+ * This class is kept for backward compatibility only.
+ */
+class Announcement extends Event
 {
-    use HasFactory;
+    protected $table = 'events';
 
-    protected $fillable = [
-        'title', 'message', 'created_by',
+    protected $attributes = [
+        'type' => Event::TYPE_ANNOUNCEMENT,
+        'is_pinned' => false,
+        'is_active' => true,
+        'view_count' => 0,
     ];
+
+    /**
+     * Boot method to automatically set type to announcement
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('announcement', function ($query) {
+            $query->where('type', Event::TYPE_ANNOUNCEMENT);
+        });
+    }
+
+    /**
+     * Get the latest announcement
+     */
+    public static function latest()
+    {
+        return static::active()
+                     ->notExpired()
+                     ->orderBy('created_at', 'desc')
+                     ->first();
+    }
 }

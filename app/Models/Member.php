@@ -149,24 +149,20 @@ class Member extends Model
         }
 
         try {
-            // For now, always use local storage since we're storing locally
             // Check if it's a Supabase path (starts with 'members/')
             if (str_starts_with($this->profile_image, 'members/')) {
-                // Use local storage URL for now
-                return asset('storage/' . $this->profile_image);
-                
-                /* Uncomment when Supabase is working properly
                 // Get Supabase public URL
                 $supabaseUrl = config('filesystems.disks.supabase.url');
                 $bucket = config('filesystems.disks.supabase.bucket');
                 
                 if ($supabaseUrl && $bucket) {
-                    return $supabaseUrl . '/object/public/' . $bucket . '/' . $this->profile_image;
+                    // Fix: Remove the duplicate 'object/public' from the URL
+                    // The config already includes '/object/public', so we just need to add bucket and path
+                    return $supabaseUrl . '/' . $bucket . '/' . $this->profile_image;
                 }
-                */
             }
             
-            // Fall back to local storage URL
+            // Fall back to local storage URL for backward compatibility
             return asset('storage/' . $this->profile_image);
             
         } catch (\Exception $e) {

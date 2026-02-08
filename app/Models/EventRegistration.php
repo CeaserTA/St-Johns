@@ -16,4 +16,28 @@ class EventRegistration extends Model
         'email',
         'phone',
     ];
+
+    /**
+     * Relationships
+     */
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    /**
+     * Accessors
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopeForEvent($query, $eventId)
+    {
+        return $query->where('event_id', $eventId);
+    }
 }

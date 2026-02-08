@@ -35,11 +35,11 @@ return [
             'key' => env('SUPABASE_ACCESS_KEY_ID'),
             'secret' => env('SUPABASE_SECRET_ACCESS_KEY'),
             'region' => 'auto',             
-            'bucket' => 'profiles',          
+            'bucket' => env('SUPABASE_BUCKET', 'profiles'),          
             'endpoint' => env('SUPABASE_ENDPOINT'),   // https://xyz.supabase.co/storage/v1/s3
             'use_path_style_endpoint' => true,
             'throw' => true,
-            'url' => env('SUPABASE_PUBLIC_URL'),      // optional, base URL
+            'url' => env('SUPABASE_PUBLIC_URL'),      // https://xyz.supabase.co/storage/v1/object/public
         ],
 
         'local' => [

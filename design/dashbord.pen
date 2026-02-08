@@ -1,0 +1,24 @@
+{
+  "version": "2.7",
+  "children": [
+    {
+      "type": "prompt",
+      "id": "pVqug",
+      "x": -192,
+      "y": -223,
+      "width": 250,
+      "height": 219
+    },
+    {
+      "type": "text",
+      "id": "GiBZO",
+      "x": -129,
+      "y": -123,
+      "fill": "#000000",
+      "content": "Admin Dashboard",
+      "fontFamily": "Inter",
+      "fontSize": 16,
+      "fontWeight": "normal"
+    }
+  ]
+}

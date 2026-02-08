@@ -171,7 +171,7 @@
                     <span class="text-sm text-gray-500">(0 total)</span>
                 @endif
             </h2>
-            <button id="addMemberBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
+            <button id="addMemberBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200" onclick="openAddMemberModal()">
                 + Add Member
             </button>
         </div>
@@ -228,7 +228,10 @@
                                                 <img class="h-10 w-10 rounded-full object-cover" 
                                                      src="{{ $member->profile_image_url }}" 
                                                      alt="{{ $member->full_name }}"
-                                                     onerror="this.onerror=null; this.src='{{ $member->default_profile_image_url }}';">
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center" style="display:none;">
+                                                    <span class="text-sm font-medium text-gray-700">{{ $member->full_name ? substr($member->full_name, 0, 1) : '?' }}</span>
+                                                </div>
                                             @else
                                                 <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                                                     <span class="text-sm font-medium text-gray-700">{{ $member->full_name ? substr($member->full_name, 0, 1) : '?' }}</span>
@@ -334,6 +337,178 @@
     </div>
 </div>
 
+<!-- Image Lightbox Modal -->
+<div id="image-lightbox" class="fixed inset-0 bg-black bg-opacity-90 hidden z-60 flex items-center justify-center">
+    <div class="relative max-w-4xl max-h-full p-4">
+        <!-- Close button -->
+        <button onclick="closeImageLightbox()" class="absolute top-2 right-2 text-white hover:text-gray-300 transition-colors z-10 bg-black bg-opacity-50 rounded-full p-2">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        
+        <!-- Image container -->
+        <div class="bg-white rounded-lg p-4 shadow-2xl">
+            <div class="text-center mb-4">
+                <h3 id="lightbox-title" class="text-lg font-semibold text-gray-900"></h3>
+            </div>
+            <img id="lightbox-image" src="" alt="" class="max-w-full max-h-96 mx-auto rounded-lg shadow-lg">
+            <div class="mt-4 text-center">
+                <button onclick="closeImageLightbox()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm">
+                    Close
+                </button>
+                <button onclick="downloadImage()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm ml-2">
+                    Download Image
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Member Modal -->
+<div id="add-member-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full modal-enter">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900">Add New Member</h3>
+                <button onclick="closeAddMemberModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 max-h-96 overflow-y-auto">
+                <!-- Add Member Form -->
+                <form id="add-member-form" enctype="multipart/form-data">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Full Name -->
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-1">Full Name *</label>
+                            <input type="text" name="fullname" required
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-fullname"></div>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Date of Birth *</label>
+                            <input type="date" name="dateOfBirth" required
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-dateOfBirth"></div>
+                        </div>
+
+                        <!-- Gender -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Gender *</label>
+                            <select name="gender" required
+                                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select Gender --</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-gender"></div>
+                        </div>
+
+                        <!-- Marital Status -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Marital Status *</label>
+                            <select name="maritalStatus" required
+                                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select Status --</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-maritalStatus"></div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Phone</label>
+                            <input type="text" name="phone" placeholder="+256700000000"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-phone"></div>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Email</label>
+                            <input type="email" name="email" placeholder="member@example.com"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-email"></div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-1">Address</label>
+                            <input type="text" name="address" placeholder="Enter full address"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-address"></div>
+                        </div>
+
+                        <!-- Date Joined -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Date Joined *</label>
+                            <input type="date" name="dateJoined" value="{{ date('Y-m-d') }}" required
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-dateJoined"></div>
+                        </div>
+
+                        <!-- Cell -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Cell (Zone) *</label>
+                            <select name="cell" required
+                                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select Cell --</option>
+                                <option value="north">North</option>
+                                <option value="east">East</option>
+                                <option value="south">South</option>
+                                <option value="west">West</option>
+                            </select>
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-cell"></div>
+                        </div>
+
+                        <!-- Profile Image -->
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-1">Profile Image</label>
+                            <input type="file" name="profileImage" accept="image/*" id="modalProfileImageInput"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-gray-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF. Max size: 5MB</p>
+                            
+                            <!-- Image Preview -->
+                            <div id="modalImagePreview" class="mt-3 hidden">
+                                <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                                <img id="modalPreviewImg" src="" alt="Preview" class="h-20 w-20 rounded-lg object-cover border-2 border-gray-300">
+                            </div>
+                            
+                            <div class="text-red-500 text-sm mt-1 hidden" id="error-profileImage"></div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-6 flex justify-end space-x-3 pt-4 border-t">
+                        <button type="button" onclick="closeAddMemberModal()" 
+                                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitMemberBtn"
+                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
+                            <span id="submitBtnText">Add Member</span>
+                            <svg id="submitBtnSpinner" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white hidden" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Custom styles for the member details modal */
 .member-modal-content {
@@ -373,6 +548,26 @@
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Image lightbox styles */
+#image-lightbox {
+    z-index: 9999;
+}
+
+#image-lightbox img {
+    max-height: 70vh;
+    max-width: 90vw;
+    object-fit: contain;
+}
+
+/* Hover effects for image container */
+.group:hover .group-hover\:bg-opacity-30 {
+    background-opacity: 0.3;
+}
+
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1;
 }
 </style>
 
@@ -436,24 +631,40 @@ function displayMemberDetails(data) {
     const member = data.member;
     const stats = data.stats;
 
+    // Debug: Log the member data to console
+    console.log('=== MEMBER MODAL DEBUG ===');
+    console.log('Member data received:', member);
+    console.log('Profile image path:', member.profile_image);
+    console.log('Profile image URL:', member.profile_image_url);
+    console.log('Has profile image:', member.has_profile_image);
+    console.log('Member name:', member.full_name);
+    console.log('==========================');
+
     const content = `
         <div class="space-y-6">
             <!-- Header with Member Info -->
             <div class="flex justify-between items-start">
                 <div class="flex items-center">
-                    <div class="h-16 w-16 rounded-full overflow-hidden bg-gray-300 flex items-center justify-center mr-4">
-                        ${member.profile_image ? 
-                            `<img class="h-16 w-16 rounded-full object-cover" 
-                                  src="${getProfileImageUrl(member.profile_image)}" 
-                                  alt="${member.full_name}"
-                                  onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\"text-xl font-bold text-gray-700\\">${member.full_name.charAt(0)}</span>';">` :
-                            `<span class="text-xl font-bold text-gray-700">${member.full_name.charAt(0)}</span>`
-                        }
+                    <div class="h-20 w-20 rounded-lg bg-gray-300 flex items-center justify-center mr-4 relative group" id="memberImageContainer-${member.id}">
+                        <!-- Image will be inserted here by JavaScript -->
+                        <!-- Click overlay for image viewing -->
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer" onclick="viewFullImage('${member.profile_image_url}', '${member.full_name}')" id="imageOverlay-${member.id}" style="display: none;">
+                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                            </svg>
+                        </div>
                     </div>
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900">${member.full_name}</h2>
                         <p class="text-gray-600">${member.user ? 'Has User Account' : 'No User Account'}</p>
                         ${stats.age ? `<p class="text-sm text-gray-500">Age: ${stats.age} years old</p>` : ''}
+                        <p class="text-xs text-blue-600 mt-1" id="imageClickHint-${member.id}" style="display: none;">
+                            <svg class="inline h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Click image to view full size
+                        </p>
                     </div>
                 </div>
                 <div class="text-right">
@@ -616,6 +827,56 @@ function displayMemberDetails(data) {
     `;
 
     document.getElementById('member-modal-content').innerHTML = content;
+    
+    // Handle member image display after content is inserted
+    const imageContainer = document.getElementById(`memberImageContainer-${member.id}`);
+    const imageOverlay = document.getElementById(`imageOverlay-${member.id}`);
+    const clickHint = document.getElementById(`imageClickHint-${member.id}`);
+    
+    if (member.profile_image_url && member.has_profile_image) {
+        console.log('Loading image:', member.profile_image_url);
+        
+        // Create image element
+        const img = document.createElement('img');
+        img.className = 'h-20 w-20 rounded-lg object-cover cursor-pointer';
+        img.alt = member.full_name;
+        img.src = member.profile_image_url;
+        img.onclick = () => viewFullImage(member.profile_image_url, member.full_name);
+        
+        img.onload = function() {
+            console.log('✅ Image loaded successfully');
+            imageContainer.innerHTML = '';
+            imageContainer.appendChild(img);
+            
+            // Show the hover overlay and click hint
+            if (imageOverlay) imageOverlay.style.display = 'flex';
+            if (clickHint) clickHint.style.display = 'block';
+        };
+        
+        img.onerror = function() {
+            console.error('❌ Image failed to load:', member.profile_image_url);
+            showFallbackInitial();
+        };
+        
+        // Set a timeout fallback
+        setTimeout(() => {
+            if (!img.complete) {
+                console.warn('⏰ Image loading timeout');
+                showFallbackInitial();
+            }
+        }, 3000);
+        
+    } else {
+        console.log('No image URL, showing initial');
+        showFallbackInitial();
+    }
+    
+    function showFallbackInitial() {
+        imageContainer.innerHTML = `<span class="text-2xl font-bold text-gray-700">${member.full_name.charAt(0)}</span>`;
+        // Hide overlay and hint for fallback
+        if (imageOverlay) imageOverlay.style.display = 'none';
+        if (clickHint) clickHint.style.display = 'none';
+    }
 }
 
 function closeMemberModal() {
@@ -656,26 +917,304 @@ function getDefaultProfileImageUrl(fullName) {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=3B82F6&color=ffffff&size=200`;
 }
 
+// Image lightbox functions
+function viewFullImage(imageUrl, memberName) {
+    if (!imageUrl) return;
+    
+    const lightbox = document.getElementById('image-lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxTitle = document.getElementById('lightbox-title');
+    
+    lightboxTitle.textContent = `${memberName}'s Profile Photo`;
+    lightboxImage.src = imageUrl;
+    lightboxImage.alt = `${memberName}'s profile photo`;
+    
+    // Store current image URL for download
+    lightbox.dataset.currentImageUrl = imageUrl;
+    lightbox.dataset.currentMemberName = memberName;
+    
+    lightbox.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeImageLightbox() {
+    const lightbox = document.getElementById('image-lightbox');
+    lightbox.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+}
+
+function downloadImage() {
+    const lightbox = document.getElementById('image-lightbox');
+    const imageUrl = lightbox.dataset.currentImageUrl;
+    const memberName = lightbox.dataset.currentMemberName;
+    
+    if (imageUrl) {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `${memberName.replace(/\s+/g, '_')}_profile_photo.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
 // Close modal on escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        const modal = document.getElementById('member-modal');
-        if (!modal.classList.contains('hidden')) {
+        const addMemberModal = document.getElementById('add-member-modal');
+        const memberModal = document.getElementById('member-modal');
+        const imageLightbox = document.getElementById('image-lightbox');
+        
+        if (!addMemberModal.classList.contains('hidden')) {
+            closeAddMemberModal();
+        } else if (!imageLightbox.classList.contains('hidden')) {
+            closeImageLightbox();
+        } else if (!memberModal.classList.contains('hidden')) {
             closeMemberModal();
         }
     }
 });
 
-// Close modal when clicking outside
+// Close modals when clicking outside
 document.getElementById('member-modal').addEventListener('click', function(event) {
     if (event.target === this) {
         closeMemberModal();
     }
 });
 
-// Add Member functionality (placeholder)
-document.getElementById('addMemberBtn').addEventListener('click', function() {
-    alert('Add Member functionality would redirect to the member creation form.');
+document.getElementById('image-lightbox').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeImageLightbox();
+    }
+});
+
+// Add Member Modal Functions
+function openAddMemberModal() {
+    document.getElementById('add-member-modal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Reset form
+    document.getElementById('add-member-form').reset();
+    clearFormErrors();
+    hideImagePreview();
+    
+    // Set default date to today
+    document.querySelector('input[name="dateJoined"]').value = new Date().toISOString().split('T')[0];
+}
+
+function closeAddMemberModal() {
+    document.getElementById('add-member-modal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    
+    // Reset form and clear any errors
+    document.getElementById('add-member-form').reset();
+    clearFormErrors();
+    hideImagePreview();
+}
+
+function clearFormErrors() {
+    // Hide all error messages
+    const errorElements = document.querySelectorAll('[id^="error-"]');
+    errorElements.forEach(element => {
+        element.classList.add('hidden');
+        element.textContent = '';
+    });
+    
+    // Remove error styling from inputs
+    const inputs = document.querySelectorAll('#add-member-form input, #add-member-form select');
+    inputs.forEach(input => {
+        input.classList.remove('border-red-500');
+    });
+}
+
+function showFormError(fieldName, message) {
+    const errorElement = document.getElementById(`error-${fieldName}`);
+    const inputElement = document.querySelector(`[name="${fieldName}"]`);
+    
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+    }
+    
+    if (inputElement) {
+        inputElement.classList.add('border-red-500');
+    }
+}
+
+// Image preview functionality
+document.getElementById('modalProfileImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            showFormError('profileImage', 'Please select a valid image file (JPEG, PNG, JPG, GIF)');
+            e.target.value = '';
+            hideImagePreview();
+            return;
+        }
+        
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showFormError('profileImage', 'Image size must be less than 5MB');
+            e.target.value = '';
+            hideImagePreview();
+            return;
+        }
+        
+        // Clear any previous errors
+        document.getElementById('error-profileImage').classList.add('hidden');
+        document.querySelector('[name="profileImage"]').classList.remove('border-red-500');
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('modalPreviewImg').src = e.target.result;
+            document.getElementById('modalImagePreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        hideImagePreview();
+    }
+});
+
+function hideImagePreview() {
+    document.getElementById('modalImagePreview').classList.add('hidden');
+    document.getElementById('modalPreviewImg').src = '';
+}
+
+// Form submission handler
+document.getElementById('add-member-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitMemberBtn');
+    const submitBtnText = document.getElementById('submitBtnText');
+    const submitBtnSpinner = document.getElementById('submitBtnSpinner');
+    
+    // Clear previous errors
+    clearFormErrors();
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtnText.textContent = 'Adding Member...';
+    submitBtnSpinner.classList.remove('hidden');
+    
+    // Prepare form data
+    const formData = new FormData(this);
+    
+    // Submit form via AJAX
+    fetch('{{ route("members.store") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => Promise.reject(data));
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Success
+        closeAddMemberModal();
+        
+        // Show success message
+        showSuccessNotification('Member added successfully!');
+        
+        // Refresh the page to show the new member
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    })
+    .catch(error => {
+        console.error('Error adding member:', error);
+        
+        // Handle validation errors
+        if (error.errors) {
+            Object.keys(error.errors).forEach(fieldName => {
+                const messages = error.errors[fieldName];
+                if (messages && messages.length > 0) {
+                    showFormError(fieldName, messages[0]);
+                }
+            });
+        } else {
+            // Show general error
+            showErrorNotification(error.message || 'Failed to add member. Please try again.');
+        }
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtnText.textContent = 'Add Member';
+        submitBtnSpinner.classList.add('hidden');
+    });
+});
+
+// Notification functions
+function showSuccessNotification(message) {
+    const notification = createNotification(message, 'success');
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+function showErrorNotification(message) {
+    const notification = createNotification(message, 'error');
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+function createNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
+        type === 'success' 
+            ? 'bg-green-100 border border-green-400 text-green-700' 
+            : 'bg-red-100 border border-red-400 text-red-700'
+    }`;
+    
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                ${type === 'success' 
+                    ? '<svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                    : '<svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" /></svg>'
+                }
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium">${message}</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <button onclick="this.parentNode.parentNode.parentNode.remove()" class="inline-flex text-gray-400 hover:text-gray-600">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return notification;
+}
+
+// Close Add Member modal when clicking outside
+document.getElementById('add-member-modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeAddMemberModal();
+    }
 });
 </script>
 

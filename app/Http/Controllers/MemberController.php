@@ -102,6 +102,16 @@ class MemberController extends Controller
                 'errors' => $e->errors(),
                 'input' => $request->all()
             ]);
+            
+            // Handle AJAX validation errors
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            
             throw $e;
         }
         
@@ -136,22 +146,35 @@ class MemberController extends Controller
                 ]);
             } else {
                 try {
-                    // First try local storage to isolate Supabase issues
+                    // Generate unique filename
                     $filename = 'member_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                    $path = $file->store('members', 'public');
+                    
+                    // Try to upload to Supabase first
+                    $path = $file->storeAs('members', $filename, 'supabase');
                     $data['profile_image'] = $path;
                     
-                    \Log::info('Image uploaded to local storage successfully', ['path' => $path]);
+                    \Log::info('Image uploaded to Supabase successfully', ['path' => $path]);
                     
                 } catch (\Exception $e) {
-                    \Log::error('Error uploading profile image', [
+                    \Log::error('Error uploading profile image to Supabase', [
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString(),
                         'file' => $file->getClientOriginalName()
                     ]);
                     
-                    // Don't fail the entire member creation, just skip the image
-                    \Log::warning('Skipping image upload due to error, creating member without image');
+                    // Fall back to local storage if Supabase fails
+                    try {
+                        $path = $file->store('members', 'public');
+                        $data['profile_image'] = $path;
+                        \Log::info('Image uploaded to local storage as fallback', ['path' => $path]);
+                    } catch (\Exception $localError) {
+                        \Log::error('Both Supabase and local storage failed', [
+                            'supabase_error' => $e->getMessage(),
+                            'local_error' => $localError->getMessage()
+                        ]);
+                        // Don't fail the entire member creation, just skip the image
+                        \Log::warning('Skipping image upload due to errors, creating member without image');
+                    }
                 }
             }
         } else {
@@ -170,7 +193,15 @@ class MemberController extends Controller
                 'data' => $data
             ]);
             
-            // Return with error message
+            // Handle AJAX errors
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to create member: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            // Return with error message for regular form submissions
             if (Auth::check()) {
                 return redirect()->back()->withErrors(['error' => 'Failed to create member: ' . $e->getMessage()])->withInput();
             }
@@ -185,6 +216,21 @@ class MemberController extends Controller
             if ($group && $member) {
                 $group->members()->syncWithoutDetaching([$member->id]);
             }
+        }
+
+        // Handle AJAX requests (from admin modal)
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Member added successfully',
+                'member' => [
+                    'id' => $member->id,
+                    'full_name' => $member->full_name,
+                    'email' => $member->email,
+                    'phone' => $member->phone,
+                    'profile_image_url' => $member->profile_image_url,
+                ]
+            ]);
         }
 
         // If an admin (authenticated user) created the member from the admin UI,
@@ -252,9 +298,11 @@ class MemberController extends Controller
                 // Generate unique filename
                 $filename = 'member_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 
-                // Store in Supabase
+                // Try to upload to Supabase first
                 $path = $file->storeAs('members', $filename, 'supabase');
                 $data['profile_image'] = $path;
+                
+                \Log::info('Image uploaded to Supabase successfully', ['path' => $path]);
                 
             } catch (\Exception $e) {
                 \Log::error('Error uploading profile image to Supabase', [
@@ -263,8 +311,18 @@ class MemberController extends Controller
                 ]);
                 
                 // Fall back to local storage if Supabase fails
-                $path = $file->store('members', 'public');
-                $data['profile_image'] = $path;
+                try {
+                    $path = $file->store('members', 'public');
+                    $data['profile_image'] = $path;
+                    \Log::info('Image uploaded to local storage as fallback', ['path' => $path]);
+                } catch (\Exception $localError) {
+                    \Log::error('Both Supabase and local storage failed', [
+                        'supabase_error' => $e->getMessage(),
+                        'local_error' => $localError->getMessage()
+                    ]);
+                    // Don't update the image field if upload fails
+                    unset($data['profile_image']);
+                }
             }
         }
 
@@ -292,15 +350,32 @@ class MemberController extends Controller
             // Test basic connection by trying to list files
             $files = $disk->files('members');
             
+            // Test upload capability with a small test file
+            $testContent = 'Test file for Supabase connection - ' . now();
+            $testFileName = 'test_' . time() . '.txt';
+            
+            try {
+                $disk->put('members/' . $testFileName, $testContent);
+                $uploadTest = 'Success - Test file uploaded';
+                
+                // Clean up test file
+                $disk->delete('members/' . $testFileName);
+            } catch (\Exception $uploadError) {
+                $uploadTest = 'Failed - ' . $uploadError->getMessage();
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Supabase connection successful',
                 'files_count' => count($files),
+                'upload_test' => $uploadTest,
                 'config' => [
                     'endpoint' => config('filesystems.disks.supabase.endpoint'),
                     'bucket' => config('filesystems.disks.supabase.bucket'),
                     'url' => config('filesystems.disks.supabase.url'),
-                ]
+                    'has_credentials' => !empty(config('filesystems.disks.supabase.key')) && !empty(config('filesystems.disks.supabase.secret')),
+                ],
+                'sample_files' => array_slice($files, 0, 5)
             ]);
             
         } catch (\Exception $e) {
@@ -311,6 +386,7 @@ class MemberController extends Controller
                     'endpoint' => config('filesystems.disks.supabase.endpoint'),
                     'bucket' => config('filesystems.disks.supabase.bucket'),
                     'url' => config('filesystems.disks.supabase.url'),
+                    'has_credentials' => !empty(config('filesystems.disks.supabase.key')) && !empty(config('filesystems.disks.supabase.secret')),
                 ]
             ], 500);
         }

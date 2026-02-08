@@ -76,6 +76,14 @@
                             Giving ❤️
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.qr-codes') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.qr-codes*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
+                            </svg>
+                            QR Codes
+                        </a>
+                    </li>
                     <li class="mt-auto border-t border-blue-900 pt-4">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
