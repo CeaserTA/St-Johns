@@ -88,62 +88,81 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            'title' => 'required|string|max:255',
-            'type' => 'required|in:event,announcement',
-            'category' => 'nullable|string|max:100',
-            'description' => 'nullable|string',
-            'content' => 'nullable|string',
-            'is_active' => 'boolean',
-            'is_pinned' => 'boolean',
-        ];
+        try {
+            $rules = [
+                'title' => 'required|string|max:255',
+                'type' => 'required|in:event,announcement',
+                'category' => 'nullable|string|max:100',
+                'description' => 'nullable|string',
+                'content' => 'nullable|string',
+                'is_active' => 'boolean',
+                'is_pinned' => 'boolean',
+            ];
 
-        // Type-specific validation
-        if ($request->type === 'event') {
-            $rules = array_merge($rules, [
-                'date' => 'nullable|date',
-                'time' => 'nullable|string|max:100',
-                'location' => 'nullable|string|max:255',
-                'starts_at' => 'nullable|date',
-                'ends_at' => 'nullable|date|after:starts_at',
+            // Type-specific validation
+            if ($request->type === 'event') {
+                $rules = array_merge($rules, [
+                    'date' => 'nullable|date',
+                    'time' => 'nullable|string|max:100',
+                    'location' => 'nullable|string|max:255',
+                    'starts_at' => 'nullable|date',
+                    'ends_at' => 'nullable|date|after:starts_at',
+                ]);
+            }
+
+            if ($request->type === 'announcement') {
+                $rules['expires_at'] = 'nullable|date'; // Allow any future date or null
+            }
+
+            // Image validation
+            if ($request->hasFile('image')) {
+                $rules['image'] = 'image|mimes:jpeg,png,jpg,gif,webp|max:5120'; // 5MB max
+            }
+
+            $validated = $request->validate($rules);
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imagePath = $image->store('events', 'public');
+                $validated['image'] = $imagePath;
+            }
+
+            // Set created_by
+            $validated['created_by'] = auth()->id();
+
+            // Handle boolean fields (checkboxes)
+            $validated['is_active'] = $request->input('is_active', false) ? true : false;
+            $validated['is_pinned'] = $request->input('is_pinned', false) ? true : false;
+
+            // For events, populate starts_at from date/time if not provided
+            if ($request->type === 'event' && !$request->starts_at && $request->date) {
+                $time = $request->time ?? '00:00:00';
+                $validated['starts_at'] = $request->date . ' ' . $time;
+            }
+
+            $event = Event::create($validated);
+
+            $typeName = $request->type === 'event' ? 'Event' : 'Announcement';
+            
+            \Log::info("Event created successfully", [
+                'id' => $event->id,
+                'title' => $event->title,
+                'type' => $event->type,
+                'is_active' => $event->is_active
             ]);
+            
+            return redirect()->route('admin.events')->with('success', "{$typeName} created successfully.");
+            
+        } catch (\Exception $e) {
+            \Log::error("Error creating event", [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            
+            return redirect()->back()->with('error', 'Error creating event: ' . $e->getMessage())->withInput();
         }
-
-        if ($request->type === 'announcement') {
-            $rules['expires_at'] = 'nullable|date|after:now';
-        }
-
-        // Image validation
-        if ($request->hasFile('image')) {
-            $rules['image'] = 'image|mimes:jpeg,png,jpg,gif,webp|max:2048';
-        }
-
-        $validated = $request->validate($rules);
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagePath = $image->store('events', 'public');
-            $validated['image'] = $imagePath;
-        }
-
-        // Set created_by
-        $validated['created_by'] = auth()->id();
-
-        // Handle boolean fields
-        $validated['is_active'] = $request->has('is_active') ? true : false;
-        $validated['is_pinned'] = $request->has('is_pinned') ? true : false;
-
-        // For events, populate starts_at from date/time if not provided
-        if ($request->type === 'event' && !$request->starts_at && $request->date) {
-            $time = $request->time ?? '00:00:00';
-            $validated['starts_at'] = $request->date . ' ' . $time;
-        }
-
-        Event::create($validated);
-
-        $typeName = $request->type === 'event' ? 'Event' : 'Announcement';
-        return redirect()->route('admin.events')->with('success', "{$typeName} created successfully.");
     }
 
     /**
@@ -192,7 +211,7 @@ class EventController extends Controller
 
         // Image validation
         if ($request->hasFile('image')) {
-            $rules['image'] = 'image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+            $rules['image'] = 'image|mimes:jpeg,png,jpg,gif,webp|max:5120'; // 5MB max
         }
 
         $validated = $request->validate($rules);
@@ -209,9 +228,9 @@ class EventController extends Controller
             $validated['image'] = $imagePath;
         }
 
-        // Handle boolean fields
-        $validated['is_active'] = $request->has('is_active') ? true : false;
-        $validated['is_pinned'] = $request->has('is_pinned') ? true : false;
+        // Handle boolean fields (checkboxes)
+        $validated['is_active'] = $request->input('is_active', false) ? true : false;
+        $validated['is_pinned'] = $request->input('is_pinned', false) ? true : false;
 
         // For events, populate starts_at from date/time if not provided
         if ($request->type === 'event' && !$request->starts_at && $request->date) {

@@ -329,8 +329,11 @@ input:checked + .toggle-slider:before {
 
                 <!-- Image Upload -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Image</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Image <span class="text-xs text-slate-500">(Optional, max 5MB)</span>
+                    </label>
                     <input type="file" name="image" accept="image/*" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
+                    <p class="text-xs text-slate-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF, WEBP</p>
                 </div>
 
                 <!-- Checkboxes -->

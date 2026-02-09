@@ -25,7 +25,7 @@
         <ul class="space-y-3 text-sm">
           <li><a href="{{ route('home') }}" class="hover:text-accent transition">Home</a></li>
           <li><a href="{{ route('services') }}" class="hover:text-accent transition">Services</a></li>
-          <li><a href="{{ route('events') }}" class="hover:text-accent transition">Events</a></li>
+          <li><a href="{{ route('events') }}" class="hover:text-accent transition">Updates</a></li>
           <li>
             <a href="#" class="hover:text-accent transition font-medium">Give / Tithe ❤️</a>
           </li>

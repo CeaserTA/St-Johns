@@ -50,6 +50,23 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Carousel styles */
+        .carousel-slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .carousel-indicator.active {
+            width: 2rem !important;
+            background-color: white !important;
+        }
     </style>
 </head>
 
@@ -84,48 +101,60 @@
         <section class="mb-12">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-2xl font-bold">What's Happening This Week</h2>
+                @if($thisWeekEvents->count() > 1)
                 <div class="flex gap-2">
-                    <button class="p-2 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                    <button onclick="previousSlide()" class="p-2 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <button class="p-2 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                    <button onclick="nextSlide()" class="p-2 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
                 </div>
+                @endif
             </div>
             
-            @php
-                $featuredEvent = $events->where('is_pinned', true)->first() ?? $events->first();
-            @endphp
-            
-            @if($featuredEvent)
-            <div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-[21/9] flex group">
-                <!-- Slide Content -->
-                <div class="absolute inset-0 bg-cover bg-center" 
-                     style="background-image: url('{{ $featuredEvent->image_url ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJuBVtqw9UvSxdwxXR4HOoRKNwjmp9luc3fMocyA9NTqdPQivYkifWnUaMwnjyQq3T4squ6UlhiwnVUaXW1dGBb9iQTqAWj2ZWY0cDsr8_w0zYXf4_sbb551OYF9iq1ViLJ1oSTTDppAlvmUWZuWIo8Etdwaaf_zx3Twh1p4XfM8eHKL64rCtraA9U_aCR3AJcZ_L-6y2nwV4LQ3nNURKG3gPTol5sCwQWKy93zdr-wzJtb_VykEtdfU3XC_2Nsxabk4C2zBpbrrgU' }}');">
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-900/40 to-transparent flex flex-col justify-center px-12 text-white">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-accent text-slate-900 text-xs font-bold rounded-full mb-4 w-fit">
-                            <span class="material-symbols-outlined text-sm leading-none">star</span> FEATURED
-                        </span>
-                        <h3 class="text-4xl font-extrabold mb-2 max-w-xl leading-tight">{{ $featuredEvent->title }}</h3>
-                        <p class="text-lg text-slate-200 mb-6 max-w-md">{{ $featuredEvent->excerpt }}</p>
-                        <div class="flex gap-4">
-                            @if($featuredEvent->is_event)
-                                <button onclick="openEventModal({{ $featuredEvent->id }}, '{{ addslashes($featuredEvent->title) }}')" class="bg-primary hover:bg-blue-600 px-6 py-3 rounded-lg font-bold transition-transform active:scale-95">
+            @if($thisWeekEvents->count() > 0)
+            <div class="relative overflow-hidden rounded-xl aspect-[21/7]">
+                @foreach($thisWeekEvents as $index => $weekEvent)
+                <div class="carousel-slide {{ $index === 0 ? 'active' : '' }} absolute inset-0 bg-slate-200 dark:bg-slate-800" data-slide="{{ $index }}">
+                    <!-- Slide Content -->
+                    <div class="absolute inset-0 bg-cover bg-center" 
+                         style="background-image: url('{{ $weekEvent->image_url ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJuBVtqw9UvSxdwxXR4HOoRKNwjmp9luc3fMocyA9NTqdPQivYkifWnUaMwnjyQq3T4squ6UlhiwnVUaXW1dGBb9iQTqAWj2ZWY0cDsr8_w0zYXf4_sbb551OYF9iq1ViLJ1oSTTDppAlvmUWZuWIo8Etdwaaf_zx3Twh1p4XfM8eHKL64rCtraA9U_aCR3AJcZ_L-6y2nwV4LQ3nNURKG3gPTol5sCwQWKy93zdr-wzJtb_VykEtdfU3XC_2Nsxabk4C2zBpbrrgU' }}');">
+                        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-900/40 to-transparent flex flex-col justify-center px-8 text-white">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent text-slate-900 text-xs font-bold rounded-full mb-3 w-fit">
+                                <span class="material-symbols-outlined text-sm leading-none">star</span> THIS WEEK
+                            </span>
+                            <h3 class="text-3xl font-extrabold mb-2 max-w-xl leading-tight">{{ $weekEvent->title }}</h3>
+                            <p class="text-base text-slate-200 mb-4 max-w-md">{{ $weekEvent->excerpt }}</p>
+                            <div class="flex gap-3">
+                                <button onclick="openEventModal({{ $weekEvent->id }}, '{{ addslashes($weekEvent->title) }}')" class="bg-primary hover:bg-blue-600 px-5 py-2.5 rounded-lg font-bold transition-transform active:scale-95 text-sm">
                                     Register Now
                                 </button>
-                            @endif
-                            <button onclick="viewDetails({{ $featuredEvent->id }})" class="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 px-6 py-3 rounded-lg font-bold transition-colors">
-                                View Details
-                            </button>
+                                <button onclick="viewDetails({{ $weekEvent->id }})" class="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 px-5 py-2.5 rounded-lg font-bold transition-colors text-sm">
+                                    View Details
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                @endforeach
+                
                 <!-- Carousel Indicators -->
-                <div class="absolute bottom-6 right-12 flex gap-2">
-                    <div class="w-8 h-1.5 bg-white rounded-full"></div>
-                    <div class="w-2 h-1.5 bg-white/40 rounded-full"></div>
-                    <div class="w-2 h-1.5 bg-white/40 rounded-full"></div>
+                @if($thisWeekEvents->count() > 1)
+                <div class="absolute bottom-4 right-8 flex gap-2 z-10">
+                    @foreach($thisWeekEvents as $index => $weekEvent)
+                        <button onclick="goToSlide({{ $index }})" class="carousel-indicator w-2 h-2 bg-white/40 rounded-full transition-all" data-indicator="{{ $index }}"></button>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+            @else
+            <!-- No events this week - show placeholder -->
+            <div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-[21/7] flex group">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/60 to-primary/40 flex flex-col justify-center items-center px-8 text-white text-center">
+                    <span class="material-symbols-outlined text-5xl mb-3 opacity-50">event_available</span>
+                    <h3 class="text-2xl font-extrabold mb-2">No Events This Week</h3>
+                    <p class="text-base text-white/90">Check out our upcoming events below!</p>
                 </div>
             </div>
             @endif
@@ -138,7 +167,7 @@
                     All
                 </button>
                 <button onclick="filterItems('event')" id="filter-event" class="px-6 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                    Upcoming Events
+                    Future Events
                 </button>
                 <button onclick="filterItems('announcement')" id="filter-announcement" class="px-6 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                     Announcements
@@ -156,29 +185,29 @@
                             <img alt="{{ $item->title }}" 
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                                  src="{{ $item->image_url ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-fKy9IwvMJcFgNjBgGeqCsxWDf45Y4A3gyZUE0COYXjV920Ecw2UpyEdz8lSsQqNt776sga6zUAQS8SPhICaU176kI8yjAEMMbs4eK9MicH34I1kLcLiReOivpIM5AbWccAQyTb-EKZ-l-UrAetKIMAAI-C97PCSC2V2192XhCBWzDDGQuKv45DxBy8RiXAe8PgX196bflqvN9A49hfA5Or-6_WfSO1P0G6VWUR_0DQujdRDI0UigGGPic8rQmPJ7ha6OdUxX-tTB' }}" />
-                            <div class="absolute top-4 left-4 bg-primary text-white text-center py-1 px-3 rounded-lg shadow-lg">
-                                <span class="block text-xs font-bold uppercase tracking-wider">
+                            <div class="absolute top-3 left-3 bg-primary text-white text-center py-0.5 px-2 rounded-lg shadow-lg">
+                                <span class="block text-[10px] font-bold uppercase tracking-wider">
                                     {{ $item->starts_at ? $item->starts_at->format('M') : ($item->date ? $item->date->format('M') : 'TBD') }}
                                 </span>
-                                <span class="block text-xl font-bold leading-none">
+                                <span class="block text-lg font-bold leading-none">
                                     {{ $item->starts_at ? $item->starts_at->format('d') : ($item->date ? $item->date->format('d') : '--') }}
                                 </span>
                             </div>
                             @if($item->is_upcoming)
-                            <div class="absolute bottom-4 right-4 inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-[10px] font-black rounded-md animate-pulse shadow-lg">
-                                <div class="w-2 h-2 bg-white rounded-full"></div> UPCOMING
+                            <div class="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 bg-red-500 text-white text-[9px] font-black rounded-md animate-pulse shadow-lg">
+                                <div class="w-1.5 h-1.5 bg-white rounded-full"></div> UPCOMING
                             </div>
                             @endif
                         </div>
-                        <div class="p-6 flex flex-col flex-1">
+                        <div class="p-4 flex flex-col flex-1">
                             <div class="flex items-center gap-2 text-primary text-xs font-bold mb-2">
                                 <span class="material-symbols-outlined text-sm">schedule</span>
                                 {{ $item->formatted_time ?? 'TBD' }} • {{ $item->location ?? 'Location TBD' }}
                             </div>
-                            <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">{{ $item->title }}</h3>
-                            <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-6">{{ $item->excerpt }}</p>
+                            <h3 class="text-lg font-bold mb-2 text-slate-900 dark:text-white">{{ $item->title }}</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-4">{{ $item->excerpt }}</p>
                             <div class="mt-auto">
-                                <button onclick="openEventModal({{ $item->id }}, '{{ addslashes($item->title) }}')" class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors">
+                                <button onclick="openEventModal({{ $item->id }}, '{{ addslashes($item->title) }}')" class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition-colors text-sm">
                                     Register
                                 </button>
                             </div>
@@ -186,20 +215,20 @@
                     </div>
                 @else
                     <!-- Announcement Card -->
-                    <div class="announcement-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all p-8 flex flex-col" data-type="announcement">
-                        <div class="flex items-center gap-2 mb-4">
-                            <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                                <span class="material-symbols-outlined">campaign</span>
+                    <div class="announcement-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all p-6 flex flex-col" data-type="announcement">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                                <span class="material-symbols-outlined text-lg">campaign</span>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">ANNOUNCEMENT</span>
                                 <span class="block text-xs font-medium text-slate-500">Posted {{ $item->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
-                        <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">{{ $item->title }}</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">{{ $item->excerpt }}</p>
+                        <h3 class="text-lg font-bold mb-2 text-slate-900 dark:text-white">{{ $item->title }}</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">{{ $item->excerpt }}</p>
                         <div class="mt-auto">
-                            <button onclick="viewAnnouncementDetails({{ $item->id }})" class="w-full py-2.5 border-2 border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary font-bold rounded-lg transition-all">
+                            <button onclick="viewAnnouncementDetails({{ $item->id }})" class="w-full py-2 border-2 border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary font-bold rounded-lg transition-all text-sm">
                                 Read More
                             </button>
                         </div>
@@ -340,15 +369,101 @@
         });
 
         function viewDetails(id) {
-            detailsModal.classList.remove('hidden');
-            detailsModal.classList.add('flex');
-            // Load event details via AJAX if needed
+            // Fetch event details from public route
+            fetch(`/events/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const event = data.event;
+                        document.getElementById('detailsTitle').textContent = event.title;
+                        
+                        let content = `
+                            <div class="space-y-4">
+                                ${event.description ? `<p class="text-slate-600 dark:text-slate-400">${event.description}</p>` : ''}
+                                ${event.content ? `<div class="prose dark:prose-invert max-w-none">${event.content}</div>` : ''}
+                                ${event.location ? `
+                                    <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                                        <span class="material-symbols-outlined">location_on</span>
+                                        <span>${event.location}</span>
+                                    </div>
+                                ` : ''}
+                                ${event.formatted_date_time ? `
+                                    <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                                        <span class="material-symbols-outlined">schedule</span>
+                                        <span>${event.formatted_date_time}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        document.getElementById('detailsContent').innerHTML = content;
+                        detailsModal.classList.remove('hidden');
+                        detailsModal.classList.add('flex');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading details:', error);
+                    document.getElementById('detailsContent').innerHTML = '<p class="text-red-500">Error loading details</p>';
+                    detailsModal.classList.remove('hidden');
+                    detailsModal.classList.add('flex');
+                });
         }
 
         function viewAnnouncementDetails(id) {
-            detailsModal.classList.remove('hidden');
-            detailsModal.classList.add('flex');
-            // Load announcement details via AJAX if needed
+            // Fetch announcement details from public route
+            fetch(`/events/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const announcement = data.event;
+                        document.getElementById('detailsTitle').textContent = announcement.title;
+                        
+                        let content = `
+                            <div class="space-y-4">
+                                ${announcement.description ? `
+                                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                                        <p class="text-slate-700 dark:text-slate-300 font-medium">${announcement.description}</p>
+                                    </div>
+                                ` : ''}
+                                ${announcement.content ? `
+                                    <div class="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-400">
+                                        ${announcement.content.replace(/\n/g, '<br>')}
+                                    </div>
+                                ` : ''}
+                                <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                    <span class="material-symbols-outlined text-sm">schedule</span>
+                                    <span>Posted ${announcement.created_at ? new Date(announcement.created_at).toLocaleDateString() : ''}</span>
+                                </div>
+                                ${announcement.expires_at ? `
+                                    <div class="flex items-center gap-2 text-sm text-orange-600 dark:text-orange-400">
+                                        <span class="material-symbols-outlined text-sm">event_busy</span>
+                                        <span>Expires ${new Date(announcement.expires_at).toLocaleDateString()}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        document.getElementById('detailsContent').innerHTML = content;
+                        detailsModal.classList.remove('hidden');
+                        detailsModal.classList.add('flex');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading announcement:', error);
+                    document.getElementById('detailsContent').innerHTML = '<p class="text-red-500">Error loading announcement</p>';
+                    detailsModal.classList.remove('hidden');
+                    detailsModal.classList.add('flex');
+                });
         }
 
         closeDetailsBtn.addEventListener('click', () => {
@@ -461,7 +576,74 @@
                     openEventModal(registerEventId, eventTitle);
                 }, 500);
             }
+
+            // Initialize carousel
+            initCarousel();
         });
+
+        // Carousel functionality
+        let currentSlide = 0;
+        let carouselInterval;
+
+        function initCarousel() {
+            const slides = document.querySelectorAll('.carousel-slide');
+            if (slides.length <= 1) return; // No need for carousel with 1 or 0 slides
+
+            // Start auto-rotation
+            startCarouselAutoRotate();
+        }
+
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.carousel-slide');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            
+            if (slides.length === 0) return;
+
+            // Wrap around
+            if (index >= slides.length) {
+                currentSlide = 0;
+            } else if (index < 0) {
+                currentSlide = slides.length - 1;
+            } else {
+                currentSlide = index;
+            }
+
+            // Update slides
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+
+            // Update indicators
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+            resetCarouselAutoRotate();
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+            resetCarouselAutoRotate();
+        }
+
+        function goToSlide(index) {
+            showSlide(index);
+            resetCarouselAutoRotate();
+        }
+
+        function startCarouselAutoRotate() {
+            carouselInterval = setInterval(() => {
+                nextSlide();
+            }, 5000); // Change slide every 5 seconds
+        }
+
+        function resetCarouselAutoRotate() {
+            clearInterval(carouselInterval);
+            startCarouselAutoRotate();
+        }
     </script>
 
 </body>

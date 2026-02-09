@@ -57,6 +57,7 @@ Route::get('/home', function () {
 // Group join endpoints removed — group management deleted per request
 
 Route::get('/events', [PublicEventController::class, 'index'])->name('events');
+Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
 
 // GIVING/TITHE ROUTES
 // Public giving page (accessible to everyone, including via QR codes)

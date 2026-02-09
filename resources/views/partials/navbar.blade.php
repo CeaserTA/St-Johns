@@ -30,7 +30,11 @@
       </a>
       <a href="{{ route('events') }}" 
          class="text-sm font-medium text-gray-700 hover:text-secondary transition">
-        Events
+        Updates
+      </a>
+      <a href="{{ route('giving.index') }}" 
+         class="text-sm font-medium text-gray-700 hover:text-secondary transition">
+        Give
       </a>
     </nav>
 
