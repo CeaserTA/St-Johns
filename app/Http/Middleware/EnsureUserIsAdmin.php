@@ -20,9 +20,9 @@ class EnsureUserIsAdmin
             return $next($request);
         }
 
-        // Redirect to home or login if not authenticated, or to unauthorized page if not admin
+        // Redirect to login if not authenticated
         if (!auth()->check()) {
-            return redirect()->route('admin.login')->with('error', 'Please log in as an admin.');
+            return redirect()->route('login')->with('error', 'Please log in as an admin.');
         }
 
         // User is logged in but not an admin

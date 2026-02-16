@@ -41,7 +41,7 @@
     <!-- Actions (Admin Portal only) -->
     <div class="hidden md:flex items-center gap-4">
       @guest
-        <a href="{{ route('admin.login') }}" 
+        <a href="{{ route('login') }}" 
            class="px-4 py-2 bg-secondary text-white text-sm font-bold rounded-full hover:bg-secondary/90 transition shadow-sm">
           Admin Portal
         </a>

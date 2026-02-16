@@ -29,9 +29,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Always redirect to the project's main dashboard (MemberController@index)
-        // instead of relying on an 'intended' URL which may point to Breeze's default.
-        return redirect()->route('dashboard');
+        $user = Auth::user();
+
+        // Check if user is admin
+        if ($user && $user->role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        // Not an admin: logout and show error
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->withErrors(['email' => 'You do not have admin access.']);
     }
 
     /**

@@ -56,7 +56,7 @@
             info@stjohnsentebbe.org
           </li>
         </ul>
-        <a href="{{ route('admin.login') }}"
+        <a href="{{ route('login') }}"
           class="mt-6 inline-block px-6 py-2.5 bg-secondary text-white font-bold rounded-full hover:bg-secondary/90 transition text-sm">
           Admin Portal
         </a>

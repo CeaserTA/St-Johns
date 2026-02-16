@@ -1,7 +1,6 @@
 <?php
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\ServiceRegistrationController;
 use App\Http\Controllers\EventController as PublicEventController;
@@ -20,15 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $groups = [];
     return view('index', compact('groups'));
-});
-
-// Admin login: dedicated admin sign-in form and POST handler (guest-only)
-Route::middleware('guest')->group(function () {
-    Route::get('/admin-login', [AdminAuthenticatedSessionController::class, 'create'])
-        ->name('admin.login');
-
-    Route::post('/admin-login', [AdminAuthenticatedSessionController::class, 'store'])
-        ->name('admin.login.submit');
 });
 
 Route::get('/dashboard', [MemberController::class, 'index'])

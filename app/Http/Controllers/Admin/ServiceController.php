@@ -11,9 +11,9 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::orderBy('name')->get();
-        // fetch recent service registrations to display in the admin table
-        $serviceRegistrations = ServiceRegistration::latest()->take(100)->get();
+        $services = Service::withCount('registrations')->orderBy('name')->get();
+        // fetch recent service registrations with their related service
+        $serviceRegistrations = ServiceRegistration::with('service')->latest()->take(100)->get();
 
         return view('admin.services_dashboard', compact('services', 'serviceRegistrations'));
     }

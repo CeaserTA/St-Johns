@@ -15,8 +15,8 @@
                 <div class="flex items-center gap-3 mb-6">
                     <img src="/assets/Logo Final.png" alt="St John's Logo" class="h-12 w-auto">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Admin Portal</h1>
-                        <p class="text-sm text-gray-500">Sign in to manage members, events and services</p>
+                        <h1 class="text-2xl font-bold text-gray-900">Admin Login</h1>
+                        <p class="text-sm text-gray-500">Sign in to manage church operations</p>
                     </div>
                 </div>
 
@@ -31,7 +31,7 @@
                     </div>
                 @endif
 
-                <form action="{{ url('/login') }}" method="POST" class="space-y-4" novalidate>
+                <form action="{{ url('/login') }}" method="POST" class="space-y-4" novalidate id="loginForm">
                     @csrf
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -54,11 +54,31 @@
                     </div>
 
                     <div>
-                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-200">
-                            Sign in
+                        <button type="submit" id="submitBtn" class="group w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg hover:rounded-none shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5 opacity-0 group-hover:opacity-100 -ml-2 group-hover:ml-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                            <span id="btnText">Sign in</span>
+                            <svg id="btnSpinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
                         </button>
                     </div>
                 </form>
+
+                <script>
+                    document.getElementById('loginForm').addEventListener('submit', function(e) {
+                        const btn = document.getElementById('submitBtn');
+                        const btnText = document.getElementById('btnText');
+                        const btnSpinner = document.getElementById('btnSpinner');
+                        
+                        // Disable button and show loading state
+                        btn.disabled = true;
+                        btnText.textContent = 'Signing in...';
+                        btnSpinner.classList.remove('hidden');
+                    });
+                </script>
 
                 <div class="mt-6 text-center text-sm text-gray-600">
                     <span>Back to</span>
