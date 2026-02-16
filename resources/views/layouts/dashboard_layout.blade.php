@@ -15,9 +15,9 @@
     <div class="flex h-screen overflow-hidden bg-gray-50">
         <x-sidebar />
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
             <!-- Top Bar -->
-            <header class="flex items-center justify-between px-4 sm:px-6 py-4 bg-white shadow-sm">
+            <header class="flex items-center justify-between px-4 sm:px-6 py-4 bg-white shadow-sm flex-shrink-0">
                 <!-- Hamburger Menu for Mobile -->
                 <button id="hamburgerBtn" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none" onclick="toggleSidebar()">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,7 +30,7 @@
 
             <!-- Main Area -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
-                <div class="w-full h-full px-4 sm:px-6 py-4 sm:py-6">
+                <div class="w-full px-4 sm:px-6 py-4 sm:py-6">
                     @if ($message = Session::get('success'))
                         <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded" role="alert">
                             <span>{{ $message }}</span>

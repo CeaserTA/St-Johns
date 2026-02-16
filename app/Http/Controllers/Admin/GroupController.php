@@ -8,11 +8,52 @@ use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $groups = Group::with('members')->orderBy('name')->get();
+        $query = Group::with('members');
+
+        // Search functionality
+        if ($request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('description', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('location', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('meeting_day', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        // Filter by meeting day
+        if ($request->meeting_day && $request->meeting_day !== 'all') {
+            $query->where('meeting_day', $request->meeting_day);
+        }
+
+        // Sorting
+        $sortBy = $request->sort_by ?? 'name';
+        $sortOrder = $request->sort_order ?? 'asc';
+        
+        if (in_array($sortBy, ['name', 'meeting_day', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('name', 'asc');
+        }
+
+        $groups = $query->get();
         $members = \App\Models\Member::orderBy('full_name')->get();
-        return view('admin.groups_dashboard', compact('groups', 'members'));
+
+        // Get filter options
+        $filterOptions = [
+            'meeting_days' => Group::select('meeting_day')->distinct()->whereNotNull('meeting_day')->pluck('meeting_day')->toArray(),
+        ];
+
+        // Get summary statistics
+        $stats = [
+            'total_groups' => Group::count(),
+            'total_members_in_groups' => \App\Models\Member::whereHas('groups')->count(),
+            'average_group_size' => Group::withCount('members')->get()->avg('members_count') ?? 0,
+        ];
+
+        return view('admin.groups_dashboard', compact('groups', 'members', 'filterOptions', 'stats'));
     }
 
     public function store(Request $request)

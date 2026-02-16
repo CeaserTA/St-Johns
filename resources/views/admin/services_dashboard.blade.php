@@ -170,9 +170,12 @@
 </div>
 
 
-<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-xl">
-        <h3 class="text-xl font-bold mb-4" id="modalTitle">Edit Service</h3>
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg p-6 w-full max-w-xl max-h-screen overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold" id="modalTitle">Edit Service</h3>
+            <button type="button" id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+        </div>
         <form id="editForm" method="POST">
             @csrf
             <div id="methodField"></div>
@@ -196,9 +199,9 @@
                     <textarea name="description" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"></textarea>
                 </div>
             </div>
-            <div class="mt-4 flex justify-end gap-3">
-                <button type="button" id="cancelEdit" class="px-4 py-2 border rounded">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" id="cancelEdit" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Save</button>
             </div>
         </form>
     </div>
@@ -210,10 +213,16 @@
     const editModal = document.getElementById('editModal');
     const editForm = document.getElementById('editForm');
     const cancelEdit = document.getElementById('cancelEdit');
+    const closeModal = document.getElementById('closeModal');
     const modalTitle = document.getElementById('modalTitle');
     const methodField = document.getElementById('methodField');
     let currentServiceId = null;
     let isAddingNew = false;
+
+    function closeEditModal() {
+        editModal.classList.add('hidden');
+        editModal.classList.remove('flex');
+    }
 
     function openModalWithData(btn) {
         isAddingNew = false;
@@ -250,7 +259,13 @@
 
     addServiceBtn.addEventListener('click', openAddModal);
     editBtns.forEach(b => b.addEventListener('click', (e) => { openModalWithData(e.currentTarget); }));
-    cancelEdit.addEventListener('click', () => { editModal.classList.add('hidden'); editModal.classList.remove('flex'); });
+    cancelEdit.addEventListener('click', closeEditModal);
+    closeModal.addEventListener('click', closeEditModal);
+    
+    // Close modal when clicking outside it
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeEditModal();
+    });
 
     editForm.addEventListener('submit', (e) => {
         e.preventDefault();
