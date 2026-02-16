@@ -45,7 +45,7 @@
 </div>
 
 <!-- Quick Actions -->
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
     <a href="{{ route('admin.members') }}" class="bg-white p-4 sm:p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
         <div class="flex flex-col sm:flex-row items-start sm:items-center">
             <div class="p-2 sm:p-3 bg-blue-100 rounded-lg mb-3 sm:mb-0 sm:mr-4 flex-shrink-0">
