@@ -275,7 +275,7 @@ class MemberController extends Controller
             'address' => 'nullable|string|max:255',
             'dateJoined' => 'required|date|before_or_equal:today',      
             'cell' => 'required|in:north,east,south,west',
-            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
         
         // Map old field names to new database column names
@@ -327,6 +327,16 @@ class MemberController extends Controller
         }
 
         $member->update($data);
+        
+        // Return JSON response for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Member updated successfully',
+                'member' => $member
+            ]);
+        }
+        
         return redirect()->route('members')->with('success', 'Member updated successfully');
     }
 

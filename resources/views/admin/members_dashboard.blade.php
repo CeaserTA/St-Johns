@@ -255,8 +255,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div>{{ $member->gender ? ucfirst($member->gender) : 'N/A' }}</div>
                                     <div class="text-gray-500">{{ $member->marital_status ? ucfirst($member->marital_status) : 'N/A' }}</div>
-                                    @if($member->age)
-                                        <div class="text-xs text-gray-400">Age: {{ $member->age }}</div>
+                                    @if($member->date_of_birth)
+                                        <div class="text-xs text-gray-400">DOB: {{ \Carbon\Carbon::parse($member->date_of_birth)->format('M d, Y') }}</div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-900">
@@ -275,10 +275,10 @@
                                                 class="text-blue-600 hover:text-blue-900 transition duration-200 text-xs px-2 py-1 bg-blue-50 rounded">
                                             👁 View
                                         </button>
-                                        <a href="{{ route('members.edit', $member->id) }}" 
-                                           class="text-yellow-600 hover:text-yellow-900 transition duration-200 text-xs px-2 py-1 bg-yellow-50 rounded">
+                                        <button onclick="openEditMemberModal({{ $member->id }})" 
+                                                class="text-yellow-600 hover:text-yellow-900 transition duration-200 text-xs px-2 py-1 bg-yellow-50 rounded">
                                             ✏️ Edit
-                                        </a>
+                                        </button>
                                         <form method="POST" action="{{ route('members.destroy', $member->id) }}" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
@@ -498,6 +498,158 @@
                                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
                             <span id="submitBtnText">Add Member</span>
                             <svg id="submitBtnSpinner" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white hidden" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Member Modal -->
+<div id="edit-member-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full modal-enter">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900">Edit Member</h3>
+                <button onclick="closeEditMemberModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 max-h-96 overflow-y-auto">
+                <!-- Edit Member Form -->
+                <form id="edit-member-form" enctype="multipart/form-data">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" id="edit-member-id" name="member_id">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Full Name -->
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-1">Full Name *</label>
+                            <input type="text" name="fullname" id="edit-fullname" required
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-fullname"></div>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Date of Birth *</label>
+                            <input type="date" name="dateOfBirth" id="edit-dateOfBirth" required
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-dateOfBirth"></div>
+                        </div>
+
+                        <!-- Gender -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Gender *</label>
+                            <select name="gender" id="edit-gender" required
+                                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select Gender --</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-gender"></div>
+                        </div>
+
+                        <!-- Marital Status -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Marital Status *</label>
+                            <select name="maritalStatus" id="edit-maritalStatus" required
+                                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select Status --</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-maritalStatus"></div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Phone</label>
+                            <input type="text" name="phone" id="edit-phone" placeholder="+256700000000"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-phone"></div>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Email</label>
+                            <input type="email" name="email" id="edit-email" placeholder="member@example.com"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-email"></div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-1">Address</label>
+                            <input type="text" name="address" id="edit-address" placeholder="Enter full address"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-address"></div>
+                        </div>
+
+                        <!-- Date Joined -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Date Joined *</label>
+                            <input type="date" name="dateJoined" id="edit-dateJoined" required
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-dateJoined"></div>
+                        </div>
+
+                        <!-- Cell -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Cell (Zone) *</label>
+                            <select name="cell" id="edit-cell" required
+                                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Select Cell --</option>
+                                <option value="north">North</option>
+                                <option value="east">East</option>
+                                <option value="south">South</option>
+                                <option value="west">West</option>
+                            </select>
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-cell"></div>
+                        </div>
+
+                        <!-- Current Profile Image -->
+                        <div class="md:col-span-2" id="edit-current-image-container">
+                            <label class="block text-gray-700 font-medium mb-1">Current Profile Image</label>
+                            <img id="edit-current-image" src="" alt="Current profile" class="h-20 w-20 rounded-lg object-cover border-2 border-gray-300">
+                        </div>
+
+                        <!-- Profile Image -->
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-1">Change Profile Image</label>
+                            <input type="file" name="profileImage" accept="image/*" id="editModalProfileImageInput"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-gray-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF. Max size: 5MB</p>
+                            
+                            <!-- Image Preview -->
+                            <div id="editModalImagePreview" class="mt-3 hidden">
+                                <p class="text-sm text-gray-600 mb-2">New Image Preview:</p>
+                                <img id="editModalPreviewImg" src="" alt="Preview" class="h-20 w-20 rounded-lg object-cover border-2 border-gray-300">
+                            </div>
+                            
+                            <div class="text-red-500 text-sm mt-1 hidden" id="edit-error-profileImage"></div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-6 flex justify-end space-x-3 pt-4 border-t">
+                        <button type="button" onclick="closeEditMemberModal()" 
+                                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitEditMemberBtn"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
+                            <span id="submitEditBtnText">Update Member</span>
+                            <svg id="submitEditBtnSpinner" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white hidden" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -962,11 +1114,14 @@ function downloadImage() {
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         const addMemberModal = document.getElementById('add-member-modal');
+        const editMemberModal = document.getElementById('edit-member-modal');
         const memberModal = document.getElementById('member-modal');
         const imageLightbox = document.getElementById('image-lightbox');
         
         if (!addMemberModal.classList.contains('hidden')) {
             closeAddMemberModal();
+        } else if (!editMemberModal.classList.contains('hidden')) {
+            closeEditMemberModal();
         } else if (!imageLightbox.classList.contains('hidden')) {
             closeImageLightbox();
         } else if (!memberModal.classList.contains('hidden')) {
@@ -1011,6 +1166,206 @@ function closeAddMemberModal() {
     clearFormErrors();
     hideImagePreview();
 }
+
+// Edit Member Modal Functions
+function openEditMemberModal(memberId) {
+    // Show modal with loading state
+    document.getElementById('edit-member-modal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Fetch member data
+    fetch(`/admin/members/${memberId}`, {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                populateEditForm(data.member);
+            } else {
+                alert('Error loading member data: ' + (data.message || 'Unknown error'));
+                closeEditMemberModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading member data: ' + error.message);
+            closeEditMemberModal();
+        });
+}
+
+function populateEditForm(member) {
+    // Set member ID
+    document.getElementById('edit-member-id').value = member.id;
+    
+    // Populate form fields
+    document.getElementById('edit-fullname').value = member.full_name || '';
+    document.getElementById('edit-dateOfBirth').value = member.date_of_birth || '';
+    document.getElementById('edit-gender').value = member.gender || '';
+    document.getElementById('edit-maritalStatus').value = member.marital_status || '';
+    document.getElementById('edit-phone').value = member.phone || '';
+    document.getElementById('edit-email').value = member.email || '';
+    document.getElementById('edit-address').value = member.address || '';
+    document.getElementById('edit-dateJoined').value = member.date_joined || '';
+    document.getElementById('edit-cell').value = member.cell || '';
+    
+    // Show current profile image if exists
+    const currentImageContainer = document.getElementById('edit-current-image-container');
+    const currentImage = document.getElementById('edit-current-image');
+    
+    if (member.profile_image_url && member.has_profile_image) {
+        currentImage.src = member.profile_image_url;
+        currentImageContainer.classList.remove('hidden');
+    } else {
+        currentImageContainer.classList.add('hidden');
+    }
+    
+    // Clear any previous errors
+    clearEditFormErrors();
+}
+
+function closeEditMemberModal() {
+    document.getElementById('edit-member-modal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    
+    // Reset form and clear any errors
+    document.getElementById('edit-member-form').reset();
+    clearEditFormErrors();
+    hideEditImagePreview();
+}
+
+function clearEditFormErrors() {
+    // Hide all error messages
+    const errorElements = document.querySelectorAll('[id^="edit-error-"]');
+    errorElements.forEach(element => {
+        element.classList.add('hidden');
+        element.textContent = '';
+    });
+    
+    // Remove error styling from inputs
+    const inputs = document.querySelectorAll('#edit-member-form input, #edit-member-form select');
+    inputs.forEach(input => {
+        input.classList.remove('border-red-500');
+    });
+}
+
+function showEditFormError(fieldName, message) {
+    const errorElement = document.getElementById(`edit-error-${fieldName}`);
+    const inputElement = document.querySelector(`#edit-member-form [name="${fieldName}"]`);
+    
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+    }
+    
+    if (inputElement) {
+        inputElement.classList.add('border-red-500');
+    }
+}
+
+function hideEditImagePreview() {
+    document.getElementById('editModalImagePreview').classList.add('hidden');
+}
+
+// Edit image preview functionality
+document.getElementById('editModalProfileImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, or GIF)');
+            this.value = '';
+            return;
+        }
+        
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB');
+            this.value = '';
+            return;
+        }
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('editModalPreviewImg').src = e.target.result;
+            document.getElementById('editModalImagePreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        hideEditImagePreview();
+    }
+});
+
+// Handle edit form submission
+document.getElementById('edit-member-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const memberId = document.getElementById('edit-member-id').value;
+    const submitBtn = document.getElementById('submitEditMemberBtn');
+    const submitBtnText = document.getElementById('submitEditBtnText');
+    const submitBtnSpinner = document.getElementById('submitEditBtnSpinner');
+    
+    // Disable submit button and show spinner
+    submitBtn.disabled = true;
+    submitBtnText.textContent = 'Updating...';
+    submitBtnSpinner.classList.remove('hidden');
+    
+    // Clear previous errors
+    clearEditFormErrors();
+    
+    // Create FormData object
+    const formData = new FormData(this);
+    
+    // Send AJAX request
+    fetch(`/members/${memberId}`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Success
+        closeEditMemberModal();
+        
+        // Show success message
+        alert('Member updated successfully!');
+        
+        // Reload the page to show updated data
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        // Handle validation errors
+        if (error.errors) {
+            Object.keys(error.errors).forEach(fieldName => {
+                const messages = error.errors[fieldName];
+                if (messages && messages.length > 0) {
+                    showEditFormError(fieldName, messages[0]);
+                }
+            });
+        } else {
+            alert('An error occurred while updating the member. Please try again.');
+        }
+    })
+    .finally(() => {
+        // Re-enable submit button and hide spinner
+        submitBtn.disabled = false;
+        submitBtnText.textContent = 'Update Member';
+        submitBtnSpinner.classList.add('hidden');
+    });
+});
 
 function clearFormErrors() {
     // Hide all error messages
@@ -1214,6 +1569,13 @@ function createNotification(message, type) {
 document.getElementById('add-member-modal').addEventListener('click', function(event) {
     if (event.target === this) {
         closeAddMemberModal();
+    }
+});
+
+// Close Edit Member modal when clicking outside
+document.getElementById('edit-member-modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeEditMemberModal();
     }
 });
 </script>
