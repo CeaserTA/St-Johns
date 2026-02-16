@@ -6,83 +6,163 @@
 @section('content')
 @php
     // Services and service registrations should be provided by the controller/route
-    // Collections available here: $services, $serviceRegistrations
+    // Collections available here: $services, $serviceRegistrations, $stats
 @endphp
 
-<!-- Services Table Section (rendered within dashboard layout) -->
-<div class="max-w-full mx-auto">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-semibold">Manage Services</h2>
-        <button id="addServiceBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Service</button>
+<div class="space-y-6">
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div class="flex items-center">
+                <div class="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">Total Services</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $stats['total_services'] ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div class="flex items-center">
+                <div class="p-2 sm:p-3 bg-green-100 rounded-lg flex-shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">Total Registrations</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $stats['total_registrations'] ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div class="flex items-center">
+                <div class="p-2 sm:p-3 bg-purple-100 rounded-lg flex-shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">This Month</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $stats['registrations_this_month'] ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div class="flex items-center">
+                <div class="p-2 sm:p-3 bg-yellow-100 rounded-lg flex-shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m7-1a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">Active Services</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $stats['active_services'] ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="bg-white p-6 rounded-lg shadow">
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left divide-y divide-gray-200">
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Search & Filter Services</h2>
+        <form method="GET" action="{{ route('admin.services') }}" class="space-y-4">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <div class="flex-1">
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search Services</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                           placeholder="Search by name, description, or schedule..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md transition duration-200 text-sm font-medium">
+                        🔍 Search
+                    </button>
+                    <a href="{{ route('admin.services') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 rounded-md transition duration-200 text-sm font-medium text-center">
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Services Table Section -->
+    <div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">Manage Services</h2>
+            <button id="addServiceBtn" class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm font-medium">+ Add Service</button>
+        </div>
+
+        <div class="bg-white p-4 sm:p-6 rounded-lg shadow overflow-x-auto">
+            <table class="min-w-full text-left divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Title</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Schedule</th>
-                        <!-- <th class="px-4 py-3 text-sm font-medium text-gray-700">Time</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Location</th> -->
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Description</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Actions</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Title</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Schedule</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Description</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($services as $service)
-                        <tr>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $service->name ?? $service->title ?? '' }}</td>
-                            <!-- <td class="px-4 py-3 text-sm text-gray-700">{{ $service->time ?? $service->day ?? '' }}</td> -->
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $service->schedule ?? '' }}</td>
-                            <!-- <td class="px-4 py-3 text-sm text-gray-700">{{ $service->location ?? '' }}</td> -->
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $service->description ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">
-                                <button class="px-3 py-1 bg-yellow-500 text-white rounded edit-btn mr-2" data-id="{{ $service->id }}" data-title="{{ $service->name ?? $service->title ?? '' }}" data-time="{{ $service->time ?? $service->day ?? '' }}" data-schedule="{{ $service->schedule ?? '' }}" data-location="{{ $service->location ?? '' }}" data-description="{{ $service->description ?? '' }}">Edit</button>
+                    @forelse($services as $service)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 font-semibold">{{ $service->name ?? $service->title ?? '' }}</td>
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">{{ $service->schedule ?? '' }}</td>
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 truncate">{{ $service->description ?? '' }}</td>
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">
+                                <button class="px-2 sm:px-3 py-1 bg-yellow-500 text-white rounded edit-btn mr-1 sm:mr-2 text-xs hover:bg-yellow-600 transition" data-id="{{ $service->id }}" data-title="{{ $service->name ?? $service->title ?? '' }}" data-time="{{ $service->time ?? $service->day ?? '' }}" data-schedule="{{ $service->schedule ?? '' }}" data-location="{{ $service->location ?? '' }}" data-description="{{ $service->description ?? '' }}">Edit</button>
                                 <form method="POST" action="{{ route('admin.services.destroy', $service->id) }}" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded delete-btn" onclick="return confirm('Are you sure?')">Delete</button>
+                                    <button type="submit" class="px-2 sm:px-3 py-1 bg-red-600 text-white rounded delete-btn text-xs hover:bg-red-700 transition" onclick="return confirm('Are you sure?')">Delete</button>
                                 </form>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-3 sm:px-4 py-4 text-center text-gray-500">No services found</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
     </div>
-</div>
 
-<!-- Service Registrations Table Section -->
-<div class="max-w-full mx-auto mt-8">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-semibold">Service Registrations</h2>
-    </div>
+    <!-- Service Registrations Table Section -->
+    <div>
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Service Registrations</h2>
 
-    <div class="bg-white p-6 rounded-lg shadow">
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left divide-y divide-gray-200">
+        <div class="bg-white p-4 sm:p-6 rounded-lg shadow overflow-x-auto">
+            <table class="min-w-full text-left divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Full Name</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Email</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Address</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Phone Number</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Service</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Registered On</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Full Name</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Email</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Service</th>
+                        <th class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700">Registered On</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($serviceRegistrations ?? [] as $reg)
-                        <tr>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $reg-> full_name ?? $reg->name ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->email ?? '' }}</td>
-                            <th class="px-4 py-3 text-sm text-gray-700">{{ $reg->address ?? ''}}</th>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->phone_number??  ''}}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->service ?? ($reg->service_name ?? '') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->registered_on ?? (optional($reg->created_at)->format('Y-m-d') ?? '') }}</td>
+                    @forelse($serviceRegistrations ?? [] as $reg)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 font-semibold">
+                                {{ $reg->member ? $reg->member->full_name : ($reg->guest_full_name ?? 'Unknown') }}
+                            </td>
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 truncate">{{ $reg->member ? $reg->member->email : ($reg->guest_email ?? '—') }}</td>
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">{{ $reg->service->name ?? 'N/A' }}</td>
+                            <td class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700">{{ optional($reg->created_at)->format('M d, Y') ?? '—' }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-3 sm:px-4 py-4 text-center text-gray-500">No registrations found</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
