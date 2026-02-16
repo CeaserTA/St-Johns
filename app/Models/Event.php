@@ -271,15 +271,27 @@ class Event extends Model
 
     public function getImageUrlAttribute()
     {
-        if ($this->image) {
-            // If it's a full URL, return as is
-            if (Str::startsWith($this->image, ['http://', 'https://'])) {
-                return $this->image;
-            }
-            // Otherwise, assume it's in storage
-            return asset('storage/' . $this->image);
+        if (!$this->image) {
+            return null;
         }
-        return null;
+
+        // If it's already a full URL, return as is
+        if (Str::startsWith($this->image, ['http://', 'https://'])) {
+            return $this->image;
+        }
+
+        // Check if image is stored on Supabase (starts with 'events/')
+        if (Str::startsWith($this->image, 'events/')) {
+            $supabaseUrl = env('SUPABASE_PUBLIC_URL');
+            $bucket = env('SUPABASE_BUCKET', 'profiles');
+            
+            if ($supabaseUrl && $bucket) {
+                return "{$supabaseUrl}/{$bucket}/{$this->image}";
+            }
+        }
+
+        // Fallback to local storage
+        return asset('storage/' . $this->image);
     }
 
     /**
