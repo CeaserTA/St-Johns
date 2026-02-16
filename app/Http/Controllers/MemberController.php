@@ -31,9 +31,21 @@ class MemberController extends Controller
         }
 
         // Get latest service registrations to show on the admin dashboard
-        $recentServiceRegistrations = ServiceRegistration::latest()->take(10)->get();
+        $recentServiceRegistrations = ServiceRegistration::with('service', 'member')->latest()->take(10)->get();
+        
+        // Aggregate service registrations by service
+        $serviceRegistrationCounts = ServiceRegistration::with('service')
+            ->select('service_id')
+            ->groupBy('service_id')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'service' => $item->service->name ?? 'Unknown',
+                    'count' => ServiceRegistration::where('service_id', $item->service_id)->count()
+                ];
+            });
 
-        return view('dashboard', compact('totalMembers', 'newRegistrations', 'activeMembers', 'monthlyNewMembers', 'monthLabels', 'recentServiceRegistrations'));
+        return view('dashboard', compact('totalMembers', 'newRegistrations', 'activeMembers', 'monthlyNewMembers', 'monthLabels', 'recentServiceRegistrations', 'serviceRegistrationCounts'));
     }
 
     /**
