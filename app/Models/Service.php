@@ -13,6 +13,14 @@ class Service extends Model
         'name', 
         'description', 
         'schedule',
+        'fee',
+        'is_free',
+        'currency',
+    ];
+
+    protected $casts = [
+        'fee' => 'decimal:2',
+        'is_free' => 'boolean',
     ];
 
     /**
@@ -42,5 +50,24 @@ class Service extends Model
     public function getRegistrationsCountAttribute()
     {
         return $this->registrations()->count();
+    }
+
+    /**
+     * Check if the service is free
+     */
+    public function isFree(): bool
+    {
+        return $this->is_free || $this->fee <= 0;
+    }
+
+    /**
+     * Get formatted fee with currency
+     */
+    public function getFormattedFeeAttribute(): string
+    {
+        if ($this->isFree()) {
+            return 'Free';
+        }
+        return $this->currency . ' ' . number_format($this->fee, 0);
     }
 }

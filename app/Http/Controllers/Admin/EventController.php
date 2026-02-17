@@ -121,11 +121,46 @@ class EventController extends Controller
 
             $validated = $request->validate($rules);
 
-            // Handle image upload
+            // Handle image upload to Supabase
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imagePath = $image->store('events', 'public');
-                $validated['image'] = $imagePath;
+                $file = $request->file('image');
+                
+                \Log::info('Processing event image upload', [
+                    'original_name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ]);
+                
+                try {
+                    // Generate unique filename
+                    $filename = 'event_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    
+                    // Upload to Supabase
+                    $path = $file->storeAs('events', $filename, 'supabase');
+                    $validated['image'] = $path;
+                    
+                    \Log::info('Event image uploaded to Supabase successfully', ['path' => $path]);
+                    
+                } catch (\Exception $e) {
+                    \Log::error('Error uploading event image to Supabase', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                    
+                    // Fall back to local storage if Supabase fails
+                    try {
+                        $path = $file->store('events', 'public');
+                        $validated['image'] = $path;
+                        \Log::info('Event image uploaded to local storage as fallback', ['path' => $path]);
+                    } catch (\Exception $localError) {
+                        \Log::error('Both Supabase and local storage failed for event image', [
+                            'supabase_error' => $e->getMessage(),
+                            'local_error' => $localError->getMessage()
+                        ]);
+                        // Continue without image
+                        unset($validated['image']);
+                    }
+                }
             }
 
             // Set created_by
@@ -218,14 +253,63 @@ class EventController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($event->image && Storage::disk('public')->exists($event->image)) {
-                Storage::disk('public')->delete($event->image);
+            $file = $request->file('image');
+            
+            \Log::info('Processing event image update', [
+                'event_id' => $event->id,
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+            ]);
+            
+            try {
+                // Delete old image from Supabase if exists
+                if ($event->image) {
+                    try {
+                        Storage::disk('supabase')->delete($event->image);
+                        \Log::info('Old event image deleted from Supabase', ['path' => $event->image]);
+                    } catch (\Exception $e) {
+                        \Log::warning('Could not delete old event image from Supabase', [
+                            'path' => $event->image,
+                            'error' => $e->getMessage()
+                        ]);
+                        
+                        // Try deleting from local storage as fallback
+                        if (Storage::disk('public')->exists($event->image)) {
+                            Storage::disk('public')->delete($event->image);
+                            \Log::info('Old event image deleted from local storage');
+                        }
+                    }
+                }
+                
+                // Generate unique filename
+                $filename = 'event_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                // Upload new image to Supabase
+                $path = $file->storeAs('events', $filename, 'supabase');
+                $validated['image'] = $path;
+                
+                \Log::info('New event image uploaded to Supabase successfully', ['path' => $path]);
+                
+            } catch (\Exception $e) {
+                \Log::error('Error uploading event image to Supabase', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                
+                // Fall back to local storage
+                try {
+                    $path = $file->store('events', 'public');
+                    $validated['image'] = $path;
+                    \Log::info('Event image uploaded to local storage as fallback', ['path' => $path]);
+                } catch (\Exception $localError) {
+                    \Log::error('Both Supabase and local storage failed for event image', [
+                        'supabase_error' => $e->getMessage(),
+                        'local_error' => $localError->getMessage()
+                    ]);
+                    // Continue without updating image
+                    unset($validated['image']);
+                }
             }
-
-            $image = $request->file('image');
-            $imagePath = $image->store('events', 'public');
-            $validated['image'] = $imagePath;
         }
 
         // Handle boolean fields (checkboxes)
@@ -249,9 +333,23 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Delete image if exists
-        if ($event->image && Storage::disk('public')->exists($event->image)) {
-            Storage::disk('public')->delete($event->image);
+        // Delete image from Supabase if exists
+        if ($event->image) {
+            try {
+                Storage::disk('supabase')->delete($event->image);
+                \Log::info('Event image deleted from Supabase', ['path' => $event->image]);
+            } catch (\Exception $e) {
+                \Log::warning('Could not delete event image from Supabase', [
+                    'path' => $event->image,
+                    'error' => $e->getMessage()
+                ]);
+                
+                // Try deleting from local storage as fallback
+                if (Storage::disk('public')->exists($event->image)) {
+                    Storage::disk('public')->delete($event->image);
+                    \Log::info('Event image deleted from local storage');
+                }
+            }
         }
 
         $typeName = $event->is_event ? 'Event' : 'Announcement';
@@ -344,9 +442,22 @@ class EventController extends Controller
         $events = Event::whereIn('id', $validated['ids'])->get();
 
         foreach ($events as $event) {
-            // Delete images
-            if ($event->image && Storage::disk('public')->exists($event->image)) {
-                Storage::disk('public')->delete($event->image);
+            // Delete images from Supabase
+            if ($event->image) {
+                try {
+                    Storage::disk('supabase')->delete($event->image);
+                } catch (\Exception $e) {
+                    \Log::warning('Could not delete event image from Supabase during bulk delete', [
+                        'event_id' => $event->id,
+                        'path' => $event->image,
+                        'error' => $e->getMessage()
+                    ]);
+                    
+                    // Try local storage as fallback
+                    if (Storage::disk('public')->exists($event->image)) {
+                        Storage::disk('public')->delete($event->image);
+                    }
+                }
             }
             $event->delete();
         }

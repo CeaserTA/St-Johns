@@ -23,6 +23,71 @@ class QRCodeController extends Controller
     }
 
     /**
+     * Helper method to store QR code on Supabase with fallback
+     */
+    private function storeQRCode($qrCodeContent, $filename)
+    {
+        try {
+            // Try to upload to Supabase first
+            Storage::disk('supabase')->put('qr-codes/' . $filename, $qrCodeContent);
+            
+            \Log::info('QR code uploaded to Supabase successfully', ['filename' => $filename]);
+            
+            return [
+                'success' => true,
+                'path' => 'qr-codes/' . $filename,
+                'storage' => 'supabase'
+            ];
+            
+        } catch (\Exception $e) {
+            \Log::error('Error uploading QR code to Supabase', [
+                'error' => $e->getMessage(),
+                'filename' => $filename
+            ]);
+            
+            // Fall back to local storage if Supabase fails
+            try {
+                Storage::disk('public')->put('qr-codes/' . $filename, $qrCodeContent);
+                \Log::info('QR code uploaded to local storage as fallback', ['filename' => $filename]);
+                
+                return [
+                    'success' => true,
+                    'path' => 'qr-codes/' . $filename,
+                    'storage' => 'local'
+                ];
+            } catch (\Exception $localError) {
+                \Log::error('Both Supabase and local storage failed for QR code', [
+                    'supabase_error' => $e->getMessage(),
+                    'local_error' => $localError->getMessage()
+                ]);
+                
+                return [
+                    'success' => false,
+                    'error' => 'Failed to store QR code'
+                ];
+            }
+        }
+    }
+
+    /**
+     * Helper method to get QR code URL
+     */
+    private function getQRCodeUrl($path, $storage = 'supabase')
+    {
+        if ($storage === 'supabase') {
+            $supabaseUrl = env('SUPABASE_PUBLIC_URL');
+            $bucket = env('SUPABASE_BUCKET', 'profiles');
+            
+            if ($supabaseUrl && $bucket) {
+                return "{$supabaseUrl}/{$bucket}/{$path}";
+            }
+        }
+        
+        // Fallback to local storage URL
+        return asset('storage/' . $path);
+    }
+
+    /**
      * Generate QR code for member registration
      */
     public function generateMemberRegistration(Request $request)
@@ -50,7 +115,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'member_registration_' . Str::slug($title) . '_' . time() . '.png';
-                    $contentType = 'image/png';
                 } catch (\Exception $pngError) {
                     // Fallback to SVG if PNG fails (missing imagick extension)
                     $qrCode = QrCode::format('svg')
@@ -59,7 +123,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'member_registration_' . Str::slug($title) . '_' . time() . '.svg';
-                    $contentType = 'image/svg+xml';
                     $format = 'svg'; // Update format for response
                 }
             } else {
@@ -69,23 +132,29 @@ class QRCodeController extends Controller
                     ->generate($url);
                 
                 $filename = 'member_registration_' . Str::slug($title) . '_' . time() . '.svg';
-                $contentType = 'image/svg+xml';
             }
 
-            // Store the QR code temporarily for download
-            Storage::disk('public')->put('qr-codes/' . $filename, $qrCode);
+            // Store the QR code on Supabase
+            $storageResult = $this->storeQRCode($qrCode, $filename);
+            
+            if (!$storageResult['success']) {
+                throw new \Exception($storageResult['error']);
+            }
+
+            $previewUrl = $this->getQRCodeUrl($storageResult['path'], $storageResult['storage']);
 
             return response()->json([
                 'success' => true,
                 'message' => 'QR Code generated successfully',
                 'qr_code' => $qrCode,
                 'download_url' => route('qr-codes.download', ['filename' => $filename]),
-                'preview_url' => asset('storage/qr-codes/' . $filename),
+                'preview_url' => $previewUrl,
                 'target_url' => $url,
                 'title' => $title,
                 'description' => $description,
                 'format' => $format,
-                'size' => $size
+                'size' => $size,
+                'storage' => $storageResult['storage']
             ]);
 
         } catch (\Exception $e) {
@@ -126,7 +195,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'event_' . $event->id . '_' . Str::slug($event->title) . '_' . time() . '.png';
-                    $contentType = 'image/png';
                 } catch (\Exception $pngError) {
                     // Fallback to SVG if PNG fails (missing imagick extension)
                     $qrCode = QrCode::format('svg')
@@ -135,7 +203,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'event_' . $event->id . '_' . Str::slug($event->title) . '_' . time() . '.svg';
-                    $contentType = 'image/svg+xml';
                     $format = 'svg'; // Update format for response
                 }
             } else {
@@ -145,18 +212,23 @@ class QRCodeController extends Controller
                     ->generate($url);
                 
                 $filename = 'event_' . $event->id . '_' . Str::slug($event->title) . '_' . time() . '.svg';
-                $contentType = 'image/svg+xml';
             }
 
-            // Store the QR code temporarily for download
-            Storage::disk('public')->put('qr-codes/' . $filename, $qrCode);
+            // Store the QR code on Supabase
+            $storageResult = $this->storeQRCode($qrCode, $filename);
+            
+            if (!$storageResult['success']) {
+                throw new \Exception($storageResult['error']);
+            }
+
+            $previewUrl = $this->getQRCodeUrl($storageResult['path'], $storageResult['storage']);
 
             return response()->json([
                 'success' => true,
                 'message' => 'QR Code generated successfully',
                 'qr_code' => $qrCode,
                 'download_url' => route('qr-codes.download', ['filename' => $filename]),
-                'preview_url' => asset('storage/qr-codes/' . $filename),
+                'preview_url' => $previewUrl,
                 'target_url' => $url,
                 'event' => [
                     'id' => $event->id,
@@ -167,7 +239,8 @@ class QRCodeController extends Controller
                 'title' => $title,
                 'description' => $description,
                 'format' => $format,
-                'size' => $size
+                'size' => $size,
+                'storage' => $storageResult['storage']
             ]);
 
         } catch (\Exception $e) {
@@ -206,7 +279,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'giving_' . Str::slug($title) . '_' . time() . '.png';
-                    $contentType = 'image/png';
                 } catch (\Exception $pngError) {
                     // Fallback to SVG if PNG fails (missing imagick extension)
                     $qrCode = QrCode::format('svg')
@@ -215,7 +287,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'giving_' . Str::slug($title) . '_' . time() . '.svg';
-                    $contentType = 'image/svg+xml';
                     $format = 'svg'; // Update format for response
                 }
             } else {
@@ -225,23 +296,29 @@ class QRCodeController extends Controller
                     ->generate($url);
                 
                 $filename = 'giving_' . Str::slug($title) . '_' . time() . '.svg';
-                $contentType = 'image/svg+xml';
             }
 
-            // Store the QR code temporarily for download
-            Storage::disk('public')->put('qr-codes/' . $filename, $qrCode);
+            // Store the QR code on Supabase
+            $storageResult = $this->storeQRCode($qrCode, $filename);
+            
+            if (!$storageResult['success']) {
+                throw new \Exception($storageResult['error']);
+            }
+
+            $previewUrl = $this->getQRCodeUrl($storageResult['path'], $storageResult['storage']);
 
             return response()->json([
                 'success' => true,
                 'message' => 'QR Code generated successfully',
                 'qr_code' => $qrCode,
                 'download_url' => route('qr-codes.download', ['filename' => $filename]),
-                'preview_url' => asset('storage/qr-codes/' . $filename),
+                'preview_url' => $previewUrl,
                 'target_url' => $url,
                 'title' => $title,
                 'description' => $description,
                 'format' => $format,
-                'size' => $size
+                'size' => $size,
+                'storage' => $storageResult['storage']
             ]);
 
         } catch (\Exception $e) {
@@ -281,7 +358,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'custom_' . Str::slug($title) . '_' . time() . '.png';
-                    $contentType = 'image/png';
                 } catch (\Exception $pngError) {
                     // Fallback to SVG if PNG fails (missing imagick extension)
                     $qrCode = QrCode::format('svg')
@@ -290,7 +366,6 @@ class QRCodeController extends Controller
                         ->generate($url);
                     
                     $filename = 'custom_' . Str::slug($title) . '_' . time() . '.svg';
-                    $contentType = 'image/svg+xml';
                     $format = 'svg'; // Update format for response
                 }
             } else {
@@ -300,23 +375,29 @@ class QRCodeController extends Controller
                     ->generate($url);
                 
                 $filename = 'custom_' . Str::slug($title) . '_' . time() . '.svg';
-                $contentType = 'image/svg+xml';
             }
 
-            // Store the QR code temporarily for download
-            Storage::disk('public')->put('qr-codes/' . $filename, $qrCode);
+            // Store the QR code on Supabase
+            $storageResult = $this->storeQRCode($qrCode, $filename);
+            
+            if (!$storageResult['success']) {
+                throw new \Exception($storageResult['error']);
+            }
+
+            $previewUrl = $this->getQRCodeUrl($storageResult['path'], $storageResult['storage']);
 
             return response()->json([
                 'success' => true,
                 'message' => 'QR Code generated successfully',
                 'qr_code' => $qrCode,
                 'download_url' => route('qr-codes.download', ['filename' => $filename]),
-                'preview_url' => asset('storage/qr-codes/' . $filename),
+                'preview_url' => $previewUrl,
                 'target_url' => $url,
                 'title' => $title,
                 'description' => $description,
                 'format' => $format,
-                'size' => $size
+                'size' => $size,
+                'storage' => $storageResult['storage']
             ]);
 
         } catch (\Exception $e) {
@@ -333,14 +414,32 @@ class QRCodeController extends Controller
     public function download($filename)
     {
         $path = 'qr-codes/' . $filename;
+        $file = null;
         
-        if (!Storage::disk('public')->exists($path)) {
+        // Try Supabase first
+        try {
+            if (Storage::disk('supabase')->exists($path)) {
+                $file = Storage::disk('supabase')->get($path);
+                \Log::info('QR code downloaded from Supabase', ['filename' => $filename]);
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Error checking Supabase for QR code download', [
+                'filename' => $filename,
+                'error' => $e->getMessage()
+            ]);
+        }
+        
+        // Fallback to local storage
+        if (!$file && Storage::disk('public')->exists($path)) {
+            $file = Storage::disk('public')->get($path);
+            \Log::info('QR code downloaded from local storage', ['filename' => $filename]);
+        }
+        
+        if (!$file) {
             abort(404, 'QR Code not found');
         }
 
-        $file = Storage::disk('public')->get($path);
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        
         $contentType = $extension === 'svg' ? 'image/svg+xml' : 'image/png';
         
         return response($file)
@@ -354,22 +453,65 @@ class QRCodeController extends Controller
     public function cleanup()
     {
         try {
-            $files = Storage::disk('public')->files('qr-codes');
             $deletedCount = 0;
             
-            foreach ($files as $file) {
-                $lastModified = Storage::disk('public')->lastModified($file);
+            // Clean up Supabase storage
+            try {
+                $supabaseFiles = Storage::disk('supabase')->files('qr-codes');
                 
-                // Delete files older than 24 hours
-                if ($lastModified < (time() - 86400)) {
-                    Storage::disk('public')->delete($file);
-                    $deletedCount++;
+                foreach ($supabaseFiles as $file) {
+                    try {
+                        $lastModified = Storage::disk('supabase')->lastModified($file);
+                        
+                        // Delete files older than 24 hours
+                        if ($lastModified < (time() - 86400)) {
+                            Storage::disk('supabase')->delete($file);
+                            $deletedCount++;
+                            \Log::info('Deleted old QR code from Supabase', ['file' => $file]);
+                        }
+                    } catch (\Exception $fileError) {
+                        \Log::warning('Error processing Supabase file during cleanup', [
+                            'file' => $file,
+                            'error' => $fileError->getMessage()
+                        ]);
+                    }
                 }
+            } catch (\Exception $supabaseError) {
+                \Log::warning('Error accessing Supabase during cleanup', [
+                    'error' => $supabaseError->getMessage()
+                ]);
+            }
+            
+            // Clean up local storage
+            try {
+                $localFiles = Storage::disk('public')->files('qr-codes');
+                
+                foreach ($localFiles as $file) {
+                    try {
+                        $lastModified = Storage::disk('public')->lastModified($file);
+                        
+                        // Delete files older than 24 hours
+                        if ($lastModified < (time() - 86400)) {
+                            Storage::disk('public')->delete($file);
+                            $deletedCount++;
+                            \Log::info('Deleted old QR code from local storage', ['file' => $file]);
+                        }
+                    } catch (\Exception $fileError) {
+                        \Log::warning('Error processing local file during cleanup', [
+                            'file' => $file,
+                            'error' => $fileError->getMessage()
+                        ]);
+                    }
+                }
+            } catch (\Exception $localError) {
+                \Log::warning('Error accessing local storage during cleanup', [
+                    'error' => $localError->getMessage()
+                ]);
             }
             
             return response()->json([
                 'success' => true,
-                'message' => "Cleaned up {$deletedCount} old QR code files"
+                'message' => "Cleaned up {$deletedCount} old QR code files from both Supabase and local storage"
             ]);
             
         } catch (\Exception $e) {

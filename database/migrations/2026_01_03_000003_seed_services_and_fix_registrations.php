@@ -12,23 +12,37 @@ return new class extends Migration
         // First, seed the services table with existing hardcoded services
         DB::table('services')->insertOrIgnore([
             [
-                'name' => 'Counseling',
-                'description' => 'Pastoral counseling and spiritual guidance',
-                'schedule' => 'By appointment',
+                'name' => 'Confirmation',
+                'description' => 'A powerful moment of personal commitment as young people and adults affirm their baptismal vows and receive the strengthening gift of the Holy Spirit.',
+                'schedule' => 'Quarterly',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Baptism',
-                'description' => 'Water baptism ceremony',
+                'description' => 'The joyous beginning of Christian life — welcoming infants, children, and adults into God\'s family through water and the Holy Spirit.',
                 'schedule' => 'Monthly - First Sunday',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Youth Retreat',
-                'description' => 'Annual youth retreat and activities',
-                'schedule' => 'Annually',
+                'name' => 'Holy Matrimony',
+                'description' => 'Celebrating the sacred covenant of marriage — two lives becoming one under God\'s blessing, surrounded by family and prayer.',
+                'schedule' => 'By appointment',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Counseling',
+                'description' => 'Compassionate, confidential guidance from our clergy and trained counselors for life\'s challenges, marriage preparation, grief, and spiritual growth.',
+                'schedule' => 'By appointment',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Sunday Service Visit',
+                'description' => 'Join us for our regular Sunday worship service and experience the warmth of our community.',
+                'schedule' => 'Every Sunday',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -44,6 +58,9 @@ return new class extends Migration
             'Counseling' => DB::table('services')->where('name', 'Counseling')->value('id'),
             'Baptism' => DB::table('services')->where('name', 'Baptism')->value('id'),
             'Youth Retreat' => DB::table('services')->where('name', 'Youth Retreat')->value('id'),
+            'Confirmation' => DB::table('services')->where('name', 'Confirmation')->value('id'),
+            'Holy Matrimony' => DB::table('services')->where('name', 'Holy Matrimony')->value('id'),
+            'Sunday Service Visit' => DB::table('services')->where('name', 'Sunday Service Visit')->value('id'),
         ];
         
         // Update service_id based on existing service enum
@@ -96,11 +113,11 @@ return new class extends Migration
         
         // Add back the service enum column
         Schema::table('service_registrations', function (Blueprint $table) {
-            $table->enum('service', ['Counseling', 'Baptism', 'Youth Retreat'])->after('guest_address');
+            $table->enum('service', ['Counseling', 'Baptism', 'Youth Retreat', 'Confirmation', 'Holy Matrimony', 'Sunday Service Visit'])->after('guest_address');
         });
         
         // Populate service enum from service_id
-        $services = DB::table('services')->whereIn('name', ['Counseling', 'Baptism', 'Youth Retreat'])->get();
+        $services = DB::table('services')->whereIn('name', ['Counseling', 'Baptism', 'Youth Retreat', 'Confirmation', 'Holy Matrimony', 'Sunday Service Visit'])->get();
         foreach ($services as $service) {
             DB::table('service_registrations')
                 ->where('service_id', $service->id)
@@ -125,6 +142,6 @@ return new class extends Migration
         });
         
         // Remove seeded services
-        DB::table('services')->whereIn('name', ['Counseling', 'Baptism', 'Youth Retreat'])->delete();
+        DB::table('services')->whereIn('name', ['Counseling', 'Baptism', 'Youth Retreat', 'Confirmation', 'Holy Matrimony', 'Sunday Service Visit'])->delete();
     }
 };

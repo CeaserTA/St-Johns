@@ -31,11 +31,26 @@ class Event extends Model
     {
         parent::boot();
 
+        // Before creating (slug generation)
+        static::creating(function ($event) {
+            if (empty($event->slug)) {
+                $event->slug = $event->generateUniqueSlug($event->title);
+            }
+        });
+
+        // Before updating (regenerate slug if title changed)
+        static::updating(function ($event) {
+            if ($event->isDirty('title') && empty($event->slug)) {
+                $event->slug = $event->generateUniqueSlug($event->title);
+            }
+        });
+
+        // After created (send notification)
         static::created(function ($model) {
-            // Notify admins of new event/announcement posted
             Notification::notifyEventPosted($model);
         });
     }
+
 
     protected $fillable = [
         'title',
@@ -75,22 +90,22 @@ class Event extends Model
     ];
 
     // Boot method for auto-generating slug
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($event) {
-            if (empty($event->slug)) {
-                $event->slug = $event->generateUniqueSlug($event->title);
-            }
-        });
+    //     static::creating(function ($event) {
+    //         if (empty($event->slug)) {
+    //             $event->slug = $event->generateUniqueSlug($event->title);
+    //         }
+    //     });
 
-        static::updating(function ($event) {
-            if ($event->isDirty('title') && empty($event->slug)) {
-                $event->slug = $event->generateUniqueSlug($event->title);
-            }
-        });
-    }
+    //     static::updating(function ($event) {
+    //         if ($event->isDirty('title') && empty($event->slug)) {
+    //             $event->slug = $event->generateUniqueSlug($event->title);
+    //         }
+    //     });
+    // }
 
     /**
      * Generate a unique slug from title
@@ -154,21 +169,21 @@ class Event extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
+                ->orWhere('expires_at', '>', now());
         });
     }
 
     public function scopeExpired($query)
     {
         return $query->whereNotNull('expires_at')
-                     ->where('expires_at', '<=', now());
+            ->where('expires_at', '<=', now());
     }
 
     public function scopeUpcoming($query)
     {
         return $query->where(function ($q) {
             $q->where('starts_at', '>', now())
-              ->orWhere('date', '>', now()->toDateString());
+                ->orWhere('date', '>', now()->toDateString());
         });
     }
 
@@ -176,7 +191,7 @@ class Event extends Model
     {
         return $query->where(function ($q) {
             $q->where('starts_at', '<', now())
-              ->orWhere('date', '<', now()->toDateString());
+                ->orWhere('date', '<', now()->toDateString());
         });
     }
 
@@ -188,11 +203,11 @@ class Event extends Model
     public function scopePublished($query)
     {
         return $query->active()
-                     ->notExpired()
-                     ->where(function ($q) {
-                         $q->whereNull('starts_at')
-                           ->orWhere('starts_at', '<=', now());
-                     });
+            ->notExpired()
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            });
     }
 
     /**

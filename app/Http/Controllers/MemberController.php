@@ -168,6 +168,38 @@ class MemberController extends Controller
             throw $e;
         }
         
+        // Check if user wants to create an account
+        $createAccount = $request->boolean('create_account');
+        $user = null;
+
+        if ($createAccount) {
+            // Validate password fields
+            $request->validate([
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+            
+            // Check if email already has a user account
+            if ($request->email && \App\Models\User::where('email', $request->email)->exists()) {
+                if ($request->wantsJson() || $request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'An account with this email already exists. Please login instead.'
+                    ], 422);
+                }
+                return back()->withErrors(['email' => 'An account with this email already exists. Please login instead.'])->withInput();
+            }
+            
+            // Create user account
+            $user = \App\Models\User::create([
+                'name' => $request->fullname,
+                'email' => $request->email,
+                'password' => \Hash::make($request->password),
+                'role' => 'member',
+            ]);
+            
+            \Log::info('User account created for member', ['user_id' => $user->id]);
+        }
+        
         // Map old field names to new database column names
         $data = [
             'full_name' => $request->fullname,
@@ -271,6 +303,17 @@ class MemberController extends Controller
             }
         }
 
+        // Add user_id to member if account was created
+        if ($user) {
+            $member->update(['user_id' => $user->id]);
+        }
+
+        // Auto-login if account was created
+        if ($user) {
+            Auth::login($user);
+            \Log::info('User auto-logged in after registration', ['user_id' => $user->id]);
+        }
+
         // Handle AJAX requests (from admin modal)
         if ($request->wantsJson() || $request->expectsJson()) {
             return response()->json([
@@ -286,14 +329,18 @@ class MemberController extends Controller
             ]);
         }
 
-        // If an admin (authenticated user) created the member from the admin UI,
-        // send them to the members listing. If the member was created from the
-        // public registration form (guest), redirect back to the homepage with a
-        // friendly success message so the user is not taken to the admin area.
-        if (Auth::check()) {
-            return redirect()->route('members')->with('success', 'Member added successfully');
+        // After member creation, check if user was logged in
+        if (Auth::check() && !$request->wantsJson()) {
+            // If admin created the member
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('members')->with('success', 'Member added successfully');
+            }
+            
+            // If member just registered with account
+            return redirect()->route('services')->with('success', 'Welcome! Your account has been created. You can now register for services.');
         }
 
+        // Guest registration (no account created)
         return redirect()->route('home')->with('success', 'Thank you for registering — we will contact you soon.');
     }
 
@@ -328,7 +375,7 @@ class MemberController extends Controller
             'address' => 'nullable|string|max:255',
             'dateJoined' => 'required|date|before_or_equal:today',      
             'cell' => 'required|in:north,east,south,west',
-            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
         
         // Map old field names to new database column names
@@ -380,6 +427,16 @@ class MemberController extends Controller
         }
 
         $member->update($data);
+        
+        // Return JSON response for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Member updated successfully',
+                'member' => $member
+            ]);
+        }
+        
         return redirect()->route('members')->with('success', 'Member updated successfully');
     }
 
@@ -390,6 +447,45 @@ class MemberController extends Controller
     {
         $member->delete();
         return redirect()->route('members')->with('success', 'Member deleted successfully');
+    }
+
+    /**
+     * Create user account for existing member
+     */
+    public function createAccount(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:members,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        
+        // Find member by email
+        $member = Member::where('email', $request->email)->first();
+        
+        if (!$member) {
+            return back()->with('error', 'Member not found with this email.');
+        }
+        
+        // Check if member already has an account
+        if ($member->user_id) {
+            return back()->with('error', 'This member already has an account. Please login.');
+        }
+        
+        // Create user account
+        $user = \App\Models\User::create([
+            'name' => $member->full_name,
+            'email' => $member->email,
+            'password' => \Hash::make($request->password),
+            'role' => 'member',
+        ]);
+        
+        // Link user to member
+        $member->update(['user_id' => $user->id]);
+        
+        // Auto-login
+        Auth::login($user);
+        
+        return redirect()->route('services')->with('success', 'Account created successfully! You can now register for services.');
     }
 
     /**
