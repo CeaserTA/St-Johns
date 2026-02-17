@@ -57,6 +57,10 @@ Route::post('/give', [GivingController::class, 'store'])->name('giving.store');
 // Member giving history (requires authentication)
 Route::middleware('auth')->group(function () {
     Route::get('/my-giving', [GivingController::class, 'history'])->name('giving.history');
+    
+    // Member service registrations API
+    Route::get('/api/my-service-registrations', [ServiceRegistrationController::class, 'myRegistrations'])->name('api.my-registrations');
+    Route::get('/api/my-pending-payments', [ServiceRegistrationController::class, 'myPendingPayments'])->name('api.my-pending-payments');
 });
 
 // Admin giving management (requires admin role)
@@ -106,6 +110,10 @@ Route::middleware('admin')->group(function () {
     Route::post('/admin/services', [ServiceController::class, 'store'])->name('admin.services.store');
     Route::put('/admin/services/{service}', [ServiceController::class, 'update'])->name('admin.services.update');
     Route::delete('/admin/services/{service}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
+    
+    // Admin service registration payment actions
+    Route::post('/admin/service-registrations/{registration}/confirm-payment', [ServiceController::class, 'confirmPayment'])->name('admin.service-registrations.confirm-payment');
+    Route::post('/admin/service-registrations/{registration}/reject-payment', [ServiceController::class, 'rejectPayment'])->name('admin.service-registrations.reject-payment');
 
     // Admin dashboard-specific announcements page
     Route::get('/admin/announcements', [AnnouncementController::class, 'index'])->name('admin.announcements');
@@ -135,6 +143,9 @@ Route::get('/services', [PublicServiceController::class, 'index'])->name('servic
 
 // Public endpoint: allow anyone to register (modal posts here)
 Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+
+// Quick account creation for existing members
+Route::post('/member/create-account', [MemberController::class, 'createAccount'])->name('member.create-account');
 
 // API endpoint for recent members (for testing)
 Route::get('/api/recent-members', function() {
@@ -222,13 +233,11 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::get('/service-register', [ServiceRegistrationController::class, 'index'])
-    ->name('service.register');
-
-
-Route::post('/service-register', [ServiceRegistrationController::class, 'store'])
-    ->name('service.register');
-
+// Protect service registration with auth
+Route::middleware(['auth'])->group(function () {
+    Route::post('/service-register', [ServiceRegistrationController::class, 'store'])->name('service.register');
+    Route::post('/service-payment-proof', [ServiceRegistrationController::class, 'submitPaymentProof'])->name('service.payment.proof');
+});
 
 
 

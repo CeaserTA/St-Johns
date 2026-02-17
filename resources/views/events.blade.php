@@ -646,6 +646,8 @@
         }
     </script>
 
+    @include('partials.member-modals')
+
 </body>
 
 </html>

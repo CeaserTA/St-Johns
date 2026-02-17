@@ -24,7 +24,22 @@ class ServiceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'schedule' => 'required|string|max:255',
+            'fee' => 'nullable|numeric|min:0',
+            'is_free' => 'nullable|boolean',
+            'currency' => 'nullable|string|max:3',
         ]);
+
+        // Set defaults
+        $validated['fee'] = $validated['fee'] ?? 0;
+        $validated['currency'] = $validated['currency'] ?? 'UGX';
+        
+        // Handle is_free: if checkbox is checked, it's free regardless of fee
+        // If unchecked, determine based on fee amount
+        if ($request->has('is_free')) {
+            $validated['is_free'] = true;
+        } else {
+            $validated['is_free'] = ($validated['fee'] <= 0);
+        }
 
         Service::create($validated);
 
@@ -37,7 +52,22 @@ class ServiceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'schedule' => 'required|string|max:255',
+            'fee' => 'nullable|numeric|min:0',
+            'is_free' => 'nullable|boolean',
+            'currency' => 'nullable|string|max:3',
         ]);
+
+        // Set defaults
+        $validated['fee'] = $validated['fee'] ?? 0;
+        $validated['currency'] = $validated['currency'] ?? 'UGX';
+        
+        // Handle is_free: if checkbox is checked, it's free regardless of fee
+        // If unchecked, determine based on fee amount
+        if ($request->has('is_free')) {
+            $validated['is_free'] = true;
+        } else {
+            $validated['is_free'] = ($validated['fee'] <= 0);
+        }
 
         $service->update($validated);
 
@@ -48,5 +78,67 @@ class ServiceController extends Controller
     {
         $service->delete();
         return redirect()->route('admin.services')->with('success', 'Service deleted successfully.');
+    }
+
+    /**
+     * Confirm payment for a service registration
+     */
+    public function confirmPayment(Request $request, $registrationId)
+    {
+        $registration = ServiceRegistration::findOrFail($registrationId);
+
+        // Generate receipt number if not exists
+        if (!$registration->receipt_number) {
+            $receiptNumber = $registration->generateReceiptNumber();
+        } else {
+            $receiptNumber = $registration->receipt_number;
+        }
+
+        $registration->update([
+            'payment_status' => 'paid',
+            'amount_paid' => $registration->service->fee,
+            'paid_at' => now(),
+            'receipt_number' => $receiptNumber,
+        ]);
+
+        // Send receipt email
+        $emailSent = $registration->sendReceipt();
+
+        $message = 'Payment confirmed successfully.';
+        if ($emailSent) {
+            $message .= ' Receipt email sent to ' . ($registration->guest_email ?? $registration->member->email);
+        } else {
+            $message .= ' However, receipt email could not be sent (no email address available).';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+        ]);
+    }
+
+    /**
+     * Reject payment for a service registration
+     */
+    public function rejectPayment(Request $request, $registrationId)
+    {
+        $registration = ServiceRegistration::findOrFail($registrationId);
+
+        $reason = $request->input('reason');
+        $notes = $registration->payment_notes ?? '';
+        
+        if ($reason) {
+            $notes .= "\n\nRejection Reason (" . now()->format('Y-m-d H:i') . "): " . $reason;
+        }
+
+        $registration->update([
+            'payment_status' => 'failed',
+            'payment_notes' => $notes,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment rejected.',
+        ]);
     }
 }

@@ -309,6 +309,7 @@
                 </section>
             </main>
 
+            @include('partials.member-modals')
             @include('partials.footer')
 
 
@@ -453,6 +454,39 @@
                             class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:bg-[#163e7b] file:text-white hover:file:bg-[#1e56a0] transition cursor-pointer">
                     </div>
 
+                    <!-- Account Creation Option -->
+                    <div class="bg-blue-50/70 rounded-xl p-6 border-2 border-blue-200">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="createAccount" name="create_account" value="1" 
+                                   class="mt-1 rounded border-gray-300 text-[#163e7b] focus:ring-[#163e7b] w-5 h-5">
+                            <div class="ml-3">
+                                <label for="createAccount" class="block text-sm font-semibold text-gray-800 cursor-pointer">
+                                    Create an account to access services, updates, and groups
+                                </label>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    With an account, you can register for services, join groups, and track your donations online.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Password fields (hidden by default) -->
+                        <div id="accountFields" class="hidden mt-5 space-y-4 pt-4 border-t border-blue-200">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+                                <input type="password" name="password" id="password" 
+                                       class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition"
+                                       placeholder="Minimum 8 characters">
+                                <p class="text-xs text-gray-500 mt-1">Choose a strong password with at least 8 characters</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password <span class="text-red-500">*</span></label>
+                                <input type="password" name="password_confirmation" id="password_confirmation" 
+                                       class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-[#163e7b]/20 focus:border-[#163e7b] transition"
+                                       placeholder="Re-enter your password">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Success Notice -->
                     <div id="formNotice"
                         class="hidden p-5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-center font-bold text-lg">
@@ -496,6 +530,28 @@
             if (backdrop) backdrop.addEventListener('click', closeModal);
             // Close on Escape
             document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+            // Show/hide password fields based on checkbox
+            const createAccountCheckbox = document.getElementById('createAccount');
+            const accountFields = document.getElementById('accountFields');
+            const passwordInput = document.getElementById('password');
+            const passwordConfirm = document.getElementById('password_confirmation');
+            
+            if (createAccountCheckbox) {
+                createAccountCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        accountFields.classList.remove('hidden');
+                        passwordInput.required = true;
+                        passwordConfirm.required = true;
+                    } else {
+                        accountFields.classList.add('hidden');
+                        passwordInput.required = false;
+                        passwordConfirm.required = false;
+                        passwordInput.value = '';
+                        passwordConfirm.value = '';
+                    }
+                });
+            }
 
             // Optional: simple demo submit handling (shows notice briefly)
             const form = document.getElementById('memberForm');
