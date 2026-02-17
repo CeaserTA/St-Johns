@@ -28,7 +28,7 @@
          class="text-sm font-medium text-gray-700 hover:text-secondary transition">
         Services
       </a>
-      <a href="{{ route('events') }}" 
+      <a href="{{ route('updates') }}" 
          class="text-sm font-medium text-gray-700 hover:text-secondary transition">
         Updates
       </a>

@@ -55,28 +55,31 @@
     @endif
 
 <!-- Services Page Hero – Shorter & Cleaner -->
-<section class="py-16 bg-white relative overflow-hidden"> <!-- Reduced from py-32+ -->
-    <div class="max-w-5xl mx-auto px-6 text-center">
-        <p class="text-accent font-bold uppercase tracking-widest text-xs mb-3">
-            Worship • Sacraments • Community
-        </p>
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-primary leading-tight mb-6">
-            Our Services
-        </h1>
-        <div class="w-20 h-1 bg-accent mx-auto mb-8"></div>
+<!-- HERO – Wider, breathes better, no wasted space -->
+<section class="py-16 bg-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12"> <!-- Wider container + more padding on large screens -->
+        <div class="text-center max-w-4xl mx-auto"> <!-- Text stays readable but not cramped -->
+            <p class="text-accent font-bold uppercase tracking-widest text-xs mb-3">
+                Worship • Sacraments • Community
+            </p>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-primary leading-tight mb-6">
+                Our Services
+            </h1>
+            <div class="w-20 h-1 bg-accent mx-auto mb-8"></div>
 
-        <div class="space-y-4 text-base md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            <p>
-                At <span class="text-primary font-semibold">St. John’s Parish Church Entebbe</span>, every service
-                is an invitation to encounter the living God.
-            </p>
-            <p class="text-gray-600">
-                Whether through the beauty of the Holy Eucharist, the joy of baptism and marriage, the comfort of
-                reconciliation, or the hope of Christian burial — we are here to walk with you in every season of faith and life.
-            </p>
-            <p class="italic text-secondary font-medium">
-                "Come to me, all you who are weary and burdened, and I will give you rest." — Matthew 11:28
-            </p>
+            <div class="space-y-4 text-base md:text-lg text-gray-700 leading-relaxed">
+                <p>
+                    At <span class="text-primary font-semibold">St. John’s Parish Church Entebbe</span>, every service
+                    is an invitation to encounter the living God.
+                </p>
+                <p class="text-gray-600">
+                    Whether through the beauty of the Holy Eucharist, the joy of baptism and marriage, the comfort of
+                    reconciliation, or the hope of Christian burial — we are here to walk with you in every season of faith and life.
+                </p>
+                <p class="italic text-secondary font-medium">
+                    "Come to me, all you who are weary and burdened, and I will give you rest." — Matthew 11:28
+                </p>
+            </div>
         </div>
     </div>
 </section>

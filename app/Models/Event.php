@@ -24,6 +24,19 @@ class Event extends Model
     const CATEGORY_WORSHIP = 'Worship';
     const CATEGORY_FELLOWSHIP = 'Fellowship';
 
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            // Notify admins of new event/announcement posted
+            Notification::notifyEventPosted($model);
+        });
+    }
+
     protected $fillable = [
         'title',
         'slug',
@@ -276,7 +289,13 @@ class Event extends Model
             if (Str::startsWith($this->image, ['http://', 'https://'])) {
                 return $this->image;
             }
-            // Otherwise, assume it's in storage
+            // Check if it's a Supabase path and construct the full URL
+            $supabasePublicUrl = config('filesystems.disks.supabase.url');
+            $bucket = config('filesystems.disks.supabase.bucket');
+            if ($supabasePublicUrl && $bucket) {
+                return $supabasePublicUrl . '/' . $bucket . '/' . $this->image;
+            }
+            // Otherwise, assume it's in local storage
             return asset('storage/' . $this->image);
         }
         return null;

@@ -16,6 +16,19 @@ class Service extends Model
     ];
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            // Notify admins of new service posted
+            Notification::notifyServicePosted($model);
+        });
+    }
+
+    /**
      * Get all registrations for this service
      */
     public function registrations()

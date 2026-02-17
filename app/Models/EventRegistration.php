@@ -18,6 +18,19 @@ class EventRegistration extends Model
     ];
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            // Notify admins of new event registration
+            Notification::notifyEventRegistration($model);
+        });
+    }
+
+    /**
      * Relationships
      */
     public function event()

@@ -2,10 +2,10 @@
 <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 md:hidden z-30" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
-<aside id="sidebar" class="w-64 flex-shrink-0 bg-blue-800 text-white flex flex-col fixed h-screen md:relative md:translate-x-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
-    <div class="p-6 text-2xl font-bold border-b border-blue-900 flex-shrink-0 flex items-center justify-between">
+<aside id="sidebar" class="w-64 flex-shrink-0 bg-primary text-white flex flex-col fixed h-screen md:relative md:translate-x-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
+    <div class="p-6 text-2xl font-bold border-b border-primary/80 flex-shrink-0 flex items-center justify-between">
         <span>St. Johns Admin</span>
-        <button id="closeSidebarBtn" class="md:hidden text-white hover:bg-blue-700 p-2 rounded" onclick="toggleSidebar()">
+        <button id="closeSidebarBtn" class="md:hidden text-white hover:bg-primary/80 p-2 rounded" onclick="toggleSidebar()">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -14,7 +14,7 @@
     <nav class="flex-1 overflow-y-auto">
         <ul>
             <li>
-                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('dashboard') ? 'bg-blue-700' : 'hover:bg-blue-700' }}" onclick="closeMobileSidebar()">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('dashboard') ? 'bg-primary/80' : 'hover:bg-primary/80' }}" onclick="closeMobileSidebar()">
                     <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-10 0h3" />
                     </svg>
@@ -69,17 +69,7 @@
                     QR Codes
                 </a>
             </li>
-            <li class="mt-auto border-t border-blue-900 pt-4">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="flex items-center px-6 py-3 rounded-r-lg transition hover:bg-blue-700 w-full text-left">
-                        <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        Logout
-                    </button>
-                </form>
-            </li>
+
         </ul>
     </nav>
 </aside>

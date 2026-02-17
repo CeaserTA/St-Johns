@@ -1,11 +1,10 @@
 @extends('layouts.dashboard_layout')
 
 @section('title', 'Dashboard')
-@section('header_title', 'Dashboard')
 
 @section('content')
 <!-- Summary Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
     <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
         <div class="flex items-start sm:items-center mb-4">
             <div class="p-2 sm:p-3 bg-blue-100 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
@@ -42,65 +41,127 @@
         <p class="text-2xl sm:text-3xl font-bold text-yellow-600">{{ $activeMembers }}</p>
         <p class="text-xs sm:text-sm text-gray-500 mt-1">Attended in last 3 months</p>
     </div>
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div class="flex items-start sm:items-center mb-4">
+            <div class="p-2 sm:p-3 bg-purple-100 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
+                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <h2 class="text-base sm:text-lg font-semibold text-gray-700">Engaged Users</h2>
+        </div>
+        <p class="text-2xl sm:text-3xl font-bold text-purple-600">{{ $membersWithInteraction }}</p>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $interactionPercentage }}% of members</p>
+    </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-    <a href="{{ route('admin.members') }}" class="bg-white p-4 sm:p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center">
-            <div class="p-2 sm:p-3 bg-blue-100 rounded-lg mb-3 sm:mb-0 sm:mr-4 flex-shrink-0">
-                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+<!-- Engagement and Registration Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+    <!-- Members Just Viewing Card -->
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div class="flex items-start sm:items-center mb-4">
+            <div class="p-2 sm:p-3 bg-indigo-100 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
+                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
             </div>
-            <div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Manage Members</h3>
-                <p class="text-xs sm:text-sm text-gray-500">View and manage church members</p>
-            </div>
+            <h2 class="text-base sm:text-lg font-semibold text-gray-700">Just Viewing</h2>
         </div>
-    </a>
+        <p class="text-2xl sm:text-3xl font-bold text-indigo-600">{{ $membersJustViewing }}</p>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $viewingPercentage }}% of members</p>
+    </div>
 
-    <a href="{{ route('admin.events') }}" class="bg-white p-4 sm:p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center">
-            <div class="p-2 sm:p-3 bg-green-100 rounded-lg mb-3 sm:mb-0 sm:mr-4 flex-shrink-0">
-                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+    <!-- Service Registrations Card -->
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div class="flex items-start sm:items-center mb-4">
+            <div class="p-2 sm:p-3 bg-red-100 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
+                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
             </div>
-            <div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Manage Updates</h3>
-                <p class="text-xs sm:text-sm text-gray-500">Create and manage events & announcements</p>
-            </div>
+            <h2 class="text-base sm:text-lg font-semibold text-gray-700">Service Registrations</h2>
         </div>
-    </a>
+        <p class="text-2xl sm:text-3xl font-bold text-red-600">{{ $totalServiceRegistrations }}</p>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total registrations</p>
+    </div>
 
-    <a href="{{ route('admin.givings') }}" class="bg-white p-4 sm:p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center">
-            <div class="p-2 sm:p-3 bg-purple-100 rounded-lg mb-3 sm:mb-0 sm:mr-4 flex-shrink-0">
-                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+    <!-- Event Registrations Card -->
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div class="flex items-start sm:items-center mb-4">
+            <div class="p-2 sm:p-3 bg-orange-100 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
+                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Giving Management</h3>
-                <p class="text-xs sm:text-sm text-gray-500">Track tithes and offerings</p>
-            </div>
+            <h2 class="text-base sm:text-lg font-semibold text-gray-700">Event Registrations</h2>
         </div>
-    </a>
+        <p class="text-2xl sm:text-3xl font-bold text-orange-600">{{ $totalEventRegistrations }}</p>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total event sign-ups</p>
+    </div>
+</div>
 
-    <a href="{{ route('admin.qr-codes') }}" class="bg-white p-4 sm:p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center">
-            <div class="p-2 sm:p-3 bg-yellow-100 rounded-lg mb-3 sm:mb-0 sm:mr-4 flex-shrink-0">
-                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
-                </svg>
-            </div>
-            <div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900">QR Codes</h3>
-                <p class="text-xs sm:text-sm text-gray-500">Generate QR codes for registration</p>
-            </div>
+ 
+<!-- Three Graph Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Member Distribution</h3>
+        <div style="position: relative; width: 100%; height: 220px; min-height: 180px;">
+            @php
+                $mdLabels = $memberDistributionLabels ?? [];
+                $mdData = $memberDistributionData ?? [];
+            @endphp
+            @if(is_array($mdLabels) && count($mdLabels) > 0)
+                <canvas id="memberDistributionChart" width="400" height="200"></canvas>
+            @else
+                <div class="flex items-center justify-center h-full text-gray-500">No member distribution data available</div>
+            @endif
         </div>
-    </a>
+    </div>
+
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Service Distribution</h3>
+        <div style="position: relative; width: 100%; height: 220px; min-height: 180px;">
+            @php
+                $sdLabels = $serviceDistributionLabels ?? [];
+                $sdData = $serviceDistributionData ?? [];
+            @endphp
+            @if(is_array($sdLabels) && count($sdLabels) > 0)
+                <canvas id="serviceDistributionChart" width="400" height="200"></canvas>
+            @else
+                <div class="flex items-center justify-center h-full text-gray-500">No service distribution data available</div>
+            @endif
+        </div>
+    </div>
+
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Active</h3>
+        <div style="position: relative; width: 100%; height: 220px; min-height: 180px;">
+            @php
+                // Prepare final labels/data for the Active card. If only `activeMembers` exists,
+                // compute the "other" slice as total - active so we can visualize the difference.
+                $aiLabelsFinal = null;
+                $aiDataFinal = null;
+
+                if (!empty($activeInactiveData) && is_array($activeInactiveData) && count($activeInactiveData) > 0) {
+                    $aiLabelsFinal = $activeInactiveLabels ?? ['Active','Inactive'];
+                    $aiDataFinal = $activeInactiveData;
+                } elseif (isset($activeMembers) && isset($totalMembers)) {
+                    $active = (int) $activeMembers;
+                    $total = (int) $totalMembers;
+                    $other = max(0, $total - $active);
+                    $aiLabelsFinal = ['Active', 'Other'];
+                    $aiDataFinal = [$active, $other];
+                }
+            @endphp
+
+            @if(is_array($aiDataFinal) && count($aiDataFinal) > 0)
+                <canvas id="activeInactiveChart" width="400" height="200"></canvas>
+            @else
+                <div class="flex items-center justify-center h-full text-gray-500">No active members data available</div>
+            @endif
+        </div>
+    </div>
 </div>
 
 <!-- Charts Section -->
@@ -214,6 +275,89 @@
                             }
                         }
                     }
+                }
+            });
+        }
+
+        // Member Distribution Chart (doughnut)
+        const memberCanvas = document.getElementById('memberDistributionChart');
+        if (memberCanvas) {
+            const mdLabels = {!! json_encode($memberDistributionLabels ?? []) !!};
+            const mdData = {!! json_encode($memberDistributionData ?? []) !!};
+            const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6'];
+            const memberCtx = memberCanvas.getContext('2d');
+            new Chart(memberCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: mdLabels,
+                    datasets: [{
+                        data: mdData,
+                        backgroundColor: palette.slice(0, mdLabels.length),
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // Service Distribution Chart (bar)
+        const serviceDistCanvas = document.getElementById('serviceDistributionChart');
+        if (serviceDistCanvas) {
+            const sdLabels = {!! json_encode($serviceDistributionLabels ?? []) !!};
+            const sdData = {!! json_encode($serviceDistributionData ?? []) !!};
+            const barColor = '#3b82f6';
+            const sdCtx = serviceDistCanvas.getContext('2d');
+            new Chart(sdCtx, {
+                type: 'bar',
+                data: {
+                    labels: sdLabels,
+                    datasets: [{
+                        label: 'Count',
+                        data: sdData,
+                        backgroundColor: sdLabels.map((_,i) => ['#3b82f6','#10b981','#f59e0b','#8b5cf6'][i % 4]),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Active vs Inactive Chart (doughnut) — use Blade-computed final values
+        const aiCanvas = document.getElementById('activeInactiveChart');
+        if (aiCanvas) {
+            const aiLabels = {!! json_encode($aiLabelsFinal ?? ['Active','Other']) !!};
+            const aiData = {!! json_encode($aiDataFinal ?? []) !!};
+            const aiCtx = aiCanvas.getContext('2d');
+            // Choose theme colors: green for active, gray for other; fall back to palette if more slices
+            const aiColors = (aiLabels.length === 2)
+                ? ['#10b981', '#9ca3af']
+                : ['#10b981','#3b82f6','#f59e0b','#8b5cf6','#ef4444'];
+
+            new Chart(aiCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: aiLabels,
+                    datasets: [{
+                        data: aiData,
+                        backgroundColor: aiColors.slice(0, aiLabels.length),
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
                 }
             });
         }
