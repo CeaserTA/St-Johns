@@ -1,315 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Give / Tithe ❤️ - St. Johns Church</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <!-- Custom styles for church theme -->
     @include('partials.theme-config')
 </head>
-
 <body class="bg-gray-50 min-h-screen">
 
     @include('partials.navbar')
+     
 
-
-    <!-- GIVING / TITHE SECTION – Clean, Balanced & Shorter -->
-    <section class="py-10 lg:py-10 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-
-            <!-- Header – Compact & Sacred -->
-            <div class="text-center mb-8">
-                <h1 class="text-4xl md:text-5xl font-black text-primary mb-4">
-                    Give / Tithe <span class="inline-block animate-pulse">❤️</span>
-                </h1>
-                <p class="text-xl text-gray-700 font-medium">
-                    Supporting God’s Work at St. John’s Parish Church Entebbe
-                </p>
-                <div class="w-24 h-1 bg-accent mx-auto mt-6"></div>
-            </div>
-
-            <!-- Scripture – Short & Gold Highlight -->
-            <div class="text-center mb-6 max-w-3xl mx-auto">
-                <blockquote class="text-xl italic font-medium text-primary leading-relaxed">
-                    “Each of you should give what you have decided in your heart to give,
-                    not reluctantly or under compulsion, for God loves a cheerful giver.”
-                </blockquote>
-                <cite class="block mt-4 text-sm font-bold text-secondary uppercase tracking-wider">
-                    — 2 Corinthians 9:7
-                </cite>
-            </div>
+    <!-- Header with Church Branding -->
+    <div class="church-gradient text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-1">
+                Give / Tithe <span class="heart-pulse inline-block">❤️</span>
+            </h1>
+            <p class="text-lg opacity-90">St. Johns Church - Supporting God's Work</p>
         </div>
-    </section>
+    </div>
 
-<!-- GIVING / TITHE SECTION – Perfectly Balanced (Form & Cards Match Height) -->
-<section class="py-10 lg:py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
+    <!-- Scripture Encouragement -->
+    <div class="bg-white border-l-4 border-purple-500 py-3">
+        <div class="container mx-auto px-4">
+            <blockquote class="scripture-text text-base text-gray-700 text-center">
+                "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."
+                <cite class="block mt-1 text-sm font-semibold text-primary">- 2 Corinthians 9:7</cite>
+            </blockquote>
+        </div>
+    </div>
 
-        <!-- Main Grid: Form left + Cards right (balanced) -->
-        <div class="grid lg:grid-cols-3 gap-10 lg:gap-12">
-
-            <!-- LEFT: Form – Tighter spacing to reduce height -->
-            <div class="lg:col-span-2 bg-white rounded-3xl shadow-xl p-6 lg:p-8 border-2 border-accent/20">
-                <h2 class="text-3xl font-bold text-primary text-center mb-6">
-                    Let Us Know Your Giving
-                </h2>
-
-                <!-- Messages -->
-                <div id="message-container" class="mb-5 hidden">
-                    <!-- your success/error divs -->
+    <!-- Main Giving Form -->
+    <div class="container mx-auto px-4 py-4">
+        <div class="max-w-7xl mx-auto">
+            <!-- Success/Error Messages -->
+            <div id="message-container" class="mb-4 hidden">
+                <div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded mb-3 hidden">
+                    <strong>Thank you!</strong> <span id="success-text"></span>
                 </div>
+                <div id="error-message" class="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-3 hidden">
+                    <strong>Error:</strong> <span id="error-text"></span>
+                </div>
+            </div>
 
-                <form id="giving-form" class="space-y-5">
+            <!-- Two Column Layout: Form on Left, Cards on Right -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Left Column: Giving Form (2/3 width) -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-lg p-4 md:p-5">
+                <form id="giving-form" class="space-y-4">
                     @csrf
-
-                    <!-- Guest / Member Info -->
+                    
+                    <!-- Member Status Check -->
                     @auth
                         @if(auth()->user()->member)
-                            <div class="bg-green-50 border border-green-200 rounded-2xl p-4 text-center text-sm">
-                                Welcome back, <strong>{{ auth()->user()->member->full_name }}</strong>!
-                                Your giving will be linked to your account.
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <p class="text-blue-800 text-sm">
+                                    <strong>Welcome, {{ auth()->user()->member->full_name }}!</strong>
+                                    Your giving will be automatically linked to your member account.
+                                </p>
                             </div>
                         @else
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 text-center text-sm">
-                                Welcome, {{ auth()->user()->name }}!
-                                Please fill in your details below.
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <p class="text-yellow-800 text-sm">
+                                    <strong>Welcome, {{ auth()->user()->name }}!</strong>
+                                    Since you don't have a member profile, please fill in your details below.
+                                </p>
                             </div>
                         @endif
                     @endauth
 
-                    <!-- Guest Fields -->
+                    <!-- Guest Information (shown if not logged in as member) -->
                     @if(!auth()->check() || !auth()->user()->member)
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-bold text-primary border-b border-gray-200 pb-2">
-                                Your Information
-                            </h3>
-
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-primary mb-1">Full Name *</label>
-                                    <input type="text" name="guest_name" required
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-primary mb-1">Email</label>
-                                    <input type="email" name="guest_email"
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                           placeholder="For receipt & confirmation">
-                                </div>
-                            </div>
-
+                    <div class="guest-info space-y-3">
+                        <h3 class="text-base font-semibold text-gray-800 border-b pb-1">Your Information</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-bold text-primary mb-1">Phone Number</label>
-                                <input type="tel" name="guest_phone"
-                                       class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                       placeholder="For mobile money / updates">
+                                <label for="guest_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Full Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="guest_name" name="guest_name" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="guest_email" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email Address
+                                </label>
+                                <input type="email" id="guest_email" name="guest_email"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="For receipt delivery">
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="guest_phone" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Phone Number
+                                </label>
+                                <input type="tel" id="guest_phone" name="guest_phone"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="For mobile money payments">
+                            </div>
+                        </div>
+                    </div>
                     @endif
 
                     <!-- Giving Details -->
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-bold text-primary border-b border-gray-200 pb-2">
-                            Giving Details
-                        </h3>
+                    <div class="giving-details space-y-3">
+                        <h3 class="text-base font-semibold text-gray-800 border-b pb-1">Giving Details</h3>
+                        
+                        <!-- Giving Type -->
+                        <div>
+                            <label for="giving_type" class="block text-sm font-medium text-gray-700 mb-1">
+                                Type of Giving <span class="text-red-500">*</span>
+                            </label>
+                            <select id="giving_type" name="giving_type" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select giving type</option>
+                                <option value="tithe">Tithe (10% of income)</option>
+                                <option value="offering">Offering (Freewill gift)</option>
+                                <option value="donation">Donation (Specific cause)</option>
+                                <option value="special_offering">Special Offering</option>
+                            </select>
+                        </div>
 
-                        <div class="grid md:grid-cols-2 gap-4">
+                        <!-- Amount -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Amount <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="amount" name="amount" required min="100" step="100"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       placeholder="Enter amount">
+                            </div>
                             <div>
-                                <label class="block text-sm font-bold text-primary mb-1">Type of Giving *</label>
-                                <select name="giving_type" required
-                                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
-                                    <!-- options unchanged -->
+                                <label for="currency" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Currency
+                                </label>
+                                <select id="currency" name="currency"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="UGX">UGX</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
                                 </select>
                             </div>
-
-                            <div>
-                                <label class="block text-sm font-bold text-primary mb-1">Amount (UGX) *</label>
-                                <input type="number" name="amount" required min="1000" step="100"
-                                       class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                       placeholder="e.g. 50000">
-                            </div>
                         </div>
 
+                        <!-- Purpose -->
                         <div>
-                            <label class="block text-sm font-bold text-primary mb-1">Purpose / Designation</label>
-                            <input type="text" name="purpose"
-                                   class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                   placeholder="e.g. Building Fund, Missions, Youth Ministry">
+                            <label for="purpose" class="block text-sm font-medium text-gray-700 mb-1">
+                                Purpose / Designation
+                            </label>
+                            <input type="text" id="purpose" name="purpose"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g., Building Fund, Missions, Youth Ministry">
                         </div>
 
+                        <!-- Notes -->
                         <div>
-                            <label class="block text-sm font-bold text-primary mb-1">Personal Message / Prayer Request</label>
-                            <textarea name="notes" rows="2"
-                                      class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition resize-none"
+                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">
+                                Personal Message / Prayer Request
+                            </label>
+                            <textarea id="notes" name="notes" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                       placeholder="Share your heart or prayer request (optional)"></textarea>
                         </div>
                     </div>
 
                     <!-- Payment Method -->
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-bold text-primary border-b border-gray-200 pb-2">
-                            How would you like to give?
-                        </h3>
+                    <div class="payment-method space-y-3">
+                        <h3 class="text-base font-semibold text-gray-800 border-b pb-1">Payment Method</h3>
+                        
+                        <div>
+                            <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">
+                                How would you like to give? <span class="text-red-500">*</span>
+                            </label>
+                            <select id="payment_method" name="payment_method" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select payment method</option>
+                                <option value="cash">Cash (In-person)</option>
+                                <option value="mobile_money">Mobile Money (MTN/Airtel)</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="check">Check</option>
+                            </select>
+                        </div>
 
-                        <!-- your radio buttons (unchanged) -->
-                        <!-- ... -->
+                        <!-- Payment Details (shown based on method) -->
+                        <div id="payment-details" class="hidden space-y-3">
+                            <!-- Mobile Money Details -->
+                            <div id="mobile-money-details" class="hidden">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <h4 class="font-semibold text-blue-800 mb-1 text-sm">Mobile Money Instructions</h4>
+                                    <p class="text-blue-700 text-xs mb-2">
+                                        Send money to: <strong>0700-123-456</strong> (Church Account)<br>
+                                        Then enter your transaction reference below.
+                                    </p>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="payment_provider" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Provider
+                                        </label>
+                                        <select id="payment_provider" name="payment_provider"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                            <option value="">Select provider</option>
+                                            <option value="MTN">MTN Mobile Money</option>
+                                            <option value="Airtel">Airtel Money</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="payment_account" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Your Phone Number
+                                        </label>
+                                        <input type="tel" id="payment_account" name="payment_account"
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                               placeholder="0700-000-000">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="transaction_reference" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Transaction Reference <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="transaction_reference" name="transaction_reference"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                           placeholder="Enter transaction ID from SMS">
+                                </div>
+                            </div>
 
-                        <div id="payment-instructions" class="hidden mt-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
-                            <!-- JS-filled -->
+                            <!-- Bank Transfer Details -->
+                            <div id="bank-transfer-details" class="hidden">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <h4 class="font-semibold text-green-800 mb-1 text-sm">Bank Transfer Details</h4>
+                                    <div class="text-green-700 text-xs space-y-1">
+                                        <p><strong>Bank:</strong> Stanbic Bank Uganda</p>
+                                        <p><strong>Account Name:</strong> St. Johns Church</p>
+                                        <p><strong>Account Number:</strong> 9030012345678</p>
+                                        <p><strong>Branch:</strong> Kampala Main Branch</p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="transaction_reference_bank" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Transaction Reference
+                                    </label>
+                                    <input type="text" id="transaction_reference_bank" name="transaction_reference"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                           placeholder="Bank transaction reference">
+                                </div>
+                            </div>
+
+                            <!-- Cash Details -->
+                            <div id="cash-details" class="hidden">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <h4 class="font-semibold text-yellow-800 mb-1 text-sm">Cash Giving</h4>
+                                    <p class="text-yellow-700 text-xs">
+                                        Please bring your cash offering to the church during service or office hours. 
+                                        Your giving will be confirmed immediately upon submission.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Submit -->
-                    <button type="submit"
-                            class="w-full bg-secondary hover:bg-accent text-white font-bold text-xl py-5 rounded-2xl shadow-xl hover:shadow-accent/30 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-3 mt-4">
-                        <span>Submit My Giving</span>
-                        <svg class="w-6 h-6 group-hover:translate-x-2 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </button>
+                    <!-- Submit Button -->
+                    <div class="text-center pt-4">
+                        <button type="submit" id="submit-btn"
+                                class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                            <span id="submit-text">Submit My Giving ❤️</span>
+                            <span id="submit-loading" class="hidden">Processing...</span>
+                        </button>
+                    </div>
                 </form>
             </div>
+        </div>
 
-            <!-- RIGHT: Cards – Stacked vertically, slightly taller to match form -->
-            <div class="flex flex-col gap-8 lg:min-h-[680px]"> <!-- min-h forces balance -->
-                <!-- Security Card -->
-                <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-accent/20 flex-1">
-                    <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-3">
-                        <span class="text-accent text-2xl">🔒</span>
-                        Secure & Transparent
-                    </h3>
-                    <ul class="space-y-2.5 text-sm text-gray-700">
-                        <li class="flex items-start gap-2.5">
-                            <span class="text-accent text-lg">✓</span>
-                            All transactions encrypted & secure
-                        </li>
-                        <li class="flex items-start gap-2.5">
-                            <span class="text-accent text-lg">✓</span>
-                            Instant digital receipt
-                        </li>
-                        <li class="flex items-start gap-2.5">
-                            <span class="text-accent text-lg">✓</span>
-                            Full financial transparency reports
-                        </li>
-                    </ul>
-                </div>
+                <!-- Right Column: Information Cards (1/3 width) -->
+                <div class="lg:col-span-1 space-y-4">
+                    <!-- Security Card -->
+                    <div class="bg-white rounded-lg shadow-lg p-4 sticky top-4">
+                        <h3 class="text-base font-semibold text-gray-800 mb-2 flex items-center">
+                            <span class="text-xl mr-2">🔒</span> Secure & Transparent
+                        </h3>
+                        <ul class="text-xs text-gray-600 space-y-1.5">
+                            <li>• All transactions are encrypted and secure</li>
+                            <li>• You'll receive a receipt for your records</li>
+                            <li>• Financial transparency reports available</li>
+                            <li>• Tax-deductible receipts provided</li>
+                        </ul>
+                    </div>
 
-                <!-- Impact Card -->
-                <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-accent/20 flex-1">
-                    <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-3">
-                        <span class="text-accent text-2xl">🌟</span>
-                        Your Impact
-                    </h3>
-                    <ul class="space-y-2.5 text-sm text-gray-700">
-                        <li class="flex items-start gap-2.5">
-                            <span class="text-accent text-lg">✓</span>
-                            Local community outreach & food programs
-                        </li>
-                        <li class="flex items-start gap-2.5">
-                            <span class="text-accent text-lg">✓</span>
-                            Youth, children & education support
-                        </li>
-                        <li class="flex items-start gap-2.5">
-                            <span class="text-accent text-lg">✓</span>
-                            Church maintenance & missions
-                        </li>
-                    </ul>
+                    <!-- Impact Card -->
+                    <div class="bg-white rounded-lg shadow-lg p-4">
+                        <h3 class="text-base font-semibold text-gray-800 mb-2 flex items-center">
+                            <span class="text-xl mr-2">🌟</span> Your Impact
+                        </h3>
+                        <ul class="text-xs text-gray-600 space-y-1.5">
+                            <li>• Supporting local community outreach</li>
+                            <li>• Funding youth and children's programs</li>
+                            <li>• Maintaining church facilities</li>
+                            <li>• Supporting missions and evangelism</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
+            <!-- Contact Information -->
+            <div class="text-center mt-4 text-gray-600">
+                <p class="text-xs">
+                    Questions about giving? Contact us at 
+                    <a href="mailto:giving@stjohnschurch.org" class="text-primary hover:underline">giving@stjohnschurch.org</a>
+                    or call <a href="tel:+256700123456" class="text-primary hover:underline">+256 700 123 456</a>
+                </p>
+            </div>
         </div>
-
-        <!-- Contact Note -->
-        <div class="text-center mt-12 text-gray-600">
-            <p class="text-lg">
-                Questions? Contact us at 
-                <a href="mailto:giving@stjohnsentebbe.org" class="text-secondary font-bold hover:text-accent transition">
-                    giving@stjohnsentebbe.org
-                </a>
-                or call 
-                <a href="tel:+256700123456" class="text-secondary font-bold hover:text-accent transition">
-                    +256 700 123 456
-                </a>
-            </p>
-            <p class="mt-3 text-sm italic text-gray-500">
-                “God loves a cheerful giver” — thank you for your generosity.
-            </p>
-        </div>
-    </div>
-</section>
-
-    <!-- Contact Note – Below both columns -->
-    <div class="text-center mt-12 mb-4 text-gray-600">
-        <p class="text-lg">
-            Questions? Contact us at
-            <a href="mailto:giving@stjohnsentebbe.org" class="text-secondary font-bold hover:text-accent transition">
-                giving@stjohnsentebbe.org
-            </a>
-            or call
-            <a href="tel:+256700123456" class="text-secondary font-bold hover:text-accent transition">
-                +256 700 123 456
-            </a>
-        </p>
-        <p class="mt-3 text-sm italic text-gray-500">
-            “God loves a cheerful giver” — thank you for your generosity.
-        </p>
-    </div>
     </div>
 
     <!-- JavaScript for Form Handling -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('giving-form');
-            const paymentMethod = document.getElementById('payment_method');
-            const instructionsDiv = document.getElementById('payment-instructions');
+            const paymentMethodSelect = document.getElementById('payment_method');
+            const paymentDetails = document.getElementById('payment-details');
+            const submitBtn = document.getElementById('submit-btn');
+            const submitText = document.getElementById('submit-text');
+            const submitLoading = document.getElementById('submit-loading');
 
-            if (paymentMethod) {
-                paymentMethod.addEventListener('change', (e) => {
-                    const method = e.target.value;
-                    instructionsDiv.innerHTML = '';
+            // Show/hide payment details based on method
+            paymentMethodSelect.addEventListener('change', function() {
+                const method = this.value;
+                const allDetails = document.querySelectorAll('[id$="-details"]');
+                
+                // Hide all payment detail sections
+                allDetails.forEach(detail => detail.classList.add('hidden'));
+                paymentDetails.classList.add('hidden');
 
+                if (method) {
+                    paymentDetails.classList.remove('hidden');
+                    
+                    // Show specific payment method details
                     if (method === 'mobile_money') {
-                        instructionsDiv.innerHTML = `
-                        <div class="bg-red-50 border border-secondary/30 rounded-2xl p-6">
-                        <h4 class="font-bold text-secondary mb-3">Mobile Money Instructions</h4>
-                        <p class="text-gray-700">Send to: <strong>0700-123-456</strong> (St. John’s Church)</p>
-                        <p class="text-sm text-gray-600 mt-2">Enter transaction ID below</p>
-                        </div>
-                        `;
+                        document.getElementById('mobile-money-details').classList.remove('hidden');
                     } else if (method === 'bank_transfer') {
-                        instructionsDiv.innerHTML = `
-                        <div class="bg-red-50 border border-secondary/30 rounded-2xl p-6">
-                        <h4 class="font-bold text-secondary mb-3">Bank Transfer Details</h4>
-                        <p class="text-gray-700"><strong>Bank:</strong> Stanbic Bank Uganda</p>
-                        <p class="text-gray-700"><strong>Account:</strong> 9030012345678</p>
-                        <p class="text-gray-700"><strong>Name:</strong> St. John's Parish Church</p>
-                        </div>
-                        `;
+                        document.getElementById('bank-transfer-details').classList.remove('hidden');
+                    } else if (method === 'cash') {
+                        document.getElementById('cash-details').classList.remove('hidden');
                     }
-
-                    if (method) instructionsDiv.classList.remove('hidden');
-                    else instructionsDiv.classList.add('hidden');
-                });
-            }
-
-            // Form submit (your existing code + improved UX)
-            form?.addEventListener('submit', (e) => {
-                // Your existing fetch logic here...
-                // Add loading state
-                const btn = form.querySelector('button[type="submit"]');
-                btn.disabled = true;
-                btn.innerHTML = 'Processing...';
+                }
             });
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                submitText.classList.add('hidden');
+                submitLoading.classList.remove('hidden');
+                submitBtn.disabled = true;
+
+                // Prepare form data
+                const formData = new FormData(form);
+                
+                // Submit via fetch
+                fetch('{{ route("giving.store") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showMessage('success', data.message);
+                        
+                        // Show next steps if available
+                        if (data.next_steps) {
+                            setTimeout(() => {
+                                showMessage('info', data.next_steps);
+                            }, 2000);
+                        }
+                        
+                        form.reset();
+                        paymentDetails.classList.add('hidden');
+                        
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        let errorMessage = data.message || 'An error occurred. Please try again.';
+                        
+                        // Handle validation errors
+                        if (data.errors) {
+                            const errorList = Object.entries(data.errors)
+                                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                                .join('\n');
+                            errorMessage += '\n\nValidation Errors:\n' + errorList;
+                        }
+                        
+                        showMessage('error', errorMessage);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    let errorMessage = 'An error occurred while processing your giving. Please try again.';
+                    
+                    // Provide more specific error messages based on error type
+                    if (error.message.includes('422')) {
+                        errorMessage = 'Please check your input and try again. Some required fields may be missing or invalid.';
+                    } else if (error.message.includes('500')) {
+                        errorMessage = 'A server error occurred. Please try again in a few moments or contact support if the problem persists.';
+                    } else if (error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Network error. Please check your internet connection and try again.';
+                    }
+                    
+                    showMessage('error', errorMessage);
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitText.classList.remove('hidden');
+                    submitLoading.classList.add('hidden');
+                    submitBtn.disabled = false;
+                });
+            });
+
+            function showMessage(type, message) {
+                const container = document.getElementById('message-container');
+                const successDiv = document.getElementById('success-message');
+                const errorDiv = document.getElementById('error-message');
+                const successText = document.getElementById('success-text');
+                const errorText = document.getElementById('error-text');
+
+                // Hide all messages first
+                successDiv.classList.add('hidden');
+                errorDiv.classList.add('hidden');
+
+                // Show appropriate message
+                if (type === 'success') {
+                    successText.innerHTML = message.replace(/\n/g, '<br>');
+                    successDiv.classList.remove('hidden');
+                } else if (type === 'info') {
+                    // Show info messages as success style but with blue color
+                    successText.innerHTML = message.replace(/\n/g, '<br>');
+                    successDiv.classList.remove('hidden');
+                    successDiv.className = successDiv.className.replace('bg-green-100 border-green-400 text-green-700', 'bg-blue-100 border-blue-400 text-blue-700');
+                } else {
+                    errorText.innerHTML = message.replace(/\n/g, '<br>');
+                    errorDiv.classList.remove('hidden');
+                }
+
+                container.classList.remove('hidden');
+                
+                // Scroll to message
+                container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Auto-hide success messages after 8 seconds
+                if (type === 'success' || type === 'info') {
+                    setTimeout(() => {
+                        container.classList.add('hidden');
+                    }, 8000);
+                }
+            }
         });
     </script>
-
     @include('partials.footer')
 </body>
-
 </html>
