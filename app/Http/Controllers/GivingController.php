@@ -18,7 +18,7 @@ class GivingController extends Controller
      */
     public function index()
     {
-        return view('giving.index');
+        return view('give');
     }
 
     /**

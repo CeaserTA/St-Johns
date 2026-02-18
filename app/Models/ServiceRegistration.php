@@ -30,6 +30,19 @@ class ServiceRegistration extends Model
     ];
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            // Notify admins of new service registration
+            Notification::notifyServiceRegistration($model);
+        });
+    }
+
+    /**
      * Get the service that this registration belongs to
      */
     public function service()

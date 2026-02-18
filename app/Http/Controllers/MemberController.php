@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\ServiceRegistration;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -19,6 +20,30 @@ class MemberController extends Controller
         $totalMembers = Member::count();
         $newRegistrations = Member::where('created_at', '>=', Carbon::now()->startOfMonth())->count();
         $activeMembers = Member::where('created_at', '>=', Carbon::now()->subMonths(3))->count();
+        
+        // Calculate engagement metrics
+        $membersWithInteraction = DB::table('members')
+            ->leftJoin('event_registrations', 'members.id', '=', 'event_registrations.id')
+            ->leftJoin('service_registrations', 'members.id', '=', 'service_registrations.member_id')
+            ->leftJoin('givings', 'members.id', '=', 'givings.member_id')
+            ->where(function($query) {
+                $query->whereNotNull('event_registrations.id')
+                    ->orWhereNotNull('service_registrations.id')
+                    ->orWhereNotNull('givings.id');
+            })
+            ->distinct('members.id')
+            ->count('members.id');
+        
+        $membersJustViewing = $totalMembers - $membersWithInteraction;
+        $interactionPercentage = $totalMembers > 0 ? round(($membersWithInteraction / $totalMembers) * 100, 1) : 0;
+        $viewingPercentage = $totalMembers > 0 ? round(($membersJustViewing / $totalMembers) * 100, 1) : 0;
+        
+        // Calculate service registrations count
+        $totalServiceRegistrations = DB::table('service_registrations')->count();
+        
+        // Calculate event registrations count
+        $totalEventRegistrations = DB::table('event_registrations')->count();
+        
         $monthlyNewMembers = [];
         $monthLabels = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -31,9 +56,37 @@ class MemberController extends Controller
         }
 
         // Get latest service registrations to show on the admin dashboard
-        $recentServiceRegistrations = ServiceRegistration::latest()->take(10)->get();
+        $recentServiceRegistrations = ServiceRegistration::with('service', 'member')->latest()->take(10)->get();
+        
+        // Aggregate service registrations by service
+        $serviceRegistrationCounts = ServiceRegistration::with('service')
+            ->select('service_id')
+            ->groupBy('service_id')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'service' => $item->service->name ?? 'Unknown',
+                    'count' => ServiceRegistration::where('service_id', $item->service_id)->count()
+                ];
+            });
 
-        return view('dashboard', compact('totalMembers', 'newRegistrations', 'activeMembers', 'monthlyNewMembers', 'monthLabels', 'recentServiceRegistrations'));
+        // Prepare service distribution arrays for charts
+        $serviceDistributionLabels = $serviceRegistrationCounts->pluck('service')->toArray();
+        $serviceDistributionData = $serviceRegistrationCounts->pluck('count')->toArray();
+
+        // Member distribution by cell (or other grouping) for charts
+        $memberDistribution = Member::select('cell', DB::raw('count(*) as count'))
+            ->groupBy('cell')
+            ->get();
+        $memberDistributionLabels = $memberDistribution->pluck('cell')->map(function($v){ return ucfirst($v); })->toArray();
+        $memberDistributionData = $memberDistribution->pluck('count')->toArray();
+
+        return view('dashboard', compact(
+            'totalMembers', 'newRegistrations', 'activeMembers', 'monthlyNewMembers', 'monthLabels', 'recentServiceRegistrations', 'serviceRegistrationCounts',
+            'serviceDistributionLabels', 'serviceDistributionData', 'memberDistributionLabels', 'memberDistributionData',
+            'membersWithInteraction', 'membersJustViewing', 'interactionPercentage', 'viewingPercentage',
+            'totalServiceRegistrations', 'totalEventRegistrations'
+        ));
     }
 
     /**

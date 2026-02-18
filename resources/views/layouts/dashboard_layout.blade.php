@@ -1,117 +1,200 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>@yield('title', 'Dashboard') - St. John's Parish Church Entebbe</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css">
-     @include('partials.theme-config')
+    @include('partials.theme-config')
+
+    <!-- Dark Mode Script -->
+    <script>
+        // Check for saved theme preference or default to 'light'
+        const theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.classList.add(theme);
+    </script>
 </head>
-<body class="bg-background-light font-display text-text-light">
-    <div class="flex h-screen overflow-hidden bg-gray-100">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-blue-800 text-white flex flex-col fixed h-screen">
-            <div class="p-6 text-2xl font-bold border-b border-blue-900 flex-shrink-0">
-                St. Johns Admin
-            </div>
-            <nav class="flex-1 overflow-y-auto">
-                <ul>
-                    <li>
-                        <a href="{{ route('dashboard') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('dashboard') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-10 0h3" />
-                            </svg>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.members') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.members*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                            Members
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.services') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.services*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                            Services
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.events') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.events*') || request()->routeIs('admin.announcements*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                            </svg>
-                            Updates
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.groups') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.groups*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m0-4a4 4 0 110-8 4 4 0 010 8z" />
-                            </svg>
-                            Groups
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.givings') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.givings*') || request()->routeIs('admin.giving*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Giving ❤️
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.qr-codes') }}" class="flex items-center px-6 py-3 rounded-r-lg transition {{ request()->routeIs('admin.qr-codes*') ? 'bg-blue-700' : 'hover:bg-blue-700' }}">
-                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
-                            </svg>
-                            QR Codes
-                        </a>
-                    </li>
-                    <li class="mt-auto border-t border-blue-900 pt-4">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="flex items-center px-6 py-3 rounded-r-lg transition hover:bg-blue-700 w-full text-left">
-                                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-        <!-- Main Content Area with Left Margin for Fixed Sidebar -->
-        <div class="ml-64 flex-1 flex flex-col overflow-hidden">
+
+<body
+    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-display min-h-screen transition-colors duration-300">
+    <div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-background-dark transition-colors duration-200">
+        <x-sidebar />
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
             <!-- Top Bar -->
-            <header class="flex items-center justify-between px-6 py-4 bg-white shadow-sm">
-                <h1 class="text-xl font-bold text-gray-800">@yield('header_title', 'St Johns Church Admin Panel')</h1>
+            <header
+                 class="flex items-center justify-between px-5 py-4 bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-700 shadow-md flex-shrink-0 transition-colors duration-300">
+                <!-- Left Section: Hamburger + Search Bar – Sacred & Modern -->
+                <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0">
+                    <!-- Hamburger Menu for Mobile -->
+                    <button id="hamburgerBtn"
+                        class="md:hidden inline-flex items-center justify-center p-2.5 rounded-xl text-primary hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all duration-200 flex-shrink-0">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <!-- Search Bar – Premium & Subtle -->
+                    <div class="hidden sm:flex items-center flex-1 max-w-md">
+                        <div class="w-full relative">
+                            <input type="text" placeholder="Search members, events, givings..."
+                                class="w-full pl-5 pr-12 py-3 rounded-xl border border-gray-200 focus:border-accent focus:ring-4 focus:ring-accent/20 bg-white text-primary placeholder-gray-500 text-base transition-all duration-200 shadow-sm hover:shadow" />
+                            <button type="submit"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-accent hover:text-secondary transition-colors">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Right Section: Theme Toggle + Notification + Logout – Dark Mode Fixed -->
+<div class="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle"
+            class="p-2.5 rounded-xl text-text-light dark:text-text-dark hover:bg-accent/10 dark:hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all duration-200"
+            title="Toggle Dark/Light Mode">
+        <svg id="sunIcon" class="h-7 w-7 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg id="moonIcon" class="h-7 w-7 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
+    <!-- Notification Icon -->
+    <button id="notificationBtn"
+            class="relative p-2.5 rounded-xl text-text-light dark:text-text-dark hover:bg-accent/10 dark:hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all duration-200"
+            title="Notifications">
+        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span id="notificationBadge"
+              class="absolute -top-1 -right-1 bg-secondary text-white text-xs font-bold min-w-[20px] h-5 px-1.5 rounded-full flex items-center justify-center shadow-sm hidden">
+            0
+        </span>
+    </button>
+
+    <!-- Logout Button -->
+    <form method="POST" action="{{ route('logout') }}" class="inline">
+        @csrf
+        <button type="submit"
+                class="px-5 sm:px-6 py-2.5 text-sm font-bold text-white bg-secondary hover:bg-accent hover:text-primary rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-accent/30">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span class="hidden sm:inline">Logout</span>
+        </button>
+    </form>
+</div>
             </header>
 
             <!-- Main Area -->
-            <main class="flex-1 p-6 overflow-y-auto bg-gray-50">
-                @if ($message = Session::get('success'))
-                    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded" role="alert">
-                        <span>{{ $message }}</span>
-                    </div>
-                @endif
-                @if ($message = Session::get('error'))
-                    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded" role="alert">
-                        <span>{{ $message }}</span>
-                    </div>
-                @endif
-                @yield('content')
+            <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-background-dark transition-colors duration-200">
+                <div class="w-full px-4 sm:px-6 py-4 sm:py-6">
+                    @if ($message = Session::get('success'))
+                        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded" role="alert">
+                            <span>{{ $message }}</span>
+                        </div>
+                    @endif
+                    @if ($message = Session::get('error'))
+                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded" role="alert">
+                            <span>{{ $message }}</span>
+                        </div>
+                    @endif
+                    @yield('content')
+                </div>
             </main>
         </div>
     </div>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            htmlElement.classList.remove(currentTheme);
+            htmlElement.classList.add(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Close sidebar when clicking overlay
+        document.getElementById('sidebarOverlay').addEventListener('click', function () {
+            closeMobileSidebar();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
+        });
+
+        // Fetch notification count on page load
+        function fetchNotificationCount() {
+            fetch('{{ route("notifications.unread-count") }}', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notificationBadge');
+                    if (data.count > 0) {
+                        badge.textContent = data.count > 9 ? '9+' : data.count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+
+        // Load notifications on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchNotificationCount();
+
+            // Refresh notification count every 30 seconds
+            setInterval(fetchNotificationCount, 30000);
+        });
+
+        // Add click handler to notification button to fetch unread notifications
+        document.getElementById('notificationBtn').addEventListener('click', function () {
+            fetchNotificationCount();
+        });
+    </script>
 </body>
+
 </html>

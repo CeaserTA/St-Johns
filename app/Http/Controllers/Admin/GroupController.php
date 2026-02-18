@@ -8,11 +8,24 @@ use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $groups = Group::with('members')->ordered()->get();
         $members = \App\Models\Member::orderBy('full_name')->get();
-        return view('admin.groups_dashboard', compact('groups', 'members'));
+
+        // Get filter options
+        $filterOptions = [
+            'meeting_days' => Group::select('meeting_day')->distinct()->whereNotNull('meeting_day')->pluck('meeting_day')->toArray(),
+        ];
+
+        // Get summary statistics
+        $stats = [
+            'total_groups' => Group::count(),
+            'total_members_in_groups' => \App\Models\Member::whereHas('groups')->count(),
+            'average_group_size' => Group::withCount('members')->get()->avg('members_count') ?? 0,
+        ];
+
+        return view('admin.groups_dashboard', compact('groups', 'members', 'filterOptions', 'stats'));
     }
 
     public function store(Request $request)

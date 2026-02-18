@@ -66,150 +66,150 @@
 
 
     <!-- Main Content -->
-<main class="flex-1 p-8 overflow-y-auto">
-    <header class="mb-8 flex items-center justify-between flex-wrap">
-        <h1 class="text-2xl font-semibold">Add New Member</h1>
-        <a href="{{ route('members') }}" class="text-blue-600 hover:underline text-sm mt-2 md:mt-0">
-            ← Back to Members
-        </a>
-    </header>
+    <main class="flex-1 p-8 overflow-y-auto">
+        <header class="mb-8 flex items-center justify-between flex-wrap">
+            <h1 class="text-2xl font-semibold">Add New Member</h1>
+            <a href="{{ route('members') }}" class="text-blue-600 hover:underline text-sm mt-2 md:mt-0">
+                ← Back to Members
+            </a>
+        </header>
 
-    <div class="w-full max-w-4xl bg-white rounded-lg shadow p-6 mx-auto">
-        <!-- Display validation errors -->
-        @if ($errors->any())
-            <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                <h4 class="font-bold">Please fix the following errors:</h4>
-                <ul class="mt-2 list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <!-- Display success message -->
-        @if (session('success'))
-            <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @if(request()->query('join_group'))
-                <input type="hidden" name="join_group" value="{{ request()->query('join_group') }}">
+        <div class="w-full max-w-4xl bg-white rounded-lg shadow p-6 mx-auto">
+            <!-- Display validation errors -->
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <h4 class="font-bold">Please fix the following errors:</h4>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700">Full Name</label>
-                    <input type="text" name="fullname" value="{{ old('fullname') }}"
-                           class="w-full p-2 border rounded @error('fullname') border-red-500 @enderror" required>
-                    @error('fullname')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Date of Birth</label>
-                    <input type="date" name="dateOfBirth" value="{{ old('dateOfBirth') }}"
-                           class="w-full p-2 border rounded @error('dateOfBirth') border-red-500 @enderror" required>
-                    @error('dateOfBirth')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Gender</label>
-                    <select name="gender" class="w-full p-2 border rounded @error('gender') border-red-500 @enderror" required>
-                        <option value="">-- Select Gender --</option>
-                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                    </select>
-                    @error('gender')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Marital Status</label>
-                    <select name="maritalStatus" class="w-full p-2 border rounded @error('maritalStatus') border-red-500 @enderror" required>
-                        <option value="">-- Select Status --</option>
-                        <option value="single" {{ old('maritalStatus') == 'single' ? 'selected' : '' }}>Single</option>
-                        <option value="married" {{ old('maritalStatus') == 'married' ? 'selected' : '' }}>Married</option>
-                        <option value="divorced" {{ old('maritalStatus') == 'divorced' ? 'selected' : '' }}>Divorced</option>
-                        <option value="widowed" {{ old('maritalStatus') == 'widowed' ? 'selected' : '' }}>Widowed</option>
-                    </select>
-                    @error('maritalStatus')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Phone</label>
-                    <input type="text" name="phone" value="{{ old('phone') }}"
-                           class="w-full p-2 border rounded @error('phone') border-red-500 @enderror" required>
-                    @error('phone')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Email</label>
-                          <input type="email" name="email" value="{{ old('email', request()->query('email')) }}"
-                           class="w-full p-2 border rounded @error('email') border-red-500 @enderror">
-                    @error('email')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700">Address</label>
-                    <input type="text" name="address" value="{{ old('address') }}"
-                           class="w-full p-2 border rounded @error('address') border-red-500 @enderror">
-                    @error('address')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Date Joined</label>
-                    <input type="date" name="dateJoined" value="{{ old('dateJoined', date('Y-m-d')) }}"
-                           class="w-full p-2 border rounded @error('dateJoined') border-red-500 @enderror" required>
-                    @error('dateJoined')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-gray-700">Cell (Zone)</label>
-                    <select name="cell" class="w-full p-2 border rounded @error('cell') border-red-500 @enderror" required>
-                        <option value="">-- Select Cell --</option>
-                        <option value="north" {{ old('cell') == 'north' ? 'selected' : '' }}>North</option>
-                        <option value="east" {{ old('cell') == 'east' ? 'selected' : '' }}>East</option>
-                        <option value="south" {{ old('cell') == 'south' ? 'selected' : '' }}>South</option>
-                        <option value="west" {{ old('cell') == 'west' ? 'selected' : '' }}>West</option>
-                    </select>
-                    @error('cell')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700">Profile Image</label>
-                    <input type="file" name="profileImage" accept="image/*" id="profileImageInput"
-                           class="w-full p-2 border rounded @error('profileImage') border-red-500 @enderror">
-                    <p class="text-xs text-gray-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF. Max size: 2MB</p>
-                    
-                    <!-- Image Preview -->
-                    <div id="imagePreview" class="mt-3 hidden">
-                        <p class="text-sm text-gray-600 mb-2">Preview:</p>
-                        <img id="previewImg" src="" alt="Preview" class="h-20 w-20 rounded-full object-cover border-2 border-gray-300">
-                    </div>
-                    
-                    @error('profileImage')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
 
-            <div class="mt-6 flex space-x-4">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
-                <a href="{{ route('members') }}" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancel</a>
-            </div>
-        </form>
-    </div>
-</main>
+            <!-- Display success message -->
+            @if (session('success'))
+                <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @if(request()->query('join_group'))
+                    <input type="hidden" name="join_group" value="{{ request()->query('join_group') }}">
+                @endif
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700">Full Name</label>
+                        <input type="text" name="fullname" value="{{ old('fullname') }}"
+                            class="w-full p-2 border rounded @error('fullname') border-red-500 @enderror" required>
+                        @error('fullname')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Date of Birth</label>
+                        <input type="date" name="dateOfBirth" value="{{ old('dateOfBirth') }}"
+                            class="w-full p-2 border rounded @error('dateOfBirth') border-red-500 @enderror" required>
+                        @error('dateOfBirth')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Gender</label>
+                        <select name="gender" class="w-full p-2 border rounded @error('gender') border-red-500 @enderror" required>
+                            <option value="">-- Select Gender --</option>
+                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                        @error('gender')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Marital Status</label>
+                        <select name="maritalStatus" class="w-full p-2 border rounded @error('maritalStatus') border-red-500 @enderror" required>
+                            <option value="">-- Select Status --</option>
+                            <option value="single" {{ old('maritalStatus') == 'single' ? 'selected' : '' }}>Single</option>
+                            <option value="married" {{ old('maritalStatus') == 'married' ? 'selected' : '' }}>Married</option>
+                            <option value="divorced" {{ old('maritalStatus') == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                            <option value="widowed" {{ old('maritalStatus') == 'widowed' ? 'selected' : '' }}>Widowed</option>
+                        </select>
+                        @error('maritalStatus')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Phone</label>
+                        <input type="text" name="phone" value="{{ old('phone') }}"
+                            class="w-full p-2 border rounded @error('phone') border-red-500 @enderror" required>
+                        @error('phone')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Email</label>
+                            <input type="email" name="email" value="{{ old('email', request()->query('email')) }}"
+                            class="w-full p-2 border rounded @error('email') border-red-500 @enderror">
+                        @error('email')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700">Address</label>
+                        <input type="text" name="address" value="{{ old('address') }}"
+                            class="w-full p-2 border rounded @error('address') border-red-500 @enderror">
+                        @error('address')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Date Joined</label>
+                        <input type="date" name="dateJoined" value="{{ old('dateJoined', date('Y-m-d')) }}"
+                            class="w-full p-2 border rounded @error('dateJoined') border-red-500 @enderror" required>
+                        @error('dateJoined')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Cell (Zone)</label>
+                        <select name="cell" class="w-full p-2 border rounded @error('cell') border-red-500 @enderror" required>
+                            <option value="">-- Select Cell --</option>
+                            <option value="north" {{ old('cell') == 'north' ? 'selected' : '' }}>North</option>
+                            <option value="east" {{ old('cell') == 'east' ? 'selected' : '' }}>East</option>
+                            <option value="south" {{ old('cell') == 'south' ? 'selected' : '' }}>South</option>
+                            <option value="west" {{ old('cell') == 'west' ? 'selected' : '' }}>West</option>
+                        </select>
+                        @error('cell')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700">Profile Image</label>
+                        <input type="file" name="profileImage" accept="image/*" id="profileImageInput"
+                            class="w-full p-2 border rounded @error('profileImage') border-red-500 @enderror">
+                        <p class="text-xs text-gray-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF. Max size: 2MB</p>
+                        
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="mt-3 hidden">
+                            <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                            <img id="previewImg" src="" alt="Preview" class="h-20 w-20 rounded-full object-cover border-2 border-gray-300">
+                        </div>
+                        
+                        @error('profileImage')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mt-6 flex space-x-4">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
+                    <a href="{{ route('members') }}" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
 
 <script>
 // Image preview functionality

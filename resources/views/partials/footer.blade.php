@@ -1,11 +1,11 @@
 <!-- Footer - 4 Columns with Social & Newsletter in Column 4 -->
-<footer class="bg-primary text-white py-16">
+<footer class="bg-primary text-white py-6">
   <div class="max-w-7xl mx-auto px-5">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 text-center md:text-left">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center md:text-left">
 
       <!-- Column 1: Logo + Tagline -->
-      <div class="space-y-5">
+      <div class="space-y-3">
         <a href="{{ route('home') }}"
           class="flex items-center justify-center md:justify-start gap-4 hover:opacity-90 transition">
           <img src="assets/Logo Final.png" alt="St. John's Parish Church Logo" class="h-14 w-auto object-contain">
@@ -21,11 +21,11 @@
 
       <!-- Column 2: Quick Links -->
       <div>
-        <h4 class="text-accent font-bold text-lg mb-5">Quick Links</h4>
-        <ul class="space-y-3 text-sm">
+        <h4 class="text-accent font-bold text-lg mb-3">Quick Links</h4>
+        <ul class="space-y-2 text-sm">
           <li><a href="{{ route('home') }}" class="hover:text-accent transition">Home</a></li>
           <li><a href="{{ route('services') }}" class="hover:text-accent transition">Services</a></li>
-          <li><a href="{{ route('events') }}" class="hover:text-accent transition">Updates</a></li>
+          <li><a href="{{ route('updates') }}" class="hover:text-accent transition">Updates</a></li>
           <li>
             <a href="#" class="hover:text-accent transition font-medium">Give / Tithe ❤️</a>
           </li>
@@ -34,8 +34,8 @@
 
       <!-- Column 3: Contact Info -->
       <div>
-        <h4 class="text-accent font-bold text-lg mb-5">Contact Info</h4>
-        <ul class="space-y-3 text-sm text-white/70">
+        <h4 class="text-accent font-bold text-lg mb-3">Contact Info</h4>
+        <ul class="space-y-2 text-sm text-white/70">
           <li class="flex items-center justify-center md:justify-start gap-3">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
@@ -46,7 +46,7 @@
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548 1.548a8.083 8.083 0 006.208 6.208l1.548-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
             </svg>
-            +256 ___ ___ ___
+            +256 703 558 174
           </li>
           <li class="flex items-center justify-center md:justify-start gap-3">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -63,7 +63,7 @@
       </div>
 
       <!-- Column 4: Stay Connected – Social Media + Newsletter -->
-      <div class="space-y-5">
+      <div class="space-y-3">
         <h4 class="text-accent font-bold text-lg text-center md:text-left">Stay Connected</h4>
         
         <!-- Social Media Icons Row -->
@@ -113,7 +113,7 @@
     </div>
 
     <!-- Bottom Bar – Auto-updating year -->
-    <div class="border-t border-white/10 mt-12 pt-8 text-sm text-white/60 flex flex-col md:flex-row justify-between items-center">
+    <div class="border-t border-white/10 mt-6 pt-3 text-sm text-white/60 flex flex-col md:flex-row justify-between items-center">
       <span>
         © {{ now()->year }} St. John's Parish Church Entebbe. All Rights Reserved.
       </span>

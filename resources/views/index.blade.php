@@ -646,6 +646,19 @@
     </script>
 
     <script src="script.js"></script>
+    <script>
+        // Safety: ensure body/html are scrollable if an accidental 'overflow-hidden' class was left
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                document.documentElement.classList.remove('overflow-hidden');
+                document.body.classList.remove('overflow-hidden');
+                document.documentElement.style.overflowY = 'auto';
+                document.body.style.overflowY = 'auto';
+            } catch (e) {
+                // noop
+            }
+        });
+    </script>
 </body>
 
 </html>

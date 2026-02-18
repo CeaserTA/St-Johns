@@ -24,6 +24,34 @@ class Event extends Model
     const CATEGORY_WORSHIP = 'Worship';
     const CATEGORY_FELLOWSHIP = 'Fellowship';
 
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Before creating (slug generation)
+        static::creating(function ($event) {
+            if (empty($event->slug)) {
+                $event->slug = $event->generateUniqueSlug($event->title);
+            }
+        });
+
+        // Before updating (regenerate slug if title changed)
+        static::updating(function ($event) {
+            if ($event->isDirty('title') && empty($event->slug)) {
+                $event->slug = $event->generateUniqueSlug($event->title);
+            }
+        });
+
+        // After created (send notification)
+        static::created(function ($model) {
+            Notification::notifyEventPosted($model);
+        });
+    }
+
+
     protected $fillable = [
         'title',
         'slug',
@@ -62,22 +90,22 @@ class Event extends Model
     ];
 
     // Boot method for auto-generating slug
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($event) {
-            if (empty($event->slug)) {
-                $event->slug = $event->generateUniqueSlug($event->title);
-            }
-        });
+    //     static::creating(function ($event) {
+    //         if (empty($event->slug)) {
+    //             $event->slug = $event->generateUniqueSlug($event->title);
+    //         }
+    //     });
 
-        static::updating(function ($event) {
-            if ($event->isDirty('title') && empty($event->slug)) {
-                $event->slug = $event->generateUniqueSlug($event->title);
-            }
-        });
-    }
+    //     static::updating(function ($event) {
+    //         if ($event->isDirty('title') && empty($event->slug)) {
+    //             $event->slug = $event->generateUniqueSlug($event->title);
+    //         }
+    //     });
+    // }
 
     /**
      * Generate a unique slug from title
@@ -141,21 +169,21 @@ class Event extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
+                ->orWhere('expires_at', '>', now());
         });
     }
 
     public function scopeExpired($query)
     {
         return $query->whereNotNull('expires_at')
-                     ->where('expires_at', '<=', now());
+            ->where('expires_at', '<=', now());
     }
 
     public function scopeUpcoming($query)
     {
         return $query->where(function ($q) {
             $q->where('starts_at', '>', now())
-              ->orWhere('date', '>', now()->toDateString());
+                ->orWhere('date', '>', now()->toDateString());
         });
     }
 
@@ -163,7 +191,7 @@ class Event extends Model
     {
         return $query->where(function ($q) {
             $q->where('starts_at', '<', now())
-              ->orWhere('date', '<', now()->toDateString());
+                ->orWhere('date', '<', now()->toDateString());
         });
     }
 
@@ -175,11 +203,11 @@ class Event extends Model
     public function scopePublished($query)
     {
         return $query->active()
-                     ->notExpired()
-                     ->where(function ($q) {
-                         $q->whereNull('starts_at')
-                           ->orWhere('starts_at', '<=', now());
-                     });
+            ->notExpired()
+            ->where(function ($q) {
+                $q->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            });
     }
 
     /**
@@ -271,27 +299,21 @@ class Event extends Model
 
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
-            return null;
-        }
-
-        // If it's already a full URL, return as is
-        if (Str::startsWith($this->image, ['http://', 'https://'])) {
-            return $this->image;
-        }
-
-        // Check if image is stored on Supabase (starts with 'events/')
-        if (Str::startsWith($this->image, 'events/')) {
-            $supabaseUrl = env('SUPABASE_PUBLIC_URL');
-            $bucket = env('SUPABASE_BUCKET', 'profiles');
-            
-            if ($supabaseUrl && $bucket) {
-                return "{$supabaseUrl}/{$bucket}/{$this->image}";
+        if ($this->image) {
+            // If it's a full URL, return as is
+            if (Str::startsWith($this->image, ['http://', 'https://'])) {
+                return $this->image;
             }
+            // Check if it's a Supabase path and construct the full URL
+            $supabasePublicUrl = config('filesystems.disks.supabase.url');
+            $bucket = config('filesystems.disks.supabase.bucket');
+            if ($supabasePublicUrl && $bucket) {
+                return $supabasePublicUrl . '/' . $bucket . '/' . $this->image;
+            }
+            // Otherwise, assume it's in local storage
+            return asset('storage/' . $this->image);
         }
-
-        // Fallback to local storage
-        return asset('storage/' . $this->image);
+        return null;
     }
 
     /**

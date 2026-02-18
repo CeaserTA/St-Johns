@@ -4,19 +4,100 @@
 @section('header_title', 'Groups Management')
 
 @section('content')
-<div class="max-w-full mx-auto">
-    <!-- Header with Actions -->
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h2 class="text-3xl font-bold text-gray-900">Church Groups</h2>
-            <p class="text-gray-600 mt-1">Manage groups and their members</p>
+<div class="space-y-6">
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m0-4a4 4 0 110-8 4 4 0 010 8z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Groups</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_groups'] ?? 0 }}</p>
+                </div>
+            </div>
         </div>
-        <button id="addGroupBtn" 
-                class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-secondary shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2">
-            <span class="material-symbols-outlined">add</span>
-            Add Group
-        </button>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Members in Groups</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_members_in_groups'] ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-purple-100 rounded-lg">
+                    <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Average Group Size</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ round($stats['average_group_size'] ?? 0, 1) }}</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Search and Filters -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Search & Filter Groups</h2>
+        <form method="GET" action="{{ route('admin.groups') }}" class="space-y-4">
+            <!-- Search Bar -->
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                           placeholder="Search by name, description, location, or meeting day..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-200">
+                        🔍 Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="meeting_day" class="block text-sm font-medium text-gray-700 mb-1">Meeting Day</label>
+                    <select name="meeting_day" id="meeting_day" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">All Days</option>
+                        @foreach($filterOptions['meeting_days'] as $day)
+                            <option value="{{ $day }}" {{ request('meeting_day') == $day ? 'selected' : '' }}>
+                                {{ ucfirst($day) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex items-end">
+                    <a href="{{ route('admin.groups') }}" class="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-center transition duration-200">
+                        Reset Filters
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Manage Groups Section -->
+    <div class="max-w-full mx-auto">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-semibold">Manage Groups</h2>
+            <button id="addGroupBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Group</button>
+        </div>
 
     <!-- Success/Error Messages -->
     @if(session('success'))
@@ -467,4 +548,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+</div>
+
 @endsection

@@ -179,7 +179,7 @@ class QRCodeController extends Controller
         ]);
 
         $event = Event::findOrFail($request->event_id);
-        $url = route('events') . '?register=' . $event->id;
+        $url = route('updates') . '?register=' . $event->id;
         $size = $request->input('size', 300);
         $format = $request->input('format', 'png');
         $title = $request->input('title', 'Register for ' . $event->title);

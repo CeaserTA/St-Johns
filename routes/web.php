@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\ServiceRegistrationController;
 use App\Http\Controllers\EventController as PublicEventController;
@@ -24,6 +25,14 @@ Route::get('/dashboard', [MemberController::class, 'index'])
     ->name('dashboard')
     ->middleware('admin');
 
+// Notification routes (requires authentication)
+Route::middleware('auth')->group(function () {
+    Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
+    Route::get('/api/notifications/unread', [NotificationController::class, 'getUnreadNotifications'])->name('notifications.unread');
+    Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -39,8 +48,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Group join endpoints removed — group management deleted per request
 
-Route::get('/events', [PublicEventController::class, 'index'])->name('events');
-Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
+Route::get('/updates', [PublicEventController::class, 'index'])->name('updates');
+Route::get('/updates/{event}', [PublicEventController::class, 'show'])->name('updates.show');
 
 // GIVING/TITHE ROUTES
 // Public giving page (accessible to everyone, including via QR codes)
