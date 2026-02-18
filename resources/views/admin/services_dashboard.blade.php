@@ -169,7 +169,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($serviceRegistrations ?? [] as $reg)
+                    @forelse($serviceRegistrations ?? [] as $reg)
                         <tr>
                             <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $reg->guest_full_name ?? $reg->member->full_name ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $reg->guest_email ?? $reg->member->email ?? '' }}</td>
