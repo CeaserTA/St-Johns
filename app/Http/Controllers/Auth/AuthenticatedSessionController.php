@@ -31,17 +31,18 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        // Check if user is admin
+        // Redirect based on user role
         if ($user && $user->role === 'admin') {
             return redirect()->route('dashboard');
         }
 
-        // Not an admin: logout and show error
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Member users redirect to services page
+        if ($user && $user->role === 'member') {
+            return redirect()->route('services');
+        }
 
-        return redirect()->route('login')->withErrors(['email' => 'You do not have admin access.']);
+        // Default redirect for other roles
+        return redirect()->route('home');
     }
 
     /**

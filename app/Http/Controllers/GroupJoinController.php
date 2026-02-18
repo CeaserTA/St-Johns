@@ -4,74 +4,59 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Member;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GroupJoinController extends Controller
 {
     /**
-     * Public: join a group by email (from the homepage modal).
-     * Validates email and group name, ensures member exists, creates group if needed,
-     * then attaches the member to the group.
+     * Apply authentication middleware to all methods.
      */
-    public function store(Request $request)
+    public function __construct()
     {
-        $data = $request->validate([
-            'group' => 'required|string|max:255',
-            'email' => 'required|email',
-        ]);
-
-        $member = Member::where('email', $data['email'])->first();
-        if (! $member) {
-            return redirect()->back()->with('error', 'Member not found. Please register before joining a group.');
-        }
-
-        $group = Group::firstOrCreate([
-            'name' => $data['group'],
-        ], [
-            'description' => null,
-            'meeting_day' => null,
-            'location' => null,
-        ]);
-
-        $group->members()->syncWithoutDetaching([$member->id]);
-
-        return redirect()->back()->with('success', 'You have been added to the group: ' . $group->name);
+        $this->middleware('auth');
     }
 
     /**
-     * Optional: handle full join from modal when additional details provided.
-     * This method is provided but not currently routed by default.
+     * Join a group (auth required).
+     * Uses the authenticated user's linked Member record.
+     * Returns JSON response for AJAX handling.
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function joinFromModal(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'group' => 'required',
-            'full_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'contact' => 'required|string|max:20',
+            'group' => 'required|string|max:255',
         ]);
+
+        $member = Auth::user()?->member;
+        if (! $member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You need to complete church member registration before joining a group. Please contact the church office.'
+            ], 403);
+        }
 
         $group = Group::where('name', $data['group'])->first();
         if (! $group) {
-            return redirect()->back()->with('error', 'Selected group not found.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Group not found.'
+            ], 404);
         }
 
-        $member = Member::firstOrCreate([
-            'email' => $data['email'],
-        ], [
-            'full_name' => $data['full_name'],
-            'phone' => $data['contact'],
-            'date_of_birth' => now()->subYears(18)->format('Y-m-d'),
-            'gender' => 'male',
-            'marital_status' => 'single',
-            'address' => 'Not provided',
-            'date_joined' => now()->format('Y-m-d'),
-            'cell' => 'north',
-        ]);
-
+        // Prevent duplicate memberships
         $group->members()->syncWithoutDetaching([$member->id]);
 
-        return redirect()->back()->with('success', 'You have been added to the group: ' . $group->name);
+        return response()->json([
+            'success' => true,
+            'message' => 'You have been added to the group: ' . $group->name,
+            'group_id' => $group->id,
+            'group_name' => $group->name
+        ]);
     }
 }
 

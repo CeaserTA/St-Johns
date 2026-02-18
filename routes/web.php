@@ -9,17 +9,16 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\GivingController;
+use App\Http\Controllers\HomeController;
 use App\Models\Event;
+use App\Models\Group;
 use App\Models\Service;
 use App\Models\Announcement;
 use App\Models\ServiceRegistration;
 use App\Models\Member;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    $groups = [];
-    return view('index', compact('groups'));
-});
+Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/dashboard', [MemberController::class, 'index'])
     ->name('dashboard')
@@ -34,15 +33,9 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 // Public site pages: index/home, events and services
-Route::get('/index', function () {
-    $groups = [];
-    return view('index', compact('groups'));
-})->name('index');
+Route::get('/index', [HomeController::class, 'index'])->name('index');
 
-Route::get('/home', function () {
-    $groups = [];
-    return view('index', compact('groups'));
-})->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Group join endpoints removed — group management deleted per request
 
@@ -175,8 +168,10 @@ Route::get('/api/recent-members', function() {
     }
 });
 
-// Public: join a group by email (if member exists) or redirect to registration
-Route::post('/groups/join', [\App\Http\Controllers\GroupJoinController::class, 'store'])->name('groups.join');
+// Join group (auth required - only registered church members)
+Route::post('/groups/join', [\App\Http\Controllers\GroupJoinController::class, 'store'])
+    ->name('groups.join')
+    ->middleware('auth');
 
 // Protect member-management routes behind auth so only admins can view/manage members
 Route::middleware('auth')->group(function () {

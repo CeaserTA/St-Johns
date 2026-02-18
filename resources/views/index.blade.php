@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>St. John's Parish Church Entebbe</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Fallback: precompiled Tailwind CSS in case the CDN script is unavailable -->
@@ -148,7 +149,7 @@
                     </div>
                 </section>
                 
-                <!-- church ministeries and groups -->
+                <!-- church ministeries and groups (dynamic from DB) -->
                 <section class="py-16 bg-gray-50 dark:bg-gray-900">
                     <div class="container mx-auto px-6 lg:px-8">
                         <div class="text-center mb-12">
@@ -161,149 +162,88 @@
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @php
+                                $groupStyles = [
+                                    ['icon' => 'group', 'bg' => 'bg-primary/10', 'iconColor' => 'text-primary'],
+                                    ['icon' => 'diversity_3', 'bg' => 'bg-pink-100 dark:bg-pink-900/30', 'iconColor' => 'text-pink-600 dark:text-pink-400'],
+                                    ['icon' => 'music_note', 'bg' => 'bg-purple-100 dark:bg-purple-900/30', 'iconColor' => 'text-purple-600 dark:text-purple-400'],
+                                    ['icon' => 'volunteer_activism', 'bg' => 'bg-blue-100 dark:bg-blue-900/30', 'iconColor' => 'text-blue-600 dark:text-blue-400'],
+                                    ['icon' => 'travel_explore', 'bg' => 'bg-green-100 dark:bg-green-900/30', 'iconColor' => 'text-green-600 dark:text-green-400'],
+                                    ['icon' => 'admin_panel_settings', 'bg' => 'bg-orange-100 dark:bg-orange-900/30', 'iconColor' => 'text-orange-600 dark:text-orange-400'],
+                                ];
+                            @endphp
 
-                            <!-- Fathers Union -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
-                                <div class="flex items-start space-x-4">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-primary text-2xl">group</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Fathers Union</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                            A community of men committed to leadership, fellowship and spiritual growth.
-                                        </p>
-
-                                        <!-- CLEAR BUTTON - impossible to miss -->
-                                        <button
-                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
-                                            data-group="Fathers Union">
-                                            Join Group
-                                        </button>
+                            @php $memberGroupIds = $memberGroupIds ?? []; @endphp
+                            @forelse($groups as $group)
+                                @php 
+                                    $style = $groupStyles[$loop->index % count($groupStyles)];
+                                    $alreadyMember = in_array($group->id, $memberGroupIds);
+                                    $canJoin = auth()->check() && auth()->user()->member && !$alreadyMember;
+                                    // Use custom icon if available, otherwise use default from style array
+                                    $displayIcon = $group->icon ?: $style['icon'];
+                                @endphp
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-start space-x-4">
+                                        @if($group->image_url)
+                                            <!-- Display custom image if available -->
+                                            <div class="flex-shrink-0 w-12 h-12 rounded-xl overflow-hidden">
+                                                <img src="{{ $group->image_url }}" alt="{{ $group->name }}" class="w-full h-full object-cover">
+                                            </div>
+                                        @else
+                                            <!-- Display icon (custom or default) -->
+                                            <div
+                                                class="flex-shrink-0 w-12 h-12 {{ $style['bg'] }} rounded-xl flex items-center justify-center">
+                                                <span class="material-symbols-outlined {{ $style['iconColor'] }} text-2xl">{{ $displayIcon }}</span>
+                                            </div>
+                                        @endif
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ $group->name }}</h3>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                                {{ $group->description ?: 'Join this group to grow in faith and fellowship.' }}
+                                            </p>
+                                            @if($group->meeting_day || $group->location)
+                                                <p class="text-xs text-gray-500 mt-2">
+                                                    @if($group->meeting_day){{ $group->meeting_day }}@endif
+                                                    @if($group->meeting_day && $group->location) · @endif
+                                                    @if($group->location){{ $group->location }}@endif
+                                                </p>
+                                            @endif
+                                            <!-- Display member count -->
+                                            @if($group->members_count > 0)
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    <span class="material-symbols-outlined text-sm align-middle">people</span>
+                                                    {{ $group->members_count }} {{ Str::plural('member', $group->members_count) }}
+                                                </p>
+                                            @endif
+                                            @if($alreadyMember)
+                                                <div class="mt-4 py-2.5 px-4 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold text-center">
+                                                    Already a member
+                                                </div>
+                                            @elseif($canJoin)
+                                                <button
+                                                    class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
+                                                    data-group="{{ $group->name }}">
+                                                    Join Group
+                                                </button>
+                                            @elseif(auth()->check() && !auth()->user()->member)
+                                                <div class="mt-4 py-2.5 px-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm font-medium text-center">
+                                                    Complete member registration to join
+                                                </div>
+                                            @else
+                                                <a href="{{ route('login') }}"
+                                                    class="mt-4 flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg border-2 border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-white transition">
+                                                    Log in to join
+                                                </a>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Mothers Union -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
-                                <div class="flex items-start space-x-4">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-xl flex items-center justify-center">
-                                        <span
-                                            class="material-symbols-outlined text-pink-600 dark:text-pink-400 text-2xl">diversity_3</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Mothers Union</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                            Women united in prayer, service, and building strong Christian homes.
-                                        </p>
-                                        <button
-                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
-                                            data-group="Mothers Union">
-                                            Join Group
-                                        </button>
-                                    </div>
+                            @empty
+                                <div class="col-span-full text-center py-12">
+                                    <p class="text-gray-500 dark:text-gray-400">No groups available at the moment. Check back soon!</p>
                                 </div>
-                            </div>
-
-                            <!-- Worship / Choir -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
-                                <div class="flex items-start space-x-4">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                                        <span
-                                            class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">music_note</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Worship (Choir)</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                            Leading the church in worship through music, praise and joyful singing.
-                                        </p>
-                                        <button
-                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
-                                            data-group="Worship (Choir)">
-                                            Join Group
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Prayer & Spiritual Growth -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
-                                <div class="flex items-start space-x-4">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                                        <span
-                                            class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">volunteer_activism</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Prayer & Spiritual
-                                            Growth</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                            Intercessors committed to deepening faith through prayer.
-                                        </p>
-                                        <button
-                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
-                                            data-group="Prayer & Spiritual Growth">
-                                            Join Group
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Service & Outreach -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
-                                <div class="flex items-start space-x-4">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                                        <span
-                                            class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">travel_explore</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Service & Outreach
-                                        </h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                            Bringing hope through community service, charity, and missions.
-                                        </p>
-                                        <button
-                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
-                                            data-group="Service & Outreach">
-                                            Join Group
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Church Administration & Support -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100 dark:border-gray-700">
-                                <div class="flex items-start space-x-4">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
-                                        <span
-                                            class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-2xl">admin_panel_settings</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Church
-                                            Administration & Support</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                            Ushers, media team, protocol, and workers supporting church operations.
-                                        </p>
-                                        <button
-                                            class="joinGroupBtn mt-4 w-full bg-primary text-white text-sm font-semibold py-2.5 px-4 rounded-lg hover:bg-secondary hover:shadow-md transform hover:scale-105 transition-all duration-200 shadow"
-                                            data-group="Church Administration & Support">
-                                            Join Group
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
+                            @endforelse
                         </div>
                     </div>
                 </section>
@@ -590,19 +530,12 @@
                 <p class="mt-2 text-white/90">We’re so excited to have you!</p>
             </div>
 
-            <!-- Form: only ask for email to match members lookup in DB -->
+            <!-- Form: group name only (user is auth + member) -->
             <form id="joinGroupForm" action="{{ route('groups.join') }}" method="POST" class="p-6 space-y-5">
                 @csrf
                 <input type="hidden" name="group" id="groupInput">
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email <span
-                            class="text-red-500">*</span></label>
-                    <input type="email" name="email" required
-                        class="w-full px-5 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary transition">
-                    <p class="text-xs text-gray-500 mt-2">Enter your registration email. If you are not yet a member,
-                        please complete full registration first.</p>
-                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Confirm you want to join this group.</p>
 
                 <!-- Success Message (hidden by default) -->
                 <div id="successMessage"
@@ -625,48 +558,91 @@
         </div>
     </div>
 
-    <!-- join javacsrip -->
+    <!-- AJAX Group Join Script -->
     <script>
-        const modal = document.getElementById('joinGroupModal');
-        const groupTitle = document.getElementById('modalGroupName');
-        const groupInput = document.getElementById('groupInput');
-        const successGroup = document.getElementById('successGroup');
-        const form = document.getElementById('joinGroupForm');
-
-        // Open modal when any "Join Group" button is clicked
-        document.querySelectorAll('.joinGroupBtn').forEach(button => {
-            button.addEventListener('click', function () {
-                const groupName = (this.getAttribute('data-group') || '').trim();
-
-                groupTitle.textContent = `Join ${groupName}`;
-                groupInput.value = groupName;
-                successGroup.textContent = groupName;
-
-                modal.classList.remove('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle join group button clicks with AJAX
+            document.querySelectorAll('.joinGroupBtn').forEach(button => {
+                button.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    
+                    const groupName = this.getAttribute('data-group');
+                    const originalText = this.innerHTML;
+                    const originalClasses = this.className;
+                    
+                    // Show loading state
+                    this.disabled = true;
+                    this.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span> Joining...';
+                    this.classList.add('opacity-75', 'cursor-not-allowed');
+                    
+                    try {
+                        // Get CSRF token
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        
+                        // Send AJAX request
+                        const response = await fetch('{{ route("groups.join") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                group: groupName
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Update button to "Already a member" state
+                            this.outerHTML = `
+                                <div class="mt-4 py-2.5 px-4 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold text-center">
+                                    Already a member
+                                </div>
+                            `;
+                            
+                            // Show success message
+                            showMessage(data.message, 'success');
+                        } else {
+                            // Restore button and show error
+                            this.disabled = false;
+                            this.innerHTML = originalText;
+                            this.className = originalClasses;
+                            showMessage(data.message || 'Failed to join group', 'error');
+                        }
+                    } catch (error) {
+                        // Restore button and show error
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                        this.className = originalClasses;
+                        showMessage('An error occurred. Please try again.', 'error');
+                        console.error('Join group error:', error);
+                    }
+                });
             });
-        });
-
-        // Close modal
-        document.getElementById('closeModalBtn').onclick = () => modal.classList.add('hidden');
-        document.getElementById('cancelBtn').onclick = () => modal.classList.add('hidden');
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.add('hidden');
-        });
-
-        // Optional: Show success & auto-close after submit (safely attach only if form exists)
-        const joinForm = document.getElementById('joinGroupForm');
-        if (joinForm) {
-            joinForm.addEventListener('submit', function (e) {
-                // allow normal submit to backend which will handle member lookup/create and pivot attach
-                // show a quick success state for UX while the request completes
+            
+            // Helper function to show messages
+            function showMessage(message, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+                    type === 'success' 
+                        ? 'bg-green-100 border-l-4 border-green-500 text-green-700' 
+                        : 'bg-red-100 border-l-4 border-red-500 text-red-700'
+                }`;
+                messageDiv.innerHTML = `
+                    <p class="font-bold">${type === 'success' ? 'Success' : 'Error'}</p>
+                    <p>${message}</p>
+                `;
+                
+                document.body.appendChild(messageDiv);
+                
+                // Auto-remove after 5 seconds
                 setTimeout(() => {
-                    const success = document.getElementById('successMessage');
-                    if (success) success.classList.remove('hidden');
-                    document.querySelectorAll('#joinGroupForm input, #joinGroupForm button[type="submit"]').forEach(el => el.disabled = true);
-                    setTimeout(() => modal.classList.add('hidden'), 1500);
-                }, 300);
-            });
-        }
+                    messageDiv.remove();
+                }, 5000);
+            }
+        });
     </script>
 
     <script src="script.js"></script>

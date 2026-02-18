@@ -10,7 +10,7 @@ class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::with('members')->orderBy('name')->get();
+        $groups = Group::with('members')->ordered()->get();
         $members = \App\Models\Member::orderBy('full_name')->get();
         return view('admin.groups_dashboard', compact('groups', 'members'));
     }
@@ -22,7 +22,15 @@ class GroupController extends Controller
             'description' => 'nullable|string',
             'meeting_day' => 'nullable|string|max:50',
             'location' => 'nullable|string|max:100',
+            'is_active' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
+            'icon' => 'nullable|string|max:50',
+            'image_url' => 'nullable|url|max:500',
+            'category' => 'nullable|string|max:50',
         ]);
+
+        $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : true;
+        $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
 
         Group::create($validated);
 
@@ -36,7 +44,15 @@ class GroupController extends Controller
             'description' => 'nullable|string',
             'meeting_day' => 'nullable|string|max:50',
             'location' => 'nullable|string|max:100',
+            'is_active' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
+            'icon' => 'nullable|string|max:50',
+            'image_url' => 'nullable|url|max:500',
+            'category' => 'nullable|string|max:50',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active');
+        $validated['sort_order'] = (int) ($validated['sort_order'] ?? $group->sort_order);
 
         $group->update($validated);
 

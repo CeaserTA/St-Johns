@@ -217,16 +217,27 @@ class GivingController extends Controller
         $givings = $user->member->givings()
             ->with('confirmedBy')
             ->orderBy('payment_date', 'desc')
-            ->paginate(20);
+            ->get()
+            ->map(function ($giving) {
+                return [
+                    'id' => $giving->id,
+                    'payment_date' => $giving->payment_date ? $giving->payment_date->format('M d, Y') : 'N/A',
+                    'giving_type' => ucfirst($giving->giving_type),
+                    'amount' => number_format($giving->amount),
+                    'payment_method' => ucfirst(str_replace('_', ' ', $giving->payment_method ?? 'N/A')),
+                    'status' => $giving->status,
+                    'transaction_reference' => $giving->transaction_reference ?? 'N/A',
+                ];
+            });
 
         return response()->json([
             'success' => true,
             'givings' => $givings,
             'summary' => [
-                'total_this_year' => $user->member->getTotalGivingAttribute(),
-                'tithes_this_year' => $user->member->getTithesThisYearAttribute(),
-                'offerings_this_year' => $user->member->getOfferingsThisYearAttribute(),
-                'donations_this_year' => $user->member->getDonationsThisYearAttribute(),
+                'total_this_year' => number_format($user->member->getTotalGivingAttribute()),
+                'tithes_this_year' => number_format($user->member->getTithesThisYearAttribute()),
+                'offerings_this_year' => number_format($user->member->getOfferingsThisYearAttribute()),
+                'donations_this_year' => number_format($user->member->getDonationsThisYearAttribute()),
             ]
         ]);
     }

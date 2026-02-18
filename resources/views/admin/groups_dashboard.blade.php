@@ -1,400 +1,470 @@
 @extends('layouts.dashboard_layout')
 
-@section('title', 'Groups')
-@section('header_title', 'Groups')
+@section('title', 'Groups Management')
+@section('header_title', 'Groups Management')
 
 @section('content')
-@php
-    // Groups and members should be provided by the controller/route
-    // Collections available here: $groups, $members
-@endphp
-
-<!-- Manage Groups Section -->
 <div class="max-w-full mx-auto">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-semibold">Manage Groups</h2>
-        <button id="addGroupBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Group</button>
-    </div>
-
-    <div class="bg-white p-2 rounded-lg shadow">
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Name</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Meeting Day</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Location</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Description</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Members</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($groups as $group)
-                        <tr>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $group->name ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $group->meeting_day ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $group->location ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $group->description ?? '' }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">
-                                <button class="text-blue-600 hover:text-blue-800 font-semibold toggle-members" data-group-id="{{ $group->id }}">
-                                    {{ $group->members->count() }} members
-                                </button>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700">
-                                <button class="px-3 py-1 bg-yellow-500 text-white rounded edit-btn mr-2" 
-                                        data-id="{{ $group->id }}" 
-                                        data-name="{{ $group->name ?? '' }}" 
-                                        data-meeting-day="{{ $group->meeting_day ?? '' }}" 
-                                        data-location="{{ $group->location ?? '' }}" 
-                                        data-description="{{ $group->description ?? '' }}">
-                                    Edit
-                                </button>
-                                <form method="POST" action="{{ route('admin.groups.destroy', $group->id) }}" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded delete-btn" onclick="return confirm('Are you sure?')">
-                                        Delete
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        <!-- Members Row (Hidden by default) -->
-                        <tr id="members-row-{{ $group->id }}" class="hidden">
-                            <td colspan="6" class="px-4 py-4">
-                                <div class="bg-gray-50 p-4 rounded">
-                                    <h4 class="font-semibold text-gray-800 mb-3">Members of {{ $group->name }}</h4>
-                                    
-                                    @if($group->members->isEmpty())
-                                        <p class="text-gray-400 text-sm mb-4">No members yet.</p>
-                                    @else
-                                        <div class="overflow-x-auto mb-4">
-                                            <table class="min-w-full text-left text-sm divide-y divide-gray-300">
-                                                <thead class="bg-gray-200">
-                                                    <tr>
-                                                        <th class="px-3 py-2 font-medium text-gray-700">Name</th>
-                                                        <th class="px-3 py-2 font-medium text-gray-700">Email</th>
-                                                        <th class="px-3 py-2 font-medium text-gray-700">Phone</th>
-                                                        <th class="px-3 py-2 font-medium text-gray-700">Cell</th>
-                                                        <th class="px-3 py-2 font-medium text-gray-700">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="divide-y divide-gray-300">
-                                                    @foreach($group->members as $member)
-                                                        <tr>
-                                                            <td class="px-3 py-2 text-gray-800">{{ $member->full_name }}</td>
-                                                            <td class="px-3 py-2 text-gray-600">{{ $member->email }}</td>
-                                                            <td class="px-3 py-2 text-gray-600">{{ $member->phone ?? 'N/A' }}</td>
-                                                            <td class="px-3 py-2 text-gray-600">{{ ucfirst($member->cell ?? 'N/A') }}</td>
-                                                            <td class="px-3 py-2">
-                                                                <form method="POST" action="{{ route('admin.groups.members.destroy', [$group->id, $member->id]) }}" style="display:inline;">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold" onclick="return confirm('Remove from group?')">
-                                                                        Remove
-                                                                    </button>
-                                                                </form>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    @endif
-
-                                    <!-- Add Member to Group -->
-                                    <div class="border-t pt-3">
-                                        <form method="POST" action="{{ route('admin.groups.members.store', $group->id) }}" class="flex gap-2">
-                                            @csrf
-                                            <select name="member_id" class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm" required>
-                                                <option value="">Select a member to add...</option>
-                                                @foreach($members as $m)
-                                                    @if(!$group->members->contains($m->id))
-                                                        <option value="{{ $m->id }}">{{ $m->fullname }} ({{ $m->email }})</option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
-                                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
-                                                Add Member
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    <!-- Header with Actions -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900">Church Groups</h2>
+            <p class="text-gray-600 mt-1">Manage groups and their members</p>
         </div>
-    </div>
-</div>
-
-<!-- Edit/Create Group Modal -->
-<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-xl">
-        <h3 class="text-xl font-bold mb-4" id="modalTitle">Add Group</h3>
-        <form id="editForm" method="POST">
-            @csrf
-            <div id="methodField"></div>
-            <div class="grid grid-cols-1 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
-                    <input name="name" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" required />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Meeting Day</label>
-                        <input name="meeting_day" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="e.g., Monday 7pm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Location</label>
-                        <input name="location" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="e.g., Church Hall" />
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea name="description" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"></textarea>
-                </div>
-            </div>
-            <div class="mt-4 flex justify-end gap-3">
-                <button type="button" id="cancelEdit" class="px-4 py-2 border rounded">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    const addGroupBtn = document.getElementById('addGroupBtn');
-    const editBtns = document.querySelectorAll('.edit-btn');
-    const toggleMembersBtns = document.querySelectorAll('.toggle-members');
-    const editModal = document.getElementById('editModal');
-    const editForm = document.getElementById('editForm');
-    const cancelEdit = document.getElementById('cancelEdit');
-    const modalTitle = document.getElementById('modalTitle');
-    const methodField = document.getElementById('methodField');
-    let currentGroupId = null;
-    let isAddingNew = false;
-
-    // Toggle members visibility
-    toggleMembersBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const groupId = this.dataset.groupId;
-            const membersRow = document.getElementById(`members-row-${groupId}`);
-            membersRow.classList.toggle('hidden');
-        });
-    });
-
-    function openModalWithData(btn) {
-        isAddingNew = false;
-        currentGroupId = btn.dataset.id;
-        modalTitle.textContent = 'Edit Group';
-        const name = btn.dataset.name || '';
-        const meetingDay = btn.dataset.meetingDay || '';
-        const location = btn.dataset.location || '';
-        const description = btn.dataset.description || '';
-
-        editForm.elements['name'].value = name;
-        editForm.elements['meeting_day'].value = meetingDay;
-        editForm.elements['location'].value = location;
-        editForm.elements['description'].value = description;
-
-        editForm.action = `/admin/groups/${currentGroupId}`;
-        methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
-
-        editModal.classList.remove('hidden');
-        editModal.classList.add('flex');
-    }
-
-    function openAddModal() {
-        isAddingNew = true;
-        currentGroupId = null;
-        modalTitle.textContent = 'Add New Group';
-        editForm.reset();
-        editForm.action = '/admin/groups';
-        methodField.innerHTML = '';
-
-        editModal.classList.remove('hidden');
-        editModal.classList.add('flex');
-    }
-
-    addGroupBtn.addEventListener('click', openAddModal);
-    editBtns.forEach(b => b.addEventListener('click', (e) => { openModalWithData(e.currentTarget); }));
-    cancelEdit.addEventListener('click', () => { editModal.classList.add('hidden'); editModal.classList.remove('flex'); });
-
-    editForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        editForm.submit();
-    });
-</script>
-@endsection
-@extends('layouts.dashboard_layout')
-
-@section('title', 'Groups')
-@section('header_title', 'Groups')
-
-@section('content')
-
-<div class="max-w-full mx-auto">
-    <!-- Create Group Form -->
-    <div class="bg-white p-6 rounded-lg shadow mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Create New Group</h2>
-        <form action="{{ route('admin.groups.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @csrf
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
-                <input type="text" name="name" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Fathers Union">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Meeting Day</label>
-                <input type="text" name="meeting_day" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Sunday">
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Describe the group..."></textarea>
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <input type="text" name="location" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional: Meeting location">
-            </div>
-            <div class="md:col-span-2">
-                <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">Create Group</button>
-            </div>
-        </form>
+        <button id="addGroupBtn" 
+                class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-secondary shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2">
+            <span class="material-symbols-outlined">add</span>
+            Add Group
+        </button>
     </div>
 
-    <!-- Groups & Members Table -->
-    <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-2xl font-semibold mb-4">Groups & Members</h2>
-        
-        @if($groups->count() > 0)
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg" role="alert">
+            <p class="font-bold">Success</p>
+            <p>{{ session('success') }}</p>
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+            <p class="font-bold">Error</p>
+            <p>{{ session('error') }}</p>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+            <p class="font-bold">Validation Errors</p>
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if($groups->count() > 0)
+        <!-- Search and Filter Bar -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center gap-4">
+            <div class="flex-1">
+                <input type="text" 
+                       id="searchGroups" 
+                       placeholder="Search groups by name..." 
+                       class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
+            </div>
+            <div class="w-48">
+                <select id="statusFilter" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
+                    <option value="all">All Groups</option>
+                    <option value="active">Active Only</option>
+                    <option value="inactive">Inactive Only</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Groups Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full text-left divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
                         <tr>
-                            <th class="px-4 py-3 text-sm font-medium text-gray-700">Group Name</th>
-                            <th class="px-4 py-3 text-sm font-medium text-gray-700">Description</th>
-                            <th class="px-4 py-3 text-sm font-medium text-gray-700">Meeting Day</th>
-                            <th class="px-4 py-3 text-sm font-medium text-gray-700">Location</th>
-                            <th class="px-4 py-3 text-sm font-medium text-gray-700">Members</th>
-                            <th class="px-4 py-3 text-sm font-medium text-gray-700">Action</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Group Name
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Description
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Meeting Info
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Members
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($groups as $group)
-                            <tr>
-                                <td class="px-4 py-3 text-sm font-semibold text-gray-900">{{ $group->name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ \Illuminate\Support\Str::limit($group->description, 50) }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ $group->meeting_day }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ $group->location ?? '—' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 font-medium">{{ $group->members->count() }}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <button type="button" class="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700" onclick="toggleMembers({{ $group->id }})">View</button>
-                                </td>
-                            </tr>
-                            <!-- Members Detail Row -->
-                            <tr id="members-row-{{ $group->id }}" class="hidden bg-gray-50">
-                                <td colspan="6" class="px-4 py-4">
-                                    <div class="space-y-4">
+                            <tr class="group-row hover:bg-gray-50 transition" 
+                                data-group-name="{{ strtolower($group->name) }}"
+                                data-status="{{ $group->is_active ? 'active' : 'inactive' }}">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        @if($group->image_url)
+                                            <img src="{{ $group->image_url }}" alt="{{ $group->name }}" class="w-10 h-10 rounded-lg object-cover">
+                                        @elseif($group->icon)
+                                            <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-primary text-xl">{{ $group->icon }}</span>
+                                            </div>
+                                        @else
+                                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-gray-400 text-xl">group</span>
+                                            </div>
+                                        @endif
                                         <div>
-                                            <h4 class="font-semibold text-gray-900 mb-2">Add Member to Group</h4>
-                                            <form method="POST" action="{{ route('admin.groups.members.store', $group->id) }}" class="flex gap-2">
-                                                @csrf
-                                                <select name="member_id" class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                                                    <option value="">-- Select a member --</option>
-                                                    @foreach($members as $member)
-                                                        @if(!$group->members->contains($member->id))
-                                                            <option value="{{ $member->id }}">{{ $member->full_name }}</option>
-                                                        @endif
-                                                    @endforeach
-                                                </select>
-                                                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700">Add</button>
-                                            </form>
-                                        </div>
-                                        
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900 mb-2">Current Members ({{ $group->members->count() }})</h4>
-                                            @if($group->members->count() > 0)
-                                                <div class="space-y-2">
-                                                    @foreach($group->members as $member)
-                                                        <div class="flex items-center justify-between bg-white p-3 rounded border border-gray-200">
-                                                            <div>
-                                                                <div class="text-sm text-gray-900 font-medium">{{ $member->full_name }}</div>
-                                                                <div class="text-xs text-gray-500">Joined: {{ optional($member->pivot->created_at)->format('Y-m-d H:i') }}</div>
-                                                            </div>
-                                                            <form method="POST" action="{{ route('admin.groups.members.destroy', [$group->id, $member->id]) }}" style="display:inline;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700" onclick="return confirm('Remove this member from the group?')">Remove</button>
-                                                            </form>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @else
-                                                <p class="text-sm text-gray-600">No members in this group yet.</p>
+                                            <div class="font-semibold text-gray-900">{{ $group->name }}</div>
+                                            @if($group->category)
+                                                <div class="text-xs text-gray-500">{{ $group->category }}</div>
                                             @endif
                                         </div>
                                     </div>
                                 </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-700 max-w-xs">
+                                        {{ Str::limit($group->description, 80) ?: '—' }}
+                                    </p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-700 space-y-1">
+                                        @if($group->meeting_day)
+                                            <div class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-xs">schedule</span>
+                                                {{ $group->meeting_day }}
+                                            </div>
+                                        @endif
+                                        @if($group->location)
+                                            <div class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-xs">location_on</span>
+                                                {{ $group->location }}
+                                            </div>
+                                        @endif
+                                        @if(!$group->meeting_day && !$group->location)
+                                            <span class="text-gray-400">—</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="toggle-members-btn text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-1"
+                                            data-group-id="{{ $group->id }}">
+                                        <span class="material-symbols-outlined text-sm">people</span>
+                                        {{ $group->members->count() }}
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($group->is_active)
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Active</span>
+                                    @else
+                                        <span class="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">Inactive</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <button class="edit-group-btn p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition"
+                                                data-id="{{ $group->id }}"
+                                                data-name="{{ $group->name }}"
+                                                data-description="{{ $group->description }}"
+                                                data-meeting-day="{{ $group->meeting_day }}"
+                                                data-location="{{ $group->location }}"
+                                                data-is-active="{{ $group->is_active ? '1' : '0' }}"
+                                                data-sort-order="{{ $group->sort_order }}"
+                                                data-icon="{{ $group->icon }}"
+                                                data-image-url="{{ $group->image_url }}"
+                                                data-category="{{ $group->category }}"
+                                                title="Edit">
+                                            <span class="material-symbols-outlined text-sm">edit</span>
+                                        </button>
+                                        <form method="POST" action="{{ route('admin.groups.destroy', $group->id) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    onclick="return confirm(&quot;Delete {{ $group->name }}? This will remove all member associations.&quot;)"
+                                                    title="Delete">
+                                                <span class="material-symbols-outlined text-sm">delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
-                        @endforeach
+                            @endforeach
                     </tbody>
                 </table>
             </div>
-        @else
-            <p class="text-gray-600 text-center py-8">No groups created yet. Create one above to get started.</p>
-        @endif
-    </div>
-</div>
-
-<!-- Group Memberships Table: list every joined member per group -->
-<div class="bg-white p-6 rounded-lg shadow mt-8">
-    <h2 class="text-2xl font-semibold mb-4">Group Memberships</h2>
-
-    @if($groups->count() > 0)
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Group</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Member</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Email</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Phone</th>
-                        <th class="px-4 py-3 text-sm font-medium text-gray-700">Joined At</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-100">
-                    @php $hasMembers = false; @endphp
-                    @foreach($groups as $group)
-                        @foreach($group->members as $member)
-                            @php $hasMembers = true; @endphp
-                            <tr>
-                                <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $group->name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ $member->full_name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ $member->email ?? '—' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ $member->phone ?? '—' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">{{ optional($member->pivot->created_at)->format('Y-m-d H:i') ?? '—' }}</td>
-                            </tr>
-                        @endforeach
-                    @endforeach
-                </tbody>
-            </table>
-            @if(!$hasMembers)
-                <p class="text-gray-600 text-center py-8">No members have joined any groups yet.</p>
-            @endif
         </div>
     @else
-        <p class="text-gray-600 text-center py-8">No groups created yet.</p>
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <span class="material-symbols-outlined text-gray-300 text-6xl mb-4">group</span>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No Groups Yet</h3>
+            <p class="text-gray-500 mb-6">Get started by creating your first group</p>
+            <button id="addGroupBtnEmpty" 
+                    class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-secondary shadow-md hover:shadow-lg transition-all duration-200 inline-flex items-center gap-2">
+                <span class="material-symbols-outlined">add</span>
+                Add First Group
+            </button>
+        </div>
     @endif
 </div>
 
-<script>
-    function toggleMembers(id) {
-        const row = document.getElementById('members-row-' + id);
-        if (row) {
-            row.classList.toggle('hidden');
-        }
-    }
-</script>
+<!-- Add/Edit Group Modal -->
+<div id="groupModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200">
+            <h3 id="modalTitle" class="text-2xl font-bold text-gray-900">Add Group</h3>
+        </div>
+        <form id="groupForm" method="POST" action="{{ route('admin.groups.store') }}" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" id="groupId" name="group_id">
+            <input type="hidden" id="formMethod" name="_method" value="POST">
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Group Name *</label>
+                    <input type="text" name="name" id="groupName" required
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
+                </div>
 
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <textarea name="description" id="groupDescription" rows="3"
+                              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Meeting Day</label>
+                        <input type="text" name="meeting_day" id="groupMeetingDay"
+                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary"
+                               placeholder="e.g., Every Sunday">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                        <input type="text" name="location" id="groupLocation"
+                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary"
+                               placeholder="e.g., Main Hall">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                        <input type="text" name="category" id="groupCategory"
+                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary"
+                               placeholder="e.g., Fellowship, Ministry">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Sort Order</label>
+                        <input type="number" name="sort_order" id="groupSortOrder" min="0" value="0"
+                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Icon (Material Symbol)</label>
+                    <input type="text" name="icon" id="groupIcon"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary"
+                           placeholder="e.g., group, church, volunteer_activism">
+                    <p class="text-xs text-gray-500 mt-1">Browse icons at <a href="https://fonts.google.com/icons" target="_blank" class="text-blue-600 hover:underline">Google Material Symbols</a></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Group Image</label>
+                    <input type="file" name="image" id="groupImage" accept="image/*"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
+                    <p class="text-xs text-gray-500 mt-1">Upload an image for the group (optional)</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_active" id="groupIsActive" value="1" checked
+                           class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                    <label for="groupIsActive" class="text-sm font-semibold text-gray-700">Active</label>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
+                <button type="button" id="cancelBtn"
+                        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">
+                    Save Group
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Members Modal -->
+<div id="membersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 id="membersModalTitle" class="text-2xl font-bold text-gray-900">Group Members</h3>
+            <button id="closeMembersModal" class="text-gray-400 hover:text-gray-600">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-6">
+            <div id="membersContent" class="space-y-4">
+                <!-- Members will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('groupModal');
+    const membersModal = document.getElementById('membersModal');
+    const form = document.getElementById('groupForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const addGroupBtn = document.getElementById('addGroupBtn');
+    const addGroupBtnEmpty = document.getElementById('addGroupBtnEmpty');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const closeMembersModal = document.getElementById('closeMembersModal');
+    const searchInput = document.getElementById('searchGroups');
+    const statusFilter = document.getElementById('statusFilter');
+
+    // Open modal for adding
+    [addGroupBtn, addGroupBtnEmpty].forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', () => {
+                modalTitle.textContent = 'Add Group';
+                form.action = '{{ route("admin.groups.store") }}';
+                document.getElementById('formMethod').value = 'POST';
+                form.reset();
+                document.getElementById('groupId').value = '';
+                document.getElementById('groupIsActive').checked = true;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+        }
+    });
+
+    // Open modal for editing
+    document.querySelectorAll('.edit-group-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            modalTitle.textContent = 'Edit Group';
+            form.action = `/admin/groups/${id}`;
+            document.getElementById('formMethod').value = 'PUT';
+            document.getElementById('groupId').value = id;
+            document.getElementById('groupName').value = btn.dataset.name;
+            document.getElementById('groupDescription').value = btn.dataset.description || '';
+            document.getElementById('groupMeetingDay').value = btn.dataset.meetingDay || '';
+            document.getElementById('groupLocation').value = btn.dataset.location || '';
+            document.getElementById('groupCategory').value = btn.dataset.category || '';
+            document.getElementById('groupSortOrder').value = btn.dataset.sortOrder || '0';
+            document.getElementById('groupIcon').value = btn.dataset.icon || '';
+            document.getElementById('groupIsActive').checked = btn.dataset.isActive === '1';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    });
+
+    // Close modal
+    cancelBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    });
+
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    });
+
+    // Toggle members modal
+    document.querySelectorAll('.toggle-members-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const groupId = btn.dataset.groupId;
+            const groupName = btn.closest('tr').querySelector('.font-semibold').textContent;
+            document.getElementById('membersModalTitle').textContent = `${groupName} - Members`;
+            
+            try {
+                const response = await fetch(`/admin/groups/${groupId}/members`);
+                const data = await response.json();
+                
+                const membersContent = document.getElementById('membersContent');
+                if (data.members.length === 0) {
+                    membersContent.innerHTML = '<p class="text-gray-500 text-center py-8">No members in this group yet.</p>';
+                } else {
+                    membersContent.innerHTML = data.members.map(member => `
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                ${member.image_url ? 
+                                    `<img src="${member.image_url}" alt="${member.full_name}" class="w-12 h-12 rounded-full object-cover">` :
+                                    `<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary">person</span>
+                                    </div>`
+                                }
+                                <div>
+                                    <div class="font-semibold text-gray-900">${member.full_name}</div>
+                                    <div class="text-sm text-gray-500">${member.email || 'No email'}</div>
+                                </div>
+                            </div>
+                            <form method="POST" action="/admin/groups/${groupId}/members/${member.id}/remove" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                        onclick="return confirm(&quot;Remove ${member.full_name} from this group?&quot;)"
+                                        title="Remove from group">
+                                    <span class="material-symbols-outlined text-sm">person_remove</span>
+                                </button>
+                            </form>
+                        </div>
+                    `).join('');
+                }
+                
+                membersModal.classList.remove('hidden');
+                membersModal.classList.add('flex');
+            } catch (error) {
+                console.error('Error loading members:', error);
+                alert('Failed to load members');
+            }
+        });
+    });
+
+    // Close members modal
+    closeMembersModal.addEventListener('click', () => {
+        membersModal.classList.add('hidden');
+        membersModal.classList.remove('flex');
+    });
+
+    membersModal.addEventListener('click', (e) => {
+        if (e.target === membersModal) {
+            membersModal.classList.add('hidden');
+            membersModal.classList.remove('flex');
+        }
+    });
+
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', filterGroups);
+    }
+
+    if (statusFilter) {
+        statusFilter.addEventListener('change', filterGroups);
+    }
+
+    function filterGroups() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        const statusValue = statusFilter ? statusFilter.value : 'all';
+        const rows = document.querySelectorAll('.group-row');
+
+        rows.forEach(row => {
+            const name = row.dataset.groupName;
+            const status = row.dataset.status;
+            
+            const matchesSearch = name.includes(searchTerm);
+            const matchesStatus = statusValue === 'all' || status === statusValue;
+            
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 @endsection
