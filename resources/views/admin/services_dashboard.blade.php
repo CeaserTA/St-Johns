@@ -111,7 +111,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($services as $service)
+                    @forelse($services as $service)
                         <tr>
                             <td class="px-4 py-3 text-sm text-gray-700 font-semibold">{{ $service->name ?? $service->title ?? '' }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $service->schedule ?? '' }}</td>
