@@ -267,6 +267,172 @@
                 </table>
             </div>
         </div>
+
+        <!-- Group Members Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mt-8">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">Group Members</h2>
+                        <p class="text-sm text-gray-500 mt-1">Manage and approve group memberships</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <!-- Group Filter -->
+                        <select id="groupFilter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary">
+                            <option value="">All Groups</option>
+                            @foreach($groups as $group)
+                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                            @endforeach
+                        </select>
+                        
+                        <!-- Status Filter -->
+                        <select id="memberStatusFilter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Member</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Group</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Joined</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200" id="groupMembersTableBody">
+                        @php
+                            $allGroupMembers = [];
+                            foreach($groups as $group) {
+                                foreach($group->members as $member) {
+                                    $allGroupMembers[] = [
+                                        'member' => $member,
+                                        'group' => $group,
+                                        'status' => $member->pivot->status,
+                                        'joined_at' => $member->pivot->created_at,
+                                    ];
+                                }
+                            }
+                        @endphp
+
+                        @forelse($allGroupMembers as $item)
+                            <tr class="hover:bg-gray-50 transition group-member-row" 
+                                data-group-id="{{ $item['group']->id }}" 
+                                data-status="{{ $item['status'] }}">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        @if($item['member']->profile_image_url)
+                                            <img src="{{ $item['member']->profile_image_url }}" 
+                                                 alt="{{ $item['member']->full_name }}" 
+                                                 class="w-10 h-10 rounded-full object-cover">
+                                        @else
+                                            <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-primary text-sm">person</span>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div class="font-semibold text-gray-900">{{ $item['member']->full_name }}</div>
+                                            <div class="text-xs text-gray-500">ID: {{ $item['member']->id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        @if($item['group']->icon)
+                                            <span class="material-symbols-outlined text-primary text-sm">{{ $item['group']->icon }}</span>
+                                        @endif
+                                        <span class="font-medium text-gray-900">{{ $item['group']->name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm">
+                                        @if($item['member']->email)
+                                            <div class="text-gray-600 flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-xs">mail</span>
+                                                {{ $item['member']->email }}
+                                            </div>
+                                        @endif
+                                        @if($item['member']->phone)
+                                            <div class="text-gray-600 flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-xs">phone</span>
+                                                {{ $item['member']->phone }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($item['status'] === 'approved')
+                                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Approved</span>
+                                    @elseif($item['status'] === 'rejected')
+                                        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Rejected</span>
+                                    @else
+                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Pending</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ $item['joined_at']->format('M d, Y') }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-end gap-2">
+                                        @if($item['status'] === 'pending')
+                                            <!-- Approve Button -->
+                                            <form method="POST" action="{{ route('admin.groups.members.approve', [$item['group']->id, $item['member']->id]) }}" class="inline">
+                                                @csrf
+                                                <button type="submit" 
+                                                        class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition flex items-center gap-1"
+                                                        title="Approve">
+                                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                                    Approve
+                                                </button>
+                                            </form>
+                                            
+                                            <!-- Reject Button -->
+                                            <form method="POST" action="{{ route('admin.groups.members.reject', [$item['group']->id, $item['member']->id]) }}" class="inline">
+                                                @csrf
+                                                <button type="submit" 
+                                                        class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition flex items-center gap-1"
+                                                        onclick="return confirm('Reject {{ $item['member']->full_name }} from {{ $item['group']->name }}?')"
+                                                        title="Reject">
+                                                    <span class="material-symbols-outlined text-sm">cancel</span>
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        @endif
+                                        
+                                        <!-- Remove Button (for all statuses) -->
+                                        <form method="POST" action="{{ route('admin.groups.members.destroy', [$item['group']->id, $item['member']->id]) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    onclick="return confirm('Remove {{ $item['member']->full_name }} from {{ $item['group']->name }}?')"
+                                                    title="Remove from group">
+                                                <span class="material-symbols-outlined text-sm">person_remove</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                    <span class="material-symbols-outlined text-4xl mb-2 block">group_off</span>
+                                    <p class="text-sm">No group members found</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     @else
         <div class="bg-white rounded-lg shadow-md p-12 text-center">
             <span class="material-symbols-outlined text-gray-300 text-6xl mb-4">group</span>
@@ -468,32 +634,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.members.length === 0) {
                     membersContent.innerHTML = '<p class="text-gray-500 text-center py-8">No members in this group yet.</p>';
                 } else {
-                    membersContent.innerHTML = data.members.map(member => `
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                ${member.image_url ? 
-                                    `<img src="${member.image_url}" alt="${member.full_name}" class="w-12 h-12 rounded-full object-cover">` :
-                                    `<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-primary">person</span>
-                                    </div>`
-                                }
-                                <div>
-                                    <div class="font-semibold text-gray-900">${member.full_name}</div>
-                                    <div class="text-sm text-gray-500">${member.email || 'No email'}</div>
+                    membersContent.innerHTML = data.members.map(member => {
+                        const statusBadge = member.status === 'approved' 
+                            ? '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Approved</span>'
+                            : member.status === 'rejected'
+                            ? '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Rejected</span>'
+                            : '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Pending</span>';
+                        
+                        const actionButtons = member.status === 'pending' 
+                            ? `
+                                <div class="flex gap-2">
+                                    <form method="POST" action="/admin/groups/${groupId}/members/${member.id}/approve" class="inline">
+                                        @csrf
+                                        <button type="submit" 
+                                                class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition flex items-center gap-1"
+                                                title="Approve member">
+                                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="/admin/groups/${groupId}/members/${member.id}/reject" class="inline">
+                                        @csrf
+                                        <button type="submit" 
+                                                class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition flex items-center gap-1"
+                                                onclick="return confirm('Reject ${member.full_name} from this group?')"
+                                                title="Reject member">
+                                            <span class="material-symbols-outlined text-sm">cancel</span>
+                                            Reject
+                                        </button>
+                                    </form>
                                 </div>
+                            `
+                            : `
+                                <form method="POST" action="/admin/groups/${groupId}/members/${member.id}" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            onclick="return confirm('Remove ${member.full_name} from this group?')"
+                                            title="Remove from group">
+                                        <span class="material-symbols-outlined text-sm">person_remove</span>
+                                    </button>
+                                </form>
+                            `;
+                        
+                        return `
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3 flex-1">
+                                    ${member.image_url ? 
+                                        `<img src="${member.image_url}" alt="${member.full_name}" class="w-12 h-12 rounded-full object-cover">` :
+                                        `<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-primary">person</span>
+                                        </div>`
+                                    }
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-900">${member.full_name}</div>
+                                        <div class="text-sm text-gray-500">${member.email || 'No email'}</div>
+                                    </div>
+                                    ${statusBadge}
+                                </div>
+                                ${actionButtons}
                             </div>
-                            <form method="POST" action="/admin/groups/${groupId}/members/${member.id}/remove" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                                        onclick="return confirm(&quot;Remove ${member.full_name} from this group?&quot;)"
-                                        title="Remove from group">
-                                    <span class="material-symbols-outlined text-sm">person_remove</span>
-                                </button>
-                            </form>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
                 
                 membersModal.classList.remove('hidden');
@@ -545,6 +748,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.style.display = 'none';
             }
         });
+    }
+    
+    // Group Members Table Filtering
+    const groupFilter = document.getElementById('groupFilter');
+    const memberStatusFilter = document.getElementById('memberStatusFilter');
+    
+    if (groupFilter && memberStatusFilter) {
+        function filterMembers() {
+            const selectedGroup = groupFilter.value;
+            const selectedStatus = memberStatusFilter.value;
+            const memberRows = document.querySelectorAll('.group-member-row');
+            
+            console.log('Filtering members:', { selectedGroup, selectedStatus, rowCount: memberRows.length });
+            
+            memberRows.forEach(row => {
+                const rowGroupId = row.dataset.groupId;
+                const rowStatus = row.dataset.status;
+                
+                const groupMatch = !selectedGroup || rowGroupId === selectedGroup;
+                const statusMatch = !selectedStatus || rowStatus === selectedStatus;
+                
+                if (groupMatch && statusMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        groupFilter.addEventListener('change', filterMembers);
+        memberStatusFilter.addEventListener('change', filterMembers);
     }
 });
 </script>

@@ -304,12 +304,19 @@ class Event extends Model
             if (Str::startsWith($this->image, ['http://', 'https://'])) {
                 return $this->image;
             }
+            
+            // If it starts with 'assets/', it's in public/assets directory
+            if (Str::startsWith($this->image, 'assets/')) {
+                return asset($this->image);
+            }
+            
             // Check if it's a Supabase path and construct the full URL
             $supabasePublicUrl = config('filesystems.disks.supabase.url');
             $bucket = config('filesystems.disks.supabase.bucket');
             if ($supabasePublicUrl && $bucket) {
                 return $supabasePublicUrl . '/' . $bucket . '/' . $this->image;
             }
+            
             // Otherwise, assume it's in local storage
             return asset('storage/' . $this->image);
         }

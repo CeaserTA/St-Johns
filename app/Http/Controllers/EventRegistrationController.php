@@ -14,14 +14,20 @@ class EventRegistrationController extends Controller
     {
         $data = $request->validate([
             'event_id' => 'nullable|integer',
-            'event_name' => 'nullable|string|max:255',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
         ]);
 
-        $registration = EventRegistration::create($data);
+        // Map the fields to the correct column names
+        $registration = EventRegistration::create([
+            'event_id' => $data['event_id'] ?? null,
+            'guest_first_name' => $data['first_name'],
+            'guest_last_name' => $data['last_name'],
+            'guest_email' => $data['email'] ?? null,
+            'guest_phone' => $data['phone'] ?? null,
+        ]);
 
         return response()->json([
             'message' => 'Registered successfully',

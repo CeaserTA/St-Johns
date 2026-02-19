@@ -241,6 +241,106 @@ input:checked + .toggle-slider:before {
     </div>
 </div>
 
+<!-- Event Registrations Section -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mt-8">
+    <div class="p-6 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold">Event Registrations</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Recent registrations for events</p>
+            </div>
+            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-bold">
+                {{ $registrations->count() }} Total
+            </span>
+        </div>
+    </div>
+
+    <!-- Registrations Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 dark:bg-slate-800/50">
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Name</th>
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Contact</th>
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Event</th>
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Type</th>
+                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Registered</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                @forelse($registrations as $registration)
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                                {{ strtoupper(substr($registration->first_name ?? 'G', 0, 1)) }}
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold">{{ $registration->full_name }}</p>
+                                @if($registration->member_id)
+                                <span class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">verified</span>
+                                    Member
+                                </span>
+                                @else
+                                <span class="text-xs text-slate-500">Guest</span>
+                                @endif
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm">
+                            @if($registration->email)
+                            <p class="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-xs">mail</span>
+                                {{ $registration->email }}
+                            </p>
+                            @endif
+                            @if($registration->phone)
+                            <p class="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-xs">phone</span>
+                                {{ $registration->phone }}
+                            </p>
+                            @endif
+                            @if(!$registration->email && !$registration->phone)
+                            <p class="text-slate-400 text-xs">No contact info</p>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="max-w-xs">
+                            <p class="text-sm font-medium truncate">{{ $registration->event->title ?? 'N/A' }}</p>
+                            @if($registration->event)
+                            <p class="text-xs text-slate-500">{{ $registration->event->formatted_date ?? 'Date TBD' }}</p>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($registration->event)
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $registration->event->is_event ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' }}">
+                            {{ strtoupper($registration->event->type) }}
+                        </span>
+                        @else
+                        <span class="text-xs text-slate-400">N/A</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
+                        {{ $registration->created_at->diffForHumans() }}
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                        <span class="material-symbols-outlined text-4xl mb-2 block">person_off</span>
+                        <p class="text-sm">No registrations yet</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 <!-- Create/Edit Modal -->
 <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">

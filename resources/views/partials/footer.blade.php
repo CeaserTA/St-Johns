@@ -121,3 +121,152 @@
     </div>
   </div>
 </footer>
+
+<!-- My Groups Modal -->
+<div id="myGroupsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-lg shadow-2xl max-h-[80vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-gray-900">My Groups</h3>
+            <button onclick="closeMyGroupsModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="myGroupsContent" class="p-4">
+            <div class="text-center py-6">
+                <svg class="w-10 h-10 text-gray-400 mx-auto mb-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <p class="text-sm text-gray-500">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showMyGroupsModal() {
+        const modal = document.getElementById('myGroupsModal');
+        const content = document.getElementById('myGroupsContent');
+        
+        if (!modal || !content) {
+            console.error('Modal elements not found');
+            return;
+        }
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Fetch member's groups
+        fetch('/api/my-groups', {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Filter to hide rejected groups
+            const userGroups = data.groups ? data.groups.filter(g => g.status !== 'rejected') : [];
+            
+            if (userGroups.length > 0) {
+                content.innerHTML = `
+                    <div class="space-y-3">
+                        ${userGroups.map(group => `
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition">
+                                ${group.image_url ? 
+                                    `<img src="${group.image_url}" alt="${group.name}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">` :
+                                    `<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </div>`
+                                }
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-semibold text-gray-900 text-sm truncate">${group.name}</h4>
+                                    ${group.meeting_day ? `<p class="text-xs text-gray-500">${group.meeting_day}${group.location ? ' • ' + group.location : ''}</p>` : ''}
+                                </div>
+                                <button onclick="leaveGroup(${group.id}, '${group.name}')" 
+                                        class="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition flex-shrink-0"
+                                        title="Leave group">
+                                    Leave
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <p class="text-gray-500 font-medium">You're not in any groups yet</p>
+                        <p class="text-gray-400 text-sm mt-1">Join a group to connect!</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading groups:', error);
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <svg class="w-12 h-12 text-red-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-red-500 text-sm">Error loading groups</p>
+                </div>
+            `;
+        });
+    }
+    
+    function leaveGroup(groupId, groupName) {
+        if (!confirm(`Are you sure you want to leave "${groupName}"?`)) {
+            return;
+        }
+        
+        fetch(`/api/groups/${groupId}/leave`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Refresh the modal
+                showMyGroupsModal();
+            } else {
+                alert(data.message || 'Failed to leave group');
+            }
+        })
+        .catch(error => {
+            console.error('Error leaving group:', error);
+            alert('Failed to leave group');
+        });
+    }
+    
+    function closeMyGroupsModal() {
+        const modal = document.getElementById('myGroupsModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+    
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('myGroupsModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeMyGroupsModal();
+                }
+            });
+        }
+    });
+</script>

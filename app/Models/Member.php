@@ -43,7 +43,9 @@ class Member extends Model
 
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_member')->withTimestamps();
+        return $this->belongsToMany(Group::class, 'group_member')
+            ->withPivot('status', 'approved_by', 'approved_at')
+            ->withTimestamps();
     }
 
     public function givings(): HasMany

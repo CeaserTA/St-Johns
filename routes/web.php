@@ -101,11 +101,14 @@ Route::middleware('admin')->group(function () {
     // Groups dashboard and management
     Route::get('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'index'])
         ->name('admin.groups');
+    Route::get('/admin/groups/{group}/members', [\App\Http\Controllers\Admin\GroupController::class, 'getMembers'])->name('admin.groups.members.get');
     Route::post('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'store'])->name('admin.groups.store');
     Route::put('/admin/groups/{group}', [\App\Http\Controllers\Admin\GroupController::class, 'update'])->name('admin.groups.update');
     Route::delete('/admin/groups/{group}', [\App\Http\Controllers\Admin\GroupController::class, 'destroy'])->name('admin.groups.destroy');
     Route::post('/admin/groups/{group}/members', [\App\Http\Controllers\Admin\GroupController::class, 'addMember'])->name('admin.groups.members.store');
     Route::delete('/admin/groups/{group}/members/{member}', [\App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('admin.groups.members.destroy');
+    Route::post('/admin/groups/{group}/members/{member}/approve', [\App\Http\Controllers\Admin\GroupController::class, 'approveMember'])->name('admin.groups.members.approve');
+    Route::post('/admin/groups/{group}/members/{member}/reject', [\App\Http\Controllers\Admin\GroupController::class, 'rejectMember'])->name('admin.groups.members.reject');
 
     // Admin dashboard-specific services page
     Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services');
@@ -181,6 +184,48 @@ Route::get('/api/recent-members', function() {
 Route::post('/groups/join', [\App\Http\Controllers\GroupJoinController::class, 'store'])
     ->name('groups.join')
     ->middleware('auth');
+
+// Get member's groups (auth required)
+Route::get('/api/my-groups', function() {
+    if (!auth()->check() || !auth()->user()->member) {
+        return response()->json(['groups' => []]);
+    }
+    
+    $member = auth()->user()->member;
+    $groups = $member->groups()->with('members')->get()->map(function($group) use ($member) {
+        return [
+            'id' => $group->id,
+            'name' => $group->name,
+            'description' => $group->description,
+            'meeting_day' => $group->meeting_day,
+            'location' => $group->location,
+            'image_url' => $group->image_url,
+            'status' => $group->pivot->status,
+            'joined_at' => $group->pivot->created_at->format('M d, Y'),
+        ];
+    });
+    
+    return response()->json(['groups' => $groups]);
+})->middleware('auth');
+
+// Leave a group (auth required)
+Route::post('/api/groups/{group}/leave', function(\App\Models\Group $group) {
+    if (!auth()->check() || !auth()->user()->member) {
+        return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+    }
+    
+    $member = auth()->user()->member;
+    
+    // Check if member is in the group
+    if (!$member->groups()->where('groups.id', $group->id)->exists()) {
+        return response()->json(['success' => false, 'message' => 'You are not in this group'], 400);
+    }
+    
+    // Remove member from group
+    $member->groups()->detach($group->id);
+    
+    return response()->json(['success' => true, 'message' => 'Successfully left the group']);
+})->middleware('auth');
 
 // Protect member-management routes behind auth so only admins can view/manage members
 Route::middleware('auth')->group(function () {
