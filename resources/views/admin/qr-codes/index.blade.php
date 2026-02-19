@@ -5,105 +5,154 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center justify-between">
+
+    <!-- QR Code Generator Header – Compact & Sacred -->
+    <div class="bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 p-5 lg:p-6 mb-8 lg:mb-10">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">QR Code Generator</h1>
-                <p class="text-gray-600 mt-1">Generate QR codes for member registration, events, giving, and custom links</p>
+                <h1 class="text-2xl lg:text-3xl font-bold text-primary dark:text-text-dark flex items-center gap-3">
+                    <svg class="h-8 w-8 text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
+                    </svg>
+                    QR Code Generator
+                </h1>
+                <p class="text-sm text-gray-600 dark:text-text-muted-dark mt-1.5">
+                    Generate QR codes for member registration, events, giving, and custom links
+                </p>
             </div>
-            <div class="flex items-center space-x-2">
-                <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
-                </svg>
+
+            <!-- Optional quick tip or status -->
+            <div class="text-right text-xs text-gray-500 dark:text-text-muted-dark">
+                <span class="inline-flex items-center gap-1.5">
+                    <svg class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Scan with phone camera
+                </span>
             </div>
         </div>
     </div>
 
-    <!-- QR Code Types -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- QR Code Types – Compact, Modern & Sacred -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 mb-8 lg:mb-10">
         <!-- Member Registration QR -->
-        <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-primary/50 dark:hover:border-primary/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-5 lg:p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="p-3 bg-primary/10 dark:bg-primary/20 rounded-lg group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors">
+                        <svg class="h-7 w-7 text-primary dark:text-text-dark group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-primary dark:text-text-dark group-hover:text-accent transition-colors">
+                        Member Registration
+                    </h3>
                 </div>
-                <h3 class="ml-3 text-lg font-semibold text-gray-900">Member Registration</h3>
+                <p class="text-sm text-gray-600 dark:text-text-muted-dark mb-4">New member sign-up</p>
+                <button onclick="openMemberRegistrationModal()" 
+                        class="w-full bg-primary hover:bg-secondary text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center justify-center gap-2 text-sm">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Generate QR
+                </button>
             </div>
-            <p class="text-gray-600 mb-4">Generate QR codes for new member registration</p>
-            <button onclick="openMemberRegistrationModal()" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
-                Generate QR Code
-            </button>
         </div>
 
         <!-- Event Registration QR -->
-        <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="p-2 bg-green-100 rounded-lg">
-                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm0 0v3m-3-3h6m-6 0H3m15 0h3" />
-                    </svg>
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-accent/50 dark:hover:border-accent/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-5 lg:p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="p-3 bg-accent/10 dark:bg-accent/20 rounded-lg group-hover:bg-accent/20 dark:group-hover:bg-accent/30 transition-colors">
+                        <svg class="h-7 w-7 text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm0 0v3m-3-3h6m-6 0H3m15 0h3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-accent group-hover:text-primary transition-colors">
+                        Event Registration
+                    </h3>
                 </div>
-                <h3 class="ml-3 text-lg font-semibold text-gray-900">Event Registration</h3>
+                <p class="text-sm text-gray-600 dark:text-text-muted-dark mb-4">Specific events</p>
+                <button onclick="openEventRegistrationModal()" 
+                        class="w-full bg-accent hover:bg-secondary text-primary hover:text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center justify-center gap-2 text-sm">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Generate QR
+                </button>
             </div>
-            <p class="text-gray-600 mb-4">Generate QR codes for specific events</p>
-            <button onclick="openEventRegistrationModal()" 
-                    class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200">
-                Generate QR Code
-            </button>
         </div>
 
         <!-- Giving/Donations QR -->
-        <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="p-2 bg-purple-100 rounded-lg">
-                    <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-secondary/50 dark:hover:border-secondary/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-5 lg:p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="p-3 bg-secondary/10 dark:bg-secondary/20 rounded-lg group-hover:bg-secondary/20 dark:group-hover:bg-secondary/30 transition-colors">
+                        <svg class="h-7 w-7 text-secondary group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-secondary group-hover:text-primary transition-colors">
+                        Giving & Donations
+                    </h3>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-text-muted-dark mb-4">Tithes & offerings</p>
+                <button onclick="openGivingModal()" 
+                        class="w-full bg-secondary hover:bg-accent text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center justify-center gap-2 text-sm">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                     </svg>
-                </div>
-                <h3 class="ml-3 text-lg font-semibold text-gray-900">Giving & Donations</h3>
+                    Generate QR
+                </button>
             </div>
-            <p class="text-gray-600 mb-4">Generate QR codes for tithes and offerings</p>
-            <button onclick="openGivingModal()" 
-                    class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition duration-200">
-                Generate QR Code
-            </button>
         </div>
 
         <!-- Custom URL QR -->
-        <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div class="flex items-center mb-4">
-                <div class="p-2 bg-yellow-100 rounded-lg">
-                    <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 hover:border-accent/50 dark:hover:border-accent/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-5 lg:p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="p-3 bg-accent/10 dark:bg-accent/20 rounded-lg group-hover:bg-accent/20 dark:group-hover:bg-accent/30 transition-colors">
+                        <svg class="h-7 w-7 text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-accent group-hover:text-primary transition-colors">
+                        Custom URL
+                    </h3>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-text-muted-dark mb-4">Any custom link</p>
+                <button onclick="openCustomModal()" 
+                        class="w-full bg-accent hover:bg-secondary text-primary hover:text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center justify-center gap-2 text-sm">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                     </svg>
-                </div>
-                <h3 class="ml-3 text-lg font-semibold text-gray-900">Custom URL</h3>
+                    Generate QR
+                </button>
             </div>
-            <p class="text-gray-600 mb-4">Generate QR codes for any custom URL</p>
-            <button onclick="openCustomModal()" 
-                    class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition duration-200">
-                Generate QR Code
-            </button>
         </div>
     </div>
 
-    <!-- Recent QR Codes -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent QR Codes</h2>
-        <div id="recent-qr-codes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="text-center text-gray-500 py-8">
-                <svg class="h-12 w-12 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <!-- Recent QR Codes – Compact & Modern -->
+    <div class="bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 p-5 lg:p-6 mb-8 lg:mb-10 overflow-hidden">
+        <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-4 flex items-center gap-2">
+            <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
+            </svg>
+            Recent QR Codes
+        </h2>
+
+        <div id="recent-qr-codes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+            <div class="group text-center text-gray-500 dark:text-text-muted-dark py-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-lg border border-gray-200/70 dark:border-gray-700 hover:border-accent/50 dark:hover:border-accent/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                <svg class="h-10 w-10 mx-auto mb-4 text-gray-300 dark:text-gray-600 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M12 8h4.01M8 12h.01M16 8h.01M8 16h.01M8 8h.01M12 16h.01" />
                 </svg>
-                <p>No QR codes generated yet</p>
-                <p class="text-sm">Generate your first QR code using the options above</p>
+                <p class="font-medium mb-1">No QR codes generated yet</p>
+                <p class="text-sm">Start by using one of the options above</p>
             </div>
+            <!-- Generated QR cards will be appended here via JS -->
         </div>
     </div>
+    
 </div>
 
 <!-- Member Registration Modal -->

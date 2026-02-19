@@ -12,348 +12,351 @@
             </div>
         @endif
 
-        <!-- Members Dashboard – Summary Cards (First Section) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-10 lg:mb-12">
-            <!-- Total Members -->
-            <div class="group bg-white dark:bg-background-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100/80 dark:border-gray-700 hover:border-accent/30 dark:hover:border-accent/50 hover:-translate-y-1">
-                <div class="p-6 lg:p-8">
-                    <div class="flex items-center gap-5 mb-6">
-                        <div class="p-4 bg-primary/10 dark:bg-primary/20 rounded-xl group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors">
-                            <svg class="h-8 w-8 text-primary dark:text-text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <!-- Summary Metrics – Clean, Slim & Smooth (No Gradients, Thin Blue Border) -->
+        <div class="bg-white dark:bg-background-dark rounded-2xl shadow-md border border-primary/30 dark:border-primary/40 hover:border-primary/50 transition-all duration-300 p-4 lg:p-5 mb-8 lg:mb-10 overflow-hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+                <!-- Total Members -->
+                <div class="group relative bg-white/90 dark:bg-background-dark/90 rounded-xl border border-gray-200/70 dark:border-gray-700 p-4 lg:p-5 hover:border-accent/40 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 bg-primary/10 dark:bg-primary/20 rounded-lg group-hover:bg-primary/20 transition-colors">
+                            <svg class="h-6 w-6 lg:h-7 lg:w-7 text-primary dark:text-text-dark group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Total Members</p>
-                            <p class="text-4xl lg:text-5xl font-black text-primary dark:text-text-dark mt-1">{{ $stats['total_members'] ?? 0 }}</p>
+                            <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Total Members</p>
+                            <p class="text-3xl lg:text-4xl font-black text-primary dark:text-text-dark mt-0.5">{{ $stats['total_members'] ?? 0 }}</p>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-text-muted-dark">All registered members</p>
+                    <p class="text-xs text-gray-500 dark:text-text-muted-dark mt-2.5">All registered members</p>
                 </div>
-            </div>
 
-            <!-- Active Members -->
-            <div class="group bg-white dark:bg-background-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100/80 dark:border-gray-700 hover:border-accent/30 dark:hover:border-accent/50 hover:-translate-y-1">
-                <div class="p-6 lg:p-8">
-                    <div class="flex items-center gap-5 mb-6">
-                        <div class="p-4 bg-accent/10 dark:bg-accent/20 rounded-xl group-hover:bg-accent/20 dark:group-hover:bg-accent/30 transition-colors">
-                            <svg class="h-8 w-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Active Members -->
+                <div class="group relative bg-white/90 dark:bg-background-dark/90 rounded-xl border border-gray-200/70 dark:border-gray-700 p-4 lg:p-5 hover:border-accent/40 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 bg-accent/10 dark:bg-accent/20 rounded-lg group-hover:bg-accent/20 transition-colors">
+                            <svg class="h-6 w-6 lg:h-7 lg:w-7 text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Active Members</p>
-                            <p class="text-4xl lg:text-5xl font-black text-accent mt-1">{{ $stats['active_members'] ?? 0 }}</p>
+                            <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Active Members</p>
+                            <p class="text-3xl lg:text-4xl font-black text-accent mt-0.5">{{ $stats['active_members'] ?? 0 }}</p>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-text-muted-dark">Currently engaged</p>
+                    <p class="text-xs text-gray-500 dark:text-text-muted-dark mt-2.5">Currently engaged</p>
                 </div>
-            </div>
 
-            <!-- New This Month -->
-            <div class="group bg-white dark:bg-background-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100/80 dark:border-gray-700 hover:border-secondary/30 dark:hover:border-secondary/50 hover:-translate-y-1">
-                <div class="p-6 lg:p-8">
-                    <div class="flex items-center gap-5 mb-6">
-                        <div class="p-4 bg-secondary/10 dark:bg-secondary/20 rounded-xl group-hover:bg-secondary/20 dark:group-hover:bg-secondary/30 transition-colors">
-                            <svg class="h-8 w-8 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- New This Month -->
+                <div class="group relative bg-white/90 dark:bg-background-dark/90 rounded-xl border border-gray-200/70 dark:border-gray-700 p-4 lg:p-5 hover:border-accent/40 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 bg-secondary/10 dark:bg-secondary/20 rounded-lg group-hover:bg-secondary/20 transition-colors">
+                            <svg class="h-6 w-6 lg:h-7 lg:w-7 text-secondary group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">New This Month</p>
-                            <p class="text-4xl lg:text-5xl font-black text-secondary mt-1">{{ $stats['new_this_month'] ?? 0 }}</p>
+                            <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">New This Month</p>
+                            <p class="text-3xl lg:text-4xl font-black text-secondary mt-0.5">{{ $stats['new_this_month'] ?? 0 }}</p>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-text-muted-dark">Recent additions</p>
+                    <p class="text-xs text-gray-500 dark:text-text-muted-dark mt-2.5">Recent additions</p>
                 </div>
-            </div>
 
-            <!-- Average Age -->
-            <div class="group bg-white dark:bg-background-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100/80 dark:border-gray-700 hover:border-accent/30 dark:hover:border-accent/50 hover:-translate-y-1">
-                <div class="p-6 lg:p-8">
-                    <div class="flex items-center gap-5 mb-6">
-                        <div class="p-4 bg-accent/10 dark:bg-accent/20 rounded-xl group-hover:bg-accent/20 dark:group-hover:bg-accent/30 transition-colors">
-                            <svg class="h-8 w-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Average Age -->
+                <div class="group relative bg-white/90 dark:bg-background-dark/90 rounded-xl border border-gray-200/70 dark:border-gray-700 p-4 lg:p-5 hover:border-accent/40 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 bg-accent/10 dark:bg-accent/20 rounded-lg group-hover:bg-accent/20 transition-colors">
+                            <svg class="h-6 w-6 lg:h-7 lg:w-7 text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm0 0v3m-3-3h6m-6 0H3m15 0h3" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Average Age</p>
-                            <p class="text-4xl lg:text-5xl font-black text-accent mt-1">{{ $stats['average_age'] ? round($stats['average_age']) : 'N/A' }}</p>
+                            <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Average Age</p>
+                            <p class="text-3xl lg:text-4xl font-black text-accent mt-0.5">{{ $stats['average_age'] ? round($stats['average_age']) : 'N/A' }}</p>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-text-muted-dark">Across all members</p>
+                    <p class="text-xs text-gray-500 dark:text-text-muted-dark mt-2.5">Across all members</p>
                 </div>
             </div>
         </div>
 
-        <!-- Search & Filters – Compact & Intuitive -->
-        <div class="bg-white dark:bg-background-dark rounded-xl shadow p-5 lg:p-6 mb-8 lg:mb-10 border border-gray-100/80 dark:border-gray-700">
-            <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-4">Search & Filter</h2>
-
-            <form method="GET" action="{{ route('admin.members') }}" class="space-y-4">
-                <!-- Main Search -->
-                <div class="flex flex-col md:flex-row gap-3">
-                    <div class="flex-1">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            id="search" 
-                            value="{{ request('search') }}"
-                            placeholder="Name, email, phone..." 
-                            class="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-white dark:bg-background-dark text-sm transition-all duration-200"
-                        />
-                    </div>
-                    <button type="submit"
-                            class="bg-accent hover:bg-secondary text-primary hover:text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow">
-                        Search
-                    </button>
-                </div>
-
-                <!-- Filters – Tighter Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <!-- Gender -->
-                    <select name="gender" id="gender"
-                            class="px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-white dark:bg-background-dark text-sm transition-all duration-200">
-                        <option value="all">Gender</option>
-                        @foreach($filterOptions['genders'] as $gender)
-                            <option value="{{ $gender }}" {{ request('gender') == $gender ? 'selected' : '' }}>
-                                {{ ucfirst($gender) }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <!-- Marital Status -->
-                    <select name="marital_status" id="marital_status"
-                            class="px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-white dark:bg-background-dark text-sm transition-all duration-200">
-                        <option value="all">Marital</option>
-                        @foreach($filterOptions['marital_statuses'] as $status)
-                            <option value="{{ $status }}" {{ request('marital_status') == $status ? 'selected' : '' }}>
-                                {{ ucfirst($status) }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <!-- Cell -->
-                    <select name="cell" id="cell"
-                            class="px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-white dark:bg-background-dark text-sm transition-all duration-200">
-                        <option value="all">Cell</option>
-                        @foreach($filterOptions['cells'] as $cellName)
-                            <option value="{{ $cellName }}" {{ request('cell') == $cellName ? 'selected' : '' }}>
-                                {{ ucfirst($cellName) }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <!-- Age Range -->
-                    <select name="age_range" id="age_range"
-                            class="px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-white dark:bg-background-dark text-sm transition-all duration-200">
-                        <option value="all">Age</option>
-                        <option value="under_18" {{ request('age_range') == 'under_18' ? 'selected' : '' }}>Under 18</option>
-                        <option value="18_30" {{ request('age_range') == '18_30' ? 'selected' : '' }}>18–30</option>
-                        <option value="31_50" {{ request('age_range') == '31_50' ? 'selected' : '' }}>31–50</option>
-                        <option value="over_50" {{ request('age_range') == 'over_50' ? 'selected' : '' }}>Over 50</option>
-                    </select>
-
-                    <!-- Joined Period -->
-                    <select name="joined_period" id="joined_period"
-                            class="px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-white dark:bg-background-dark text-sm transition-all duration-200">
-                        <option value="all">Joined</option>
-                        <option value="this_month" {{ request('joined_period') == 'this_month' ? 'selected' : '' }}>This Month</option>
-                        <option value="this_year" {{ request('joined_period') == 'this_year' ? 'selected' : '' }}>This Year</option>
-                        <option value="last_year" {{ request('joined_period') == 'last_year' ? 'selected' : '' }}>Last Year</option>
-                    </select>
-
-                    <!-- Clear -->
-                    <div class="flex items-end">
-                        <a href="{{ route('admin.members') }}"
-                        class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-text-muted-dark px-4 py-2.5 rounded-lg text-center text-sm transition-all duration-200">
-                            Clear
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-<!-- Members Table – Clean, Modern & Intuitive -->
-<div class="bg-white dark:bg-background-dark rounded-2xl shadow-lg border border-gray-100/80 dark:border-gray-700 overflow-hidden">
-    <!-- Table Header -->
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 class="text-xl font-bold text-primary dark:text-text-dark flex items-center gap-3">
-            <span class="text-accent text-2xl">👥</span>
-            Members List
-            @if($members && request()->hasAny(['search', 'gender', 'marital_status', 'cell', 'age_range', 'joined_period']))
-                <span class="text-sm font-medium text-gray-500 dark:text-text-muted-dark">({{ $members->total() }} filtered)</span>
-            @elseif($members)
-                <span class="text-sm font-medium text-gray-500 dark:text-text-muted-dark">({{ $members->total() }} total)</span>
-            @else
-                <span class="text-sm font-medium text-gray-500 dark:text-text-muted-dark">(0 total)</span>
-            @endif
+    <!-- Search & Filters – Ultra Slim & Smooth -->
+    <div class="bg-white dark:bg-background-dark rounded-xl shadow-sm border border-gray-200/60 dark:border-gray-700 p-4 lg:p-5 mb-6 lg:mb-8">
+        <h2 class="text-base lg:text-lg font-semibold text-primary dark:text-text-dark mb-3.5 flex items-center gap-2">
+            <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Search & Filter
         </h2>
 
-        <button id="addMemberBtn"
-                class="bg-secondary hover:bg-accent text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Member
-        </button>
+        <form method="GET" action="{{ route('admin.members') }}" class="space-y-3">
+            <!-- Main Search -->
+            <div class="flex flex-col md:flex-row gap-3">
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        id="search" 
+                        value="{{ request('search') }}"
+                        placeholder="Name, email, phone..." 
+                        class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500"
+                    />
+                </div>
+                <button type="submit"
+                        class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm flex items-center justify-center gap-2">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Search
+                </button>
+            </div>
+
+            <!-- Filters – Tight Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <!-- Gender -->
+                <select name="gender" id="gender"
+                        class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
+                    <option value="all">Gender</option>
+                    @foreach($filterOptions['genders'] as $gender)
+                        <option value="{{ $gender }}" {{ request('gender') == $gender ? 'selected' : '' }}>
+                            {{ ucfirst($gender) }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Marital Status -->
+                <select name="marital_status" id="marital_status"
+                        class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
+                    <option value="all">Marital</option>
+                    @foreach($filterOptions['marital_statuses'] as $status)
+                        <option value="{{ $status }}" {{ request('marital_status') == $status ? 'selected' : '' }}>
+                            {{ ucfirst($status) }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Cell -->
+                <select name="cell" id="cell"
+                        class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
+                    <option value="all">Cell</option>
+                    @foreach($filterOptions['cells'] as $cellName)
+                        <option value="{{ $cellName }}" {{ request('cell') == $cellName ? 'selected' : '' }}>
+                            {{ ucfirst($cellName) }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Age Range -->
+                <select name="age_range" id="age_range"
+                        class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
+                    <option value="all">Age</option>
+                    <option value="under_18" {{ request('age_range') == 'under_18' ? 'selected' : '' }}>Under 18</option>
+                    <option value="18_30" {{ request('age_range') == '18_30' ? 'selected' : '' }}>18–30</option>
+                    <option value="31_50" {{ request('age_range') == '31_50' ? 'selected' : '' }}>31–50</option>
+                    <option value="over_50" {{ request('age_range') == 'over_50' ? 'selected' : '' }}>Over 50</option>
+                </select>
+
+                <!-- Joined Period -->
+                <select name="joined_period" id="joined_period"
+                        class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
+                    <option value="all">Joined</option>
+                    <option value="this_month" {{ request('joined_period') == 'this_month' ? 'selected' : '' }}>This Month</option>
+                    <option value="this_year" {{ request('joined_period') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                    <option value="last_year" {{ request('joined_period') == 'last_year' ? 'selected' : '' }}>Last Year</option>
+                </select>
+
+                <!-- Clear -->
+                <div class="flex items-end">
+                    <a href="{{ route('admin.members') }}"
+                    class="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-text-muted-dark px-4 py-2 rounded-lg text-center text-sm transition-all duration-200 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500">
+                        Clear
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <!-- Table -->
-    <div class="overflow-x-auto">
-        <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800/50">
-                <tr>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">
-                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'full_name', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
-                           class="flex items-center hover:text-accent transition-colors">
-                            Full Name
-                            @if(request('sort_by') == 'full_name')
-                                <svg class="ml-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    @if(request('sort_order') == 'asc')
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                                    @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    @endif
-                                </svg>
-                            @endif
-                        </a>
-                    </th>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">Contact</th>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">Personal Info</th>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">Address</th>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">Church Info</th>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">
-                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'date_joined', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
-                           class="flex items-center hover:text-accent transition-colors">
-                            Joined
-                            @if(request('sort_by') == 'date_joined')
-                                <svg class="ml-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    @if(request('sort_order') == 'asc')
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                                    @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    @endif
-                                </svg>
-                            @endif
-                        </a>
-                    </th>
-                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 dark:text-text-muted-dark uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
-                @if($members && $members->count() > 0)
-                    @foreach($members as $member)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        @if($member->hasProfileImage())
-                                            <img class="h-10 w-10 rounded-full object-cover ring-2 ring-accent/30" 
-                                                 src="{{ $member->profile_image_url }}" 
-                                                 alt="{{ $member->full_name }}"
-                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                            <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center ring-2 ring-accent/30" style="display:none;">
-                                                <span class="text-sm font-medium text-primary dark:text-text-dark">
-                                                    {{ $member->full_name ? substr($member->full_name, 0, 1) : '?' }}
-                                                </span>
-                                            </div>
+    <!-- Members Table – Slim, Modern & Intuitive (Thin Blue Border) -->
+    <div class="bg-white dark:bg-background-dark rounded-2xl shadow-md border border-primary/30 dark:border-primary/40 overflow-hidden">
+        <!-- Table Header -->
+        <div class="px-5 py-3.5 border-b border-gray-200/80 dark:border-gray-700/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 class="text-lg lg:text-xl font-bold text-primary dark:text-text-dark flex items-center gap-3">
+                <svg class="h-6 w-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Members List
+                @if($members && request()->hasAny(['search', 'gender', 'marital_status', 'cell', 'age_range', 'joined_period']))
+                    <span class="text-sm font-medium text-gray-500 dark:text-text-muted-dark">({{ $members->total() }} filtered)</span>
+                @elseif($members)
+                    <span class="text-sm font-medium text-gray-500 dark:text-text-muted-dark">({{ $members->total() }} total)</span>
+                @else
+                    <span class="text-sm font-medium text-gray-500 dark:text-text-muted-dark">(0 total)</span>
+                @endif
+            </h2>
+
+            <button id="addMemberBtn"
+                    class="bg-secondary hover:bg-accent text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent/30 text-sm">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Member
+            </button>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200/60 dark:divide-gray-700/50">
+                <thead class="bg-gray-50/80 dark:bg-gray-800/40 border-b border-primary/30 dark:border-primary/40">
+                    <tr>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider border-r border-gray-200/50 dark:border-gray-700/40">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'full_name', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                            class="flex items-center hover:text-accent transition-colors">
+                                Full Name
+                                @if(request('sort_by') == 'full_name')
+                                    <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        @if(request('sort_order') == 'asc')
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                                         @else
-                                            <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center ring-2 ring-accent/30">
-                                                <span class="text-sm font-medium text-primary dark:text-text-dark">
-                                                    {{ $member->full_name ? substr($member->full_name, 0, 1) : '?' }}
-                                                </span>
-                                            </div>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         @endif
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-text-dark">{{ $member->full_name ?? 'N/A' }}</div>
-                                        @if($member->user)
-                                            <span class="text-xs text-green-600 dark:text-green-400">Has Account</span>
+                                    </svg>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider border-r border-gray-200/50 dark:border-gray-700/40">Contact</th>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider border-r border-gray-200/50 dark:border-gray-700/40">Personal Info</th>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider border-r border-gray-200/50 dark:border-gray-700/40">Address</th>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider border-r border-gray-200/50 dark:border-gray-700/40">Church Info</th>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider border-r border-gray-200/50 dark:border-gray-700/40">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'date_joined', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                            class="flex items-center hover:text-accent transition-colors">
+                                Joined
+                                @if(request('sort_by') == 'date_joined')
+                                    <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        @if(request('sort_order') == 'asc')
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                                         @else
-                                            <span class="text-xs text-gray-500 dark:text-text-muted-dark">No Account</span>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         @endif
+                                    </svg>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="px-5 py-3 text-left text-xs font-semibold text-primary dark:text-text-muted-dark uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100/70 dark:divide-gray-700/50">
+                    @if($members && $members->count() > 0)
+                        @foreach($members as $member)
+                            <tr class="group hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-sm hover:-translate-y-[1px] transition-all duration-200">
+                                <td class="px-5 py-3.5 whitespace-nowrap border-r border-gray-100/50 dark:border-gray-700/40">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-9 w-9">
+                                            @if($member->hasProfileImage())
+                                                <img class="h-9 w-9 rounded-full object-cover ring-1 ring-accent/30" 
+                                                    src="{{ $member->profile_image_url }}" 
+                                                    alt="{{ $member->full_name }}"
+                                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div class="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center ring-1 ring-accent/30" style="display:none;">
+                                                    <span class="text-xs font-medium text-primary dark:text-text-dark">
+                                                        {{ $member->full_name ? substr($member->full_name, 0, 1) : '?' }}
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <div class="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center ring-1 ring-accent/30">
+                                                    <span class="text-xs font-medium text-primary dark:text-text-dark">
+                                                        {{ $member->full_name ? substr($member->full_name, 0, 1) : '?' }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="ml-3">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-text-dark group-hover:text-primary transition-colors">{{ $member->full_name ?? 'N/A' }}</div>
+                                            @if($member->user)
+                                                <span class="text-xs text-green-600 dark:text-green-400">Has Account</span>
+                                            @else
+                                                <span class="text-xs text-gray-500 dark:text-text-muted-dark">No Account</span>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-text-dark">
-                                <div>{{ $member->phone ?: 'N/A' }}</div>
-                                <div class="text-gray-500 dark:text-text-muted-dark">{{ $member->email ?: 'N/A' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-text-dark">
-                                <div>{{ $member->gender ? ucfirst($member->gender) : 'N/A' }}</div>
-                                <div class="text-gray-500 dark:text-text-muted-dark">
-                                    {{ $member->marital_status ? ucfirst($member->marital_status) : 'N/A' }}
-                                </div>
-                                @if($member->date_of_birth)
+                                </td>
+                                <td class="px-5 py-3.5 whitespace-nowrap text-sm text-gray-900 dark:text-text-dark border-r border-gray-100/50 dark:border-gray-700/40 group-hover:text-primary/90 transition-colors">
+                                    <div>{{ $member->phone ?: 'N/A' }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-text-muted-dark">{{ $member->email ?: 'N/A' }}</div>
+                                </td>
+                                <td class="px-5 py-3.5 whitespace-nowrap text-sm text-gray-900 dark:text-text-dark border-r border-gray-100/50 dark:border-gray-700/40 group-hover:text-primary/90 transition-colors">
+                                    <div>{{ $member->gender ? ucfirst($member->gender) : 'N/A' }}</div>
                                     <div class="text-xs text-gray-500 dark:text-text-muted-dark">
-                                        DOB: {{ \Carbon\Carbon::parse($member->date_of_birth)->format('M d, Y') }}
+                                        {{ $member->marital_status ? ucfirst($member->marital_status) : 'N/A' }}
                                     </div>
+                                    @if($member->date_of_birth)
+                                        <div class="text-xs text-gray-500 dark:text-text-muted-dark">
+                                            DOB: {{ \Carbon\Carbon::parse($member->date_of_birth)->format('M d, Y') }}
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3.5 text-sm text-gray-900 dark:text-text-dark border-r border-gray-100/50 dark:border-gray-700/40 group-hover:text-primary/90 transition-colors">
+                                    <div class="max-w-xs truncate">{{ $member->address ?: 'N/A' }}</div>
+                                </td>
+                                <td class="px-5 py-3.5 whitespace-nowrap text-sm text-gray-900 dark:text-text-dark border-r border-gray-100/50 dark:border-gray-700/40 group-hover:text-primary/90 transition-colors">
+                                    <div>Cell: {{ $member->cell ? ucfirst($member->cell) : 'N/A' }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-text-muted-dark">Groups: 0</div>
+                                </td>
+                                <td class="px-5 py-3.5 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted-dark border-r border-gray-100/50 dark:border-gray-700/40">
+                                    {{ $member->formatted_date_joined }}
+                                </td>
+                                <td class="px-5 py-3.5 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex flex-wrap gap-2">
+                                        <button onclick="viewMemberDetails({{ $member->id }})"
+                                                class="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-blue-200/50 dark:border-blue-700/40 hover:border-blue-300 dark:hover:border-blue-600/60">
+                                            👁 View
+                                        </button>
+                                        <button onclick="openEditMemberModal({{ $member->id }})"
+                                                class="px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-yellow-200/50 dark:border-yellow-700/40 hover:border-yellow-300 dark:hover:border-yellow-600/60">
+                                            ✏️ Edit
+                                        </button>
+                                        <form method="POST" action="{{ route('members.destroy', $member->id) }}" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-red-200/50 dark:border-red-700/40 hover:border-red-300 dark:hover:border-red-600/60"
+                                                    onclick="return confirm('Are you sure you want to delete this member?')">
+                                                🗑 Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="7" class="px-6 py-10 text-center text-gray-500 dark:text-text-muted-dark text-sm">
+                                @if(request()->hasAny(['search', 'gender', 'marital_status', 'cell', 'age_range', 'joined_period']))
+                                    No members match your filters. 
+                                    <a href="{{ route('admin.members') }}" class="text-primary hover:underline font-medium">Clear filters</a>
+                                @else
+                                    No members registered yet. 
+                                    <button onclick="document.getElementById('addMemberBtn').click()" 
+                                            class="text-primary hover:underline font-medium">
+                                        Add the first member
+                                    </button>!
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-text-dark">
-                                <div class="max-w-xs truncate">{{ $member->address ?: 'N/A' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-text-dark">
-                                <div>Cell: {{ $member->cell ? ucfirst($member->cell) : 'N/A' }}</div>
-                                <div class="text-gray-500 dark:text-text-muted-dark">Groups: 0</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted-dark">
-                                {{ $member->formatted_date_joined }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex flex-wrap gap-2">
-                                    <button onclick="viewMemberDetails({{ $member->id }})"
-                                            class="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-lg transition duration-200 text-xs">
-                                        👁 View
-                                    </button>
-                                    <button onclick="openEditMemberModal({{ $member->id }})"
-                                            class="px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-800/50 rounded-lg transition duration-200 text-xs">
-                                        ✏️ Edit
-                                    </button>
-                                    <form method="POST" action="{{ route('members.destroy', $member->id) }}" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition duration-200 text-xs"
-                                                onclick="return confirm('Are you sure you want to delete this member?')">
-                                            🗑 Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
                         </tr>
-                    @endforeach
-                @else
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-text-muted-dark">
-                            @if(request()->hasAny(['search', 'gender', 'marital_status', 'cell', 'age_range', 'joined_period']))
-                                No members match your filters. 
-                                <a href="{{ route('admin.members') }}" class="text-accent hover:underline font-medium">Clear filters</a>
-                            @else
-                                No members registered yet. 
-                                <button onclick="document.getElementById('addMemberBtn').click()" 
-                                        class="text-accent hover:underline font-medium">
-                                    Add the first member
-                                </button>!
-                            @endif
-                        </td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    @if($members && $members->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
-            {{ $members->links('pagination::tailwind') }}
+                    @endif
+                </tbody>
+            </table>
         </div>
-    @endif
-</div>
 
+        <!-- Pagination -->
+        @if($members && $members->hasPages())
+            <div class="px-5 py-3.5 border-t border-gray-200/80 dark:border-gray-700/80 flex justify-center">
+                {{ $members->links('pagination::tailwind') }}
+            </div>
+        @endif
     </div>
+
 
     <!-- Member Details Modal -->
     <div id="member-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">

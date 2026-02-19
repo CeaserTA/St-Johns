@@ -5,95 +5,136 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-green-100 rounded-lg">
-                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total This Month</p>
-                    <p class="text-2xl font-bold text-gray-900" id="total-month">Loading...</p>
-                    <p class="text-xs text-gray-500" id="current-month">{{ now()->format('F Y') }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Pending</p>
-                    <p class="text-2xl font-bold text-gray-900" id="pending-count">Loading...</p>
+    <!-- Giving Summary Cards – Compact & Clean -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-8 lg:mb-10">
+        <!-- Total This Month -->
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-primary/50 dark:hover:border-primary/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2.5 bg-primary/10 dark:bg-primary/20 rounded-lg group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors">
+                        <svg class="h-6 w-6 text-primary dark:text-text-dark group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Total This Month</p>
+                        <p class="text-2xl lg:text-3xl font-black text-primary dark:text-text-dark mt-0.5" id="total-month">Loading...</p>
+                        <p class="text-xs text-gray-500 dark:text-text-muted-dark mt-0.5" id="current-month">{{ now()->format('F Y') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-purple-100 rounded-lg">
-                    <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Tithes This Month</p>
-                    <p class="text-2xl font-bold text-gray-900" id="tithes-month">Loading...</p>
-                    <p class="text-xs text-gray-500">{{ now()->format('F Y') }}</p>
+        <!-- Pending -->
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-yellow-500/50 dark:hover:border-yellow-400/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2.5 bg-yellow-100/60 dark:bg-yellow-900/30 rounded-lg group-hover:bg-yellow-200/50 dark:group-hover:bg-yellow-800/40 transition-colors">
+                        <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Pending</p>
+                        <p class="text-2xl lg:text-3xl font-black text-yellow-600 dark:text-yellow-400 mt-0.5" id="pending-count">Loading...</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-yellow-100 rounded-lg">
-                    <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+        <!-- Tithes This Month -->
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-secondary/50 dark:hover:border-secondary/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2.5 bg-secondary/10 dark:bg-secondary/20 rounded-lg group-hover:bg-secondary/20 dark:group-hover:bg-secondary/30 transition-colors">
+                        <svg class="h-6 w-6 text-secondary group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Tithes This Month</p>
+                        <p class="text-2xl lg:text-3xl font-black text-secondary mt-0.5" id="tithes-month">Loading...</p>
+                        <p class="text-xs text-gray-500 dark:text-text-muted-dark mt-0.5">{{ now()->format('F Y') }}</p>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Transactions</p>
-                    <p class="text-2xl font-bold text-gray-900" id="transaction-count">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="group bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 border-accent/50 dark:hover:border-accent/60 hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden">
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2.5 bg-accent/10 dark:bg-accent/20 rounded-lg group-hover:bg-accent/20 dark:group-hover:bg-accent/30 transition-colors">
+                        <svg class="h-6 w-6 text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-600 dark:text-text-muted-dark uppercase tracking-wide">Transactions</p>
+                        <p class="text-2xl lg:text-3xl font-black text-accent mt-0.5" id="transaction-count">Loading...</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
-            <div class="text-sm text-gray-500" id="last-updated">
+    <!-- Quick Actions – Compact & Modern -->
+    <div class="bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 p-5 lg:p-6 mb-8 lg:mb-10">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+            <h2 class="text-lg font-semibold text-primary dark:text-text-dark flex items-center gap-2">
+                <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Quick Actions
+            </h2>
+
+            <p class="text-xs text-gray-500 dark:text-text-muted-dark" id="last-updated">
                 <!-- Last updated time will be shown here -->
-            </div>
+            </p>
         </div>
-        <div class="flex flex-wrap gap-4">
-            <a href="{{ route('admin.giving.reports') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                📊 View Reports
+
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ route('admin.giving.reports') }}"
+            class="group bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent/30 text-sm">
+                <svg class="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                View Reports
             </a>
-            <button onclick="refreshData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200" id="refresh-btn">
-                🔄 Refresh Data
+
+            <button onclick="refreshData()" id="refresh-btn"
+                    class="group bg-gray-600 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent/30 text-sm">
+                <svg class="h-4 w-4 group-hover:rotate-180 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh Data
             </button>
-            <a href="{{ route('giving.index') }}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                ❤️ Public Giving Page
+
+            <a href="{{ route('giving.index') }}" target="_blank"
+            class="group bg-accent hover:bg-secondary text-primary hover:text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent/30 text-sm">
+                <svg class="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                Public Giving Page
             </a>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Filter Givings</h2>
-        <form method="GET" action="{{ route('admin.givings') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+    <!-- Filter Givings – Compact & Clean -->
+    <div class="bg-white dark:bg-background-dark rounded-xl shadow border border-gray-200/70 dark:border-gray-700 p-5 lg:p-6 mb-8 lg:mb-10">
+        <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-4 flex items-center gap-2">
+            <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18" />
+            </svg>
+            Filter Givings
+        </h2>
+
+        <form method="GET" action="{{ route('admin.givings') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Status -->
             <div>
-                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="status" class="block text-xs font-medium text-gray-700 dark:text-text-muted-dark mb-1.5">Status</label>
+                <select name="status" id="status"
+                        class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
                     <option value="">All Statuses</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
@@ -102,9 +143,11 @@
                 </select>
             </div>
 
+            <!-- Giving Type -->
             <div>
-                <label for="giving_type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <select name="giving_type" id="giving_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="giving_type" class="block text-xs font-medium text-gray-700 dark:text-text-muted-dark mb-1.5">Type</label>
+                <select name="giving_type" id="giving_type"
+                        class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
                     <option value="">All Types</option>
                     <option value="tithe" {{ request('giving_type') == 'tithe' ? 'selected' : '' }}>Tithe</option>
                     <option value="offering" {{ request('giving_type') == 'offering' ? 'selected' : '' }}>Offering</option>
@@ -113,9 +156,11 @@
                 </select>
             </div>
 
+            <!-- Payment Method -->
             <div>
-                <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-                <select name="payment_method" id="payment_method" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="payment_method" class="block text-xs font-medium text-gray-700 dark:text-text-muted-dark mb-1.5">Payment Method</label>
+                <select name="payment_method" id="payment_method"
+                        class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
                     <option value="">All Methods</option>
                     <option value="cash" {{ request('payment_method') == 'cash' ? 'selected' : '' }}>Cash</option>
                     <option value="mobile_money" {{ request('payment_method') == 'mobile_money' ? 'selected' : '' }}>Mobile Money</option>
@@ -125,140 +170,164 @@
                 </select>
             </div>
 
+            <!-- Start Date -->
             <div>
-                <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="start_date" class="block text-xs font-medium text-gray-700 dark:text-text-muted-dark mb-1.5">Start Date</label>
+                <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}"
+                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-background-dark text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-gray-400 dark:hover:border-gray-500">
             </div>
 
+            <!-- Filter Button -->
             <div class="flex items-end">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
+                <button type="submit"
+                        class="w-full bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm">
                     Filter
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Givings Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Recent Givings</h2>
+    <!-- Recent Givings Table – Compact, Modern & Intuitive -->
+    <div class="bg-white dark:bg-background-dark rounded-2xl shadow-lg border border-gray-200/70 dark:border-gray-700 overflow-hidden">
+        <!-- Table Header -->
+        <div class="px-5 py-3.5 border-b border-gray-200/80 dark:border-gray-700/80">
+            <h2 class="text-lg font-bold text-primary dark:text-text-dark flex items-center gap-3">
+                <svg class="h-6 w-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Recent Givings
+            </h2>
         </div>
-        
+
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-gray-200/70 dark:divide-gray-700/60">
+                <thead class="bg-primary/5 dark:bg-primary/10 border-b border-primary/30 dark:border-primary/40">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giver</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
+                            Giver
+                        </th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
+                            Type
+                        </th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
+                            Amount
+                        </th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
+                            Payment
+                        </th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
+                            Status
+                        </th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
+                            Date
+                        </th>
+                        <th class="px-5 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-100/70 dark:divide-gray-700/50">
                     @forelse($givings as $giving)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10">
-                                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                        @if($giving->member)
-                                            <span class="text-sm font-medium text-gray-700">{{ substr($giving->member->full_name, 0, 1) }}</span>
-                                        @else
-                                            <span class="text-sm font-medium text-gray-700">G</span>
-                                        @endif
+                        <tr class="group hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-md hover:-translate-y-[1px] hover:border-x hover:border-primary/30 dark:hover:border-primary/40 transition-all duration-200">
+                            <td class="px-5 py-3.5 whitespace-nowrap border-r border-gray-100/50 dark:border-gray-700/40">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-9 w-9">
+                                        <div class="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center ring-1 ring-accent/30">
+                                            <span class="text-sm font-medium text-primary dark:text-text-dark">
+                                                {{ $giving->member ? substr($giving->member->full_name, 0, 1) : 'G' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-text-dark group-hover:text-primary transition-colors">
+                                            {{ $giving->giver_name }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-text-muted-dark">
+                                            {{ $giving->member ? 'Member' : 'Guest' }}
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $giving->giver_name }}</div>
-                                    <div class="text-sm text-gray-500">
-                                        @if($giving->member)
-                                            Member
-                                        @else
-                                            Guest
-                                        @endif
-                                    </div>
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap border-r border-gray-100/50 dark:border-gray-700/40">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($giving->giving_type == 'tithe') bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300
+                                    @elseif($giving->giving_type == 'offering') bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300
+                                    @elseif($giving->giving_type == 'donation') bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300
+                                    @else bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 @endif">
+                                    {{ ucfirst(str_replace('_', ' ', $giving->giving_type)) }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap text-sm font-medium border-r border-gray-100/50 dark:border-gray-700/40 group-hover:text-primary transition-colors">
+                                <div>{{ number_format($giving->amount, 0) }} {{ $giving->currency }}</div>
+                                @if($giving->processing_fee)
+                                    <div class="text-xs text-gray-500 dark:text-text-muted-dark">Fee: {{ number_format($giving->processing_fee, 0) }} {{ $giving->currency }}</div>
+                                @endif
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap text-sm text-gray-700 dark:text-text-muted-dark border-r border-gray-100/50 dark:border-gray-700/40 group-hover:text-primary/90 transition-colors">
+                                <div>{{ ucfirst(str_replace('_', ' ', $giving->payment_method)) }}</div>
+                                @if($giving->payment_provider)
+                                    <div class="text-xs text-gray-500 dark:text-text-muted-dark">{{ $giving->payment_provider }}</div>
+                                @endif
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap border-r border-gray-100/50 dark:border-gray-700/40">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    @if($giving->status == 'completed') bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300
+                                    @elseif($giving->status == 'pending') bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300
+                                    @elseif($giving->status == 'failed') bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300
+                                    @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-text-muted-dark @endif">
+                                    {{ ucfirst($giving->status) }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted-dark border-r border-gray-100/50 dark:border-gray-700/40">
+                                {{ $giving->payment_date ? $giving->payment_date->format('M d, Y') : $giving->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap text-sm font-medium">
+                                <div class="flex flex-wrap gap-2">
+                                    @if($giving->status == 'pending')
+                                        <button onclick="showConfirmModal({{ $giving->id }}, '{{ $giving->giver_name }}', {{ $giving->amount }}, '{{ $giving->currency }}')" 
+                                                class="px-3 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-green-200/50 dark:border-green-700/40 hover:border-green-300 dark:hover:border-green-600/60">
+                                            ✓ Confirm
+                                        </button>
+                                        <button onclick="showFailModal({{ $giving->id }}, '{{ $giving->giver_name }}')" 
+                                                class="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-red-200/50 dark:border-red-700/40 hover:border-red-300 dark:hover:border-red-600/60">
+                                            ✗ Fail
+                                        </button>
+                                    @endif
+                                    @if($giving->status == 'completed' && $giving->giver_email)
+                                        <button onclick="resendReceipt({{ $giving->id }}, '{{ $giving->giver_email }}')" 
+                                                class="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-blue-200/50 dark:border-blue-700/40 hover:border-blue-300 dark:hover:border-blue-600/60">
+                                            📧 Resend
+                                        </button>
+                                    @endif
+                                    <button onclick="viewDetails({{ $giving->id }})" 
+                                            class="px-3 py-1.5 bg-gray-50 dark:bg-gray-800/30 text-gray-700 dark:text-text-muted-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500">
+                                        👁 View
+                                    </button>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                @if($giving->giving_type == 'tithe') bg-purple-100 text-purple-800
-                                @elseif($giving->giving_type == 'offering') bg-blue-100 text-blue-800
-                                @elseif($giving->giving_type == 'donation') bg-green-100 text-green-800
-                                @else bg-yellow-100 text-yellow-800 @endif">
-                                {{ ucfirst(str_replace('_', ' ', $giving->giving_type)) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <div class="font-medium">{{ number_format($giving->amount, 0) }} {{ $giving->currency }}</div>
-                            @if($giving->processing_fee)
-                                <div class="text-xs text-gray-500">Fee: {{ number_format($giving->processing_fee, 0) }} {{ $giving->currency }}</div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <div>{{ ucfirst(str_replace('_', ' ', $giving->payment_method)) }}</div>
-                            @if($giving->payment_provider)
-                                <div class="text-xs text-gray-500">{{ $giving->payment_provider }}</div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                @if($giving->status == 'completed') bg-green-100 text-green-800
-                                @elseif($giving->status == 'pending') bg-yellow-100 text-yellow-800
-                                @elseif($giving->status == 'failed') bg-red-100 text-red-800
-                                @else bg-gray-100 text-gray-800 @endif">
-                                {{ ucfirst($giving->status) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $giving->payment_date ? $giving->payment_date->format('M d, Y') : $giving->created_at->format('M d, Y') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                @if($giving->status == 'pending')
-                                    <button onclick="showConfirmModal({{ $giving->id }}, '{{ $giving->giver_name }}', {{ $giving->amount }}, '{{ $giving->currency }}')" 
-                                            class="text-green-600 hover:text-green-900 transition duration-200 text-xs px-2 py-1 bg-green-50 rounded">
-                                        ✓ Confirm
-                                    </button>
-                                    <button onclick="showFailModal({{ $giving->id }}, '{{ $giving->giver_name }}')" 
-                                            class="text-red-600 hover:text-red-900 transition duration-200 text-xs px-2 py-1 bg-red-50 rounded">
-                                        ✗ Fail
-                                    </button>
-                                @endif
-                                @if($giving->status == 'completed' && $giving->giver_email)
-                                    <button onclick="resendReceipt({{ $giving->id }}, '{{ $giving->giver_email }}')" 
-                                            class="text-blue-600 hover:text-blue-900 transition duration-200 text-xs px-2 py-1 bg-blue-50 rounded">
-                                        📧 Resend
-                                    </button>
-                                @endif
-                                <button onclick="viewDetails({{ $giving->id }})" 
-                                        class="text-gray-600 hover:text-gray-900 transition duration-200 text-xs px-2 py-1 bg-gray-50 rounded">
-                                    👁 View
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-                            No givings found. <a href="{{ route('giving.index') }}" class="text-blue-600 hover:underline">Share the giving page</a> to get started!
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="px-6 py-10 text-center text-gray-500 dark:text-text-muted-dark text-sm">
+                                No givings found yet.
+                                <a href="{{ route('giving.index') }}" class="text-primary hover:underline font-medium ml-2">
+                                    Share the public giving page
+                                </a> to start receiving donations!
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
+        <!-- Pagination -->
         @if($givings->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200">
-            {{ $givings->links() }}
-        </div>
+            <div class="px-5 py-3.5 border-t border-gray-200/80 dark:border-gray-700/80 flex justify-center">
+                {{ $givings->links('pagination::tailwind') }}
+            </div>
         @endif
     </div>
+
 </div>
 
 <!-- Giving Details Modal -->
