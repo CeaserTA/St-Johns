@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Service;
 use App\Models\ServiceRegistration;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
+use App\Notifications\ServiceRegistrationCreated;
+use App\Notifications\ServicePaymentSubmitted;
 
 class ServiceRegistrationController extends Controller
 {
@@ -66,6 +69,18 @@ class ServiceRegistrationController extends Controller
             'paid_at' => $service->isFree() ? now() : null,
         ]);
 
+        // Send notification to admins
+        try {
+            $notificationService = app(NotificationService::class);
+            $notificationService->notifyAdmins(new ServiceRegistrationCreated($registration));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send service registration notification', [
+                'registration_id' => $registration->id,
+                'error' => $e->getMessage()
+            ]);
+            // Don't fail registration if notification fails
+        }
+
         $serviceName = $registration->service->name;
 
         if ($service->isFree()) {
@@ -104,6 +119,18 @@ class ServiceRegistrationController extends Controller
             'payment_notes' => $validated['payment_notes'] ?? null,
             // Status remains 'pending' until admin confirms
         ]);
+
+        // Send notification to admins
+        try {
+            $notificationService = app(NotificationService::class);
+            $notificationService->notifyAdmins(new ServicePaymentSubmitted($registration));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send service payment notification', [
+                'registration_id' => $registration->id,
+                'error' => $e->getMessage()
+            ]);
+            // Don't fail payment submission if notification fails
+        }
 
         return response()->json([
             'success' => true,

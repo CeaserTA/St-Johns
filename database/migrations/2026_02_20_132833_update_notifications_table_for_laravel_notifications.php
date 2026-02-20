@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop the old notifications table
+        Schema::dropIfExists('notifications');
+        
+        // Create the new notifications table with Laravel's standard structure
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('type'); // Notification class name
@@ -29,6 +33,23 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop the Laravel notifications table
         Schema::dropIfExists('notifications');
+        
+        // Restore the old notifications table structure
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('type');
+            $table->string('title');
+            $table->text('message');
+            $table->unsignedBigInteger('related_id')->nullable();
+            $table->string('related_type')->nullable();
+            $table->boolean('is_read')->default(false);
+            $table->timestamps();
+
+            $table->index(['user_id', 'is_read']);
+            $table->index('created_at');
+        });
     }
 };

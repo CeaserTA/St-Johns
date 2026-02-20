@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Services\NotificationService;
+use App\Notifications\NewAccountCreated;
 
 class RegisteredUserController extends Controller
 {
@@ -86,6 +88,21 @@ class RegisteredUserController extends Controller
             DB::commit();
 
             Log::info('Account creation successful', ['user_id' => $user->id, 'member_id' => $member->id]);
+
+            // Send notification to admins (only if linked to member)
+            if ($member) {
+                try {
+                    $notificationService = app(NotificationService::class);
+                    $notificationService->notifyAdmins(new NewAccountCreated($user, $member));
+                } catch (\Exception $e) {
+                    Log::error('Failed to send account creation notification', [
+                        'user_id' => $user->id,
+                        'member_id' => $member->id,
+                        'error' => $e->getMessage()
+                    ]);
+                    // Don't fail account creation if notification fails
+                }
+            }
 
             return redirect()->route('services')->with('success', 'Welcome! Your account is ready.');
             

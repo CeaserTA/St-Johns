@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Services\NotificationService;
+use App\Notifications\NewGivingSubmitted;
 
 class GivingController extends Controller
 {
@@ -135,6 +137,18 @@ class GivingController extends Controller
             $giving->calculateNetAmount();
 
             DB::commit();
+
+            // Send notification to admins
+            try {
+                $notificationService = app(NotificationService::class);
+                $notificationService->notifyAdmins(new NewGivingSubmitted($giving));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send giving notification', [
+                    'giving_id' => $giving->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Don't fail giving creation if notification fails
+            }
 
             $responseMessage = 'Thank you for your generous giving! Your contribution has been recorded.';
             $responseMessage .= ' Your payment is being verified and you will receive a receipt once confirmed by our admin team.';
