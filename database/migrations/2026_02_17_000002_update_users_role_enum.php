@@ -12,8 +12,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Modify the enum to include 'member' as a valid value
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'member') DEFAULT 'member'");
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'sqlite') {
+            // SQLite doesn't support ENUM or MODIFY COLUMN
+            // We need to recreate the table
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role_temp')->default('member')->after('role');
+            });
+            
+            DB::statement("UPDATE users SET role_temp = role");
+            
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('role');
+            });
+            
+            Schema::table('users', function (Blueprint $table) {
+                $table->renameColumn('role_temp', 'role');
+            });
+        } else {
+            // MySQL/PostgreSQL
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'member') DEFAULT 'member'");
+        }
     }
 
     /**
@@ -21,7 +41,26 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Revert back to original enum values
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin') DEFAULT 'user'");
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'sqlite') {
+            // SQLite doesn't support ENUM or MODIFY COLUMN
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role_temp')->default('user')->after('role');
+            });
+            
+            DB::statement("UPDATE users SET role_temp = role");
+            
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('role');
+            });
+            
+            Schema::table('users', function (Blueprint $table) {
+                $table->renameColumn('role_temp', 'role');
+            });
+        } else {
+            // MySQL/PostgreSQL
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin') DEFAULT 'user'");
+        }
     }
 };

@@ -142,6 +142,7 @@
                             <input type="number" name="amount" required min="1000" step="100"
                                 class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
                                 placeholder="e.g. 50000">
+                            <input type="hidden" name="currency" value="UGX">
                         </div>
                     </div>
 
@@ -197,7 +198,7 @@
                                         <label for="payment_provider" class="block text-sm font-medium text-gray-700 mb-1">
                                             Provider
                                         </label>
-                                        <select id="payment_provider" name="payment_provider"
+                                        <select id="payment_provider" name="payment_provider" disabled
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                             <option value="">Select provider</option>
                                             <option value="MTN">MTN Mobile Money</option>
@@ -208,7 +209,7 @@
                                         <label for="payment_account" class="block text-sm font-medium text-gray-700 mb-1">
                                             Your Phone Number
                                         </label>
-                                        <input type="tel" id="payment_account" name="payment_account"
+                                        <input type="tel" id="payment_account" name="payment_account" disabled
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                                placeholder="0700-000-000">
                                     </div>
@@ -218,7 +219,7 @@
                                     <label for="transaction_reference" class="block text-sm font-medium text-gray-700 mb-1">
                                         Transaction Reference <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" id="transaction_reference" name="transaction_reference"
+                                    <input type="text" id="transaction_reference" name="transaction_reference" disabled
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                            placeholder="Enter transaction ID from SMS">
                                 </div>
@@ -238,9 +239,9 @@
                                 
                                 <div>
                                     <label for="transaction_reference_bank" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Transaction Reference
+                                        Transaction Reference <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" id="transaction_reference_bank" name="transaction_reference"
+                                    <input type="text" id="transaction_reference_bank" name="transaction_reference" disabled
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                            placeholder="Bank transaction reference">
                                 </div>
@@ -261,9 +262,15 @@
 
                 <!-- Submit -->
                 <div class="flex justify-center">
-                    <button type="submit"
+                    <button type="submit" id="submit-btn"
                         class="px-6 bg-secondary hover:bg-accent text-white font-bold text-lg py-2 rounded-2xl shadow-xl hover:shadow-accent/30 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-3">
-                        <span>Submit </span>
+                        <span id="submit-text">Submit </span>
+                        <span id="submit-loading" class="hidden">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
                         <svg class="w-6 h-6 group-hover:translate-x-2 transition" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
@@ -365,14 +372,30 @@
             allDetails.forEach(detail => detail.classList.add('hidden'));
             paymentDetails.classList.add('hidden');
 
+            // Clear all payment-specific fields when switching methods
+            document.getElementById('payment_provider').value = '';
+            document.getElementById('payment_account').value = '';
+            document.getElementById('transaction_reference').value = '';
+            document.getElementById('transaction_reference_bank').value = '';
+            
+            // Disable fields that aren't being used
+            document.getElementById('payment_provider').disabled = true;
+            document.getElementById('payment_account').disabled = true;
+            document.getElementById('transaction_reference').disabled = true;
+            document.getElementById('transaction_reference_bank').disabled = true;
+
             if (method) {
                 paymentDetails.classList.remove('hidden');
 
-                // Show specific payment method details
+                // Show specific payment method details and enable relevant fields
                 if (method === 'mobile_money') {
                     document.getElementById('mobile-money-details').classList.remove('hidden');
+                    document.getElementById('payment_provider').disabled = false;
+                    document.getElementById('payment_account').disabled = false;
+                    document.getElementById('transaction_reference').disabled = false;
                 } else if (method === 'bank_transfer') {
                     document.getElementById('bank-transfer-details').classList.remove('hidden');
+                    document.getElementById('transaction_reference_bank').disabled = false;
                 } else if (method === 'cash') {
                     document.getElementById('cash-details').classList.remove('hidden');
                 }
@@ -400,13 +423,15 @@
                 }
             })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
+                    // Parse JSON regardless of status
+                    return response.json().then(data => ({
+                        status: response.status,
+                        ok: response.ok,
+                        data: data
+                    }));
                 })
-                .then(data => {
-                    if (data.success) {
+                .then(({status, ok, data}) => {
+                    if (ok && data.success) {
                         showMessage('success', data.message);
 
                         // Show next steps if available
@@ -422,14 +447,18 @@
                         // Scroll to top
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
+                        // Handle validation errors (422) or other errors
                         let errorMessage = data.message || 'An error occurred. Please try again.';
 
                         // Handle validation errors
                         if (data.errors) {
                             const errorList = Object.entries(data.errors)
-                                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
-                                .join('\n');
-                            errorMessage += '\n\nValidation Errors:\n' + errorList;
+                                .map(([field, messages]) => {
+                                    const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                    return `<strong>${fieldName}:</strong> ${Array.isArray(messages) ? messages.join(', ') : messages}`;
+                                })
+                                .join('<br>');
+                            errorMessage = `<strong>Validation Errors:</strong><br>${errorList}`;
                         }
 
                         showMessage('error', errorMessage);
@@ -440,11 +469,7 @@
                     let errorMessage = 'An error occurred while processing your giving. Please try again.';
 
                     // Provide more specific error messages based on error type
-                    if (error.message.includes('422')) {
-                        errorMessage = 'Please check your input and try again. Some required fields may be missing or invalid.';
-                    } else if (error.message.includes('500')) {
-                        errorMessage = 'A server error occurred. Please try again in a few moments or contact support if the problem persists.';
-                    } else if (error.message.includes('Failed to fetch')) {
+                    if (error.message.includes('Failed to fetch')) {
                         errorMessage = 'Network error. Please check your internet connection and try again.';
                     }
 

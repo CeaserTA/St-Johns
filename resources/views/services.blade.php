@@ -605,6 +605,20 @@ textarea.field-input-sm { resize: none; }
     </div>
 @endif
 
+{{-- Member Registration Required Message --}}
+@if(session('show_member_registration'))
+    <div class="flash" role="alert" style="background:#e8f4ff; border-left:3px solid #3b82f6; color:#1e40af;">
+        <span class="material-symbols-outlined" style="font-size:18px; flex-shrink:0; color:#3b82f6;">info</span>
+        <div>
+            <div class="flash-title">Member Registration Required</div>
+            <p style="margin-top:4px;">You must register as a church member before creating an account. Please visit our church office or contact us to complete your member registration.</p>
+            @if(session('prefill_email'))
+                <p style="margin-top:8px; font-size:12px; opacity:0.8;">Email: {{ session('prefill_email') }}</p>
+            @endif
+        </div>
+    </div>
+@endif
+
 {{-- ═══════════════ PAGE HERO ═══════════════ --}}
 <section class="page-hero">
     <div class="page-hero-cross">✝</div>
@@ -742,7 +756,7 @@ textarea.field-input-sm { resize: none; }
                         <div class="login-prompt">
                             <p>Please log in to register for a service. Don't have an account? Create one in seconds.</p>
                             <div class="login-prompt-btns">
-                                <a href="{{ route('login') }}" class="btn-lp-solid">Log In</a>
+                                <button onclick="showLoginModal()" class="btn-lp-solid">Log In</button>
                                 <a href="#" onclick="showQuickAccountModal(); return false;" class="btn-lp-outline">Create Account</a>
                             </div>
                         </div>
@@ -856,6 +870,7 @@ textarea.field-input-sm { resize: none; }
 </div>
 
 @include('partials.member-modals')
+@include('partials.login-modal')
 @include('partials.quick-account-modal')
 @include('partials.footer')
 
@@ -866,6 +881,49 @@ let currentRegistrationData = null;
 @if(session('show_payment_modal') && session('registration_data'))
     document.addEventListener('DOMContentLoaded', function () {
         showPaymentModal(@json(session('registration_data')));
+    });
+@endif
+
+// Auto-show quick account modal after member registration
+@if(session('show_account_creation'))
+    document.addEventListener('DOMContentLoaded', function () {
+        // Small delay to ensure modal is loaded
+        setTimeout(function() {
+            if (typeof showQuickAccountModal === 'function') {
+                showQuickAccountModal();
+                // Pre-fill email if provided in session
+                @if(session('prefill_email'))
+                    const emailInput = document.getElementById('quickAccountEmail');
+                    if (emailInput) {
+                        emailInput.value = '{{ session('prefill_email') }}';
+                    }
+                @endif
+            }
+        }, 300);
+    });
+@endif
+
+// Handle show_member_registration flash message
+@if(session('show_member_registration'))
+    document.addEventListener('DOMContentLoaded', function () {
+        // Show member registration modal if available
+        setTimeout(function() {
+            if (typeof showMemberRegistrationModal === 'function') {
+                showMemberRegistrationModal();
+                // Pre-fill email if provided in session
+                @if(session('prefill_email'))
+                    const emailInput = document.querySelector('#memberRegistrationModal input[name="email"]');
+                    if (emailInput) {
+                        emailInput.value = '{{ session('prefill_email') }}';
+                    }
+                @endif
+                // Show informational message
+                showToast('Please register as a church member first before creating an account.', 'info');
+            } else {
+                // Fallback: just show the toast message if modal function doesn't exist
+                showToast('Please register as a church member first before creating an account.', 'info');
+            }
+        }, 300);
     });
 @endif
 
@@ -922,13 +980,20 @@ document.getElementById('paymentProofForm').addEventListener('submit', async fun
 
 function showToast(msg, type = 'success') {
     const t = document.createElement('div');
+    let styles = '';
+    if (type === 'success') {
+        styles = 'background:#0c1b3a; color:#e8b96a; border-left:3px solid #c8973a;';
+    } else if (type === 'error') {
+        styles = 'background:#fff; color:#c0392b; border-left:3px solid #c0392b; box-shadow:0 8px 24px rgba(0,0,0,.12);';
+    } else if (type === 'info') {
+        styles = 'background:#fff; color:#0c1b3a; border-left:3px solid #3b82f6; box-shadow:0 8px 24px rgba(0,0,0,.12);';
+    }
+    
     t.style.cssText = `
         position:fixed; top:24px; right:24px; z-index:9999;
         padding:16px 22px; min-width:280px; font-family:'Jost',sans-serif;
         font-size:13px; border-radius:2px; animation: fadeUp .3s ease both;
-        ${type === 'success'
-            ? 'background:#0c1b3a; color:#e8b96a; border-left:3px solid #c8973a;'
-            : 'background:#fff; color:#c0392b; border-left:3px solid #c0392b; box-shadow:0 8px 24px rgba(0,0,0,.12);'}
+        ${styles}
     `;
     t.textContent = msg;
     document.body.appendChild(t);

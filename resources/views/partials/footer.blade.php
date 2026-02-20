@@ -120,6 +120,7 @@
       <span class="mt-2 md:mt-0">Made with ❤️ in Uganda</span>
     </div>
   </div>
+@include('partials.login-modal')
 </footer>
 
 <!-- My Groups Modal -->

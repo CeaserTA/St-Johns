@@ -134,25 +134,10 @@ class GivingController extends Controller
             // Calculate net amount
             $giving->calculateNetAmount();
 
-            // Auto-confirm cash payments (assuming they're verified at collection)
-            if ($request->payment_method === 'cash') {
-                $giving->markAsCompleted($user);
-                
-                // Send receipt immediately for cash payments if email available
-                if ($giving->giver_email) {
-                    $giving->sendReceipt();
-                }
-            }
-
             DB::commit();
 
             $responseMessage = 'Thank you for your generous giving! Your contribution has been recorded.';
-            
-            if ($giving->status === 'pending') {
-                $responseMessage .= ' Your payment is being verified and you will receive a receipt once confirmed.';
-            } elseif ($giving->status === 'completed' && $giving->giver_email) {
-                $responseMessage .= ' A receipt has been sent to your email address.';
-            }
+            $responseMessage .= ' Your payment is being verified and you will receive a receipt once confirmed by our admin team.';
 
             return response()->json([
                 'success' => true,
@@ -186,17 +171,17 @@ class GivingController extends Controller
     {
         switch ($giving->payment_method) {
             case 'mobile_money':
-                return 'Please ensure you have completed the mobile money transaction. Your giving will be confirmed once payment is verified.';
+                return 'Please ensure you have completed the mobile money transaction. Your giving will be confirmed once payment is verified by our admin team.';
             case 'bank_transfer':
-                return 'Please complete the bank transfer using the provided details. Your giving will be confirmed once payment is received.';
+                return 'Please complete the bank transfer using the provided details. Your giving will be confirmed once payment is received and verified.';
             case 'card':
-                return 'Your card payment is being processed. You will receive confirmation once the transaction is complete.';
+                return 'Your card payment is being processed. You will receive confirmation once the transaction is verified by our admin team.';
             case 'check':
-                return 'Please bring your check to the church office during business hours for processing.';
+                return 'Please bring your check to the church office during business hours. Your giving will be confirmed once the check is received and verified.';
             case 'cash':
-                return 'Your cash giving has been confirmed. Thank you for your contribution!';
+                return 'Please bring your cash to the church office during business hours. Your giving will be confirmed once the cash is received and verified by our admin team.';
             default:
-                return 'Thank you for your giving. You will receive updates on the status of your contribution.';
+                return 'Thank you for your giving. You will receive updates on the status of your contribution once verified by our admin team.';
         }
     }
 
@@ -870,11 +855,8 @@ class GivingController extends Controller
      */
     private function getInitialStatus(string $paymentMethod): string
     {
-        return match($paymentMethod) {
-            'cash' => 'completed', // Cash is immediately confirmed
-            'mobile_money', 'bank_transfer', 'card', 'check' => 'pending',
-            default => 'pending'
-        };
+        // All payment methods start as pending and require admin confirmation
+        return 'pending';
     }
 
     /**

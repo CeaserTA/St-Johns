@@ -1198,10 +1198,10 @@ select.field-input { appearance: none; cursor: pointer; background-image: url("d
                             @elseif(auth()->check() && !auth()->user()->member)
                                 <div class="group-btn-disabled">Complete registration to join</div>
                             @else
-                                <a href="{{ route('login') }}" class="group-btn-login">
+                                <button onclick="showLoginModal()" class="group-btn-login">
                                     <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
                                     Log in to join
-                                </a>
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -1220,6 +1220,7 @@ select.field-input { appearance: none; cursor: pointer; background-image: url("d
     </main>
 
     @include('partials.member-modals')
+    @include('partials.login-modal')
     @include('partials.footer')
 </div>
 </div>

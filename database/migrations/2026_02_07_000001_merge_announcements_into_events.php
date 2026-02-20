@@ -71,11 +71,23 @@ return new class extends Migration
         });
 
         // Step 2: Migrate existing events data to use starts_at
-        DB::statement("
-            UPDATE events 
-            SET starts_at = CONCAT(date, ' ', COALESCE(time, '00:00:00'))
-            WHERE date IS NOT NULL AND starts_at IS NULL
-        ");
+        // Use database-agnostic approach
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'sqlite') {
+            DB::statement("
+                UPDATE events 
+                SET starts_at = date || ' ' || COALESCE(time, '00:00:00')
+                WHERE date IS NOT NULL AND starts_at IS NULL
+            ");
+        } else {
+            // MySQL/PostgreSQL
+            DB::statement("
+                UPDATE events 
+                SET starts_at = CONCAT(date, ' ', COALESCE(time, '00:00:00'))
+                WHERE date IS NOT NULL AND starts_at IS NULL
+            ");
+        }
 
         // Step 3: Migrate announcements data into events table
         $announcements = DB::table('announcements')->get();

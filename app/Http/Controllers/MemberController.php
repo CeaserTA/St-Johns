@@ -7,6 +7,7 @@ use App\Models\ServiceRegistration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class MemberController extends Controller
@@ -123,7 +124,7 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         // Debug: Log the incoming request
-        \Log::info('Member store request received', [
+        Log::info('Member store request received', [
             'has_file' => $request->hasFile('profileImage'),
             'all_data' => $request->all(),
             'files' => $request->allFiles()
@@ -148,10 +149,10 @@ class MemberController extends Controller
                 'profileImage' => 'nullable|image|max:5120', // Just use 'image' rule
             ]);
             
-            \Log::info('Validation passed successfully');
+            Log::info('Validation passed successfully');
             
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation failed', [
+            Log::error('Validation failed', [
                 'errors' => $e->errors(),
                 'input' => $request->all()
             ]);
@@ -197,7 +198,7 @@ class MemberController extends Controller
                 'role' => 'member',
             ]);
             
-            \Log::info('User account created for member', ['user_id' => $user->id]);
+            Log::info('User account created for member', ['user_id' => $user->id]);
         }
         
         // Map old field names to new database column names
@@ -217,7 +218,7 @@ class MemberController extends Controller
         if ($request->hasFile('profileImage')) {
             $file = $request->file('profileImage');
             
-            \Log::info('Processing profile image upload', [
+            Log::info('Processing profile image upload', [
                 'original_name' => $file->getClientOriginalName(),
                 'size' => $file->getSize(),
                 'mime_type' => $file->getMimeType(),
@@ -225,7 +226,7 @@ class MemberController extends Controller
             ]);
             
             if (!$file->isValid()) {
-                \Log::error('Uploaded file is not valid', [
+                Log::error('Uploaded file is not valid', [
                     'error' => $file->getError(),
                     'error_message' => $file->getErrorMessage()
                 ]);
@@ -238,10 +239,10 @@ class MemberController extends Controller
                     $path = $file->storeAs('members', $filename, 'supabase');
                     $data['profile_image'] = $path;
                     
-                    \Log::info('Image uploaded to Supabase successfully', ['path' => $path]);
+                    Log::info('Image uploaded to Supabase successfully', ['path' => $path]);
                     
                 } catch (\Exception $e) {
-                    \Log::error('Error uploading profile image to Supabase', [
+                    Log::error('Error uploading profile image to Supabase', [
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString(),
                         'file' => $file->getClientOriginalName()
@@ -251,28 +252,28 @@ class MemberController extends Controller
                     try {
                         $path = $file->store('members', 'public');
                         $data['profile_image'] = $path;
-                        \Log::info('Image uploaded to local storage as fallback', ['path' => $path]);
+                        Log::info('Image uploaded to local storage as fallback', ['path' => $path]);
                     } catch (\Exception $localError) {
-                        \Log::error('Both Supabase and local storage failed', [
+                        Log::error('Both Supabase and local storage failed', [
                             'supabase_error' => $e->getMessage(),
                             'local_error' => $localError->getMessage()
                         ]);
                         // Don't fail the entire member creation, just skip the image
-                        \Log::warning('Skipping image upload due to errors, creating member without image');
+                        Log::warning('Skipping image upload due to errors, creating member without image');
                     }
                 }
             }
         } else {
-            \Log::info('No profile image uploaded');
+            Log::info('No profile image uploaded');
         }
 
-        \Log::info('Creating member with data', $data);
+        Log::info('Creating member with data', $data);
 
         try {
             $member = Member::create($data);
-            \Log::info('Member created successfully', ['member_id' => $member->id, 'member_name' => $member->full_name]);
+            Log::info('Member created successfully', ['member_id' => $member->id, 'member_name' => $member->full_name]);
         } catch (\Exception $e) {
-            \Log::error('Error creating member', [
+            Log::error('Error creating member', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'data' => $data
@@ -311,7 +312,7 @@ class MemberController extends Controller
         // Auto-login if account was created
         if ($user) {
             Auth::login($user);
-            \Log::info('User auto-logged in after registration', ['user_id' => $user->id]);
+            Log::info('User auto-logged in after registration', ['user_id' => $user->id]);
         }
 
         // Handle AJAX requests (from admin modal)
@@ -341,7 +342,12 @@ class MemberController extends Controller
         }
 
         // Guest registration (no account created)
-        return redirect()->route('home')->with('success', 'Thank you for registering — we will contact you soon.');
+        // Redirect to services page with flash message to show account creation modal
+        return redirect()->route('services')
+            ->with('success', 'Thank you for registering as a member!')
+            ->with('show_account_creation', true)
+            ->with('prefill_email', $member->email)
+            ->with('member_registration_complete', 'Next step: Create your account to access services and groups.');
     }
 
     /**
@@ -402,10 +408,10 @@ class MemberController extends Controller
                 $path = $file->storeAs('members', $filename, 'supabase');
                 $data['profile_image'] = $path;
                 
-                \Log::info('Image uploaded to Supabase successfully', ['path' => $path]);
+                Log::info('Image uploaded to Supabase successfully', ['path' => $path]);
                 
             } catch (\Exception $e) {
-                \Log::error('Error uploading profile image to Supabase', [
+                Log::error('Error uploading profile image to Supabase', [
                     'error' => $e->getMessage(),
                     'file' => $file->getClientOriginalName()
                 ]);
@@ -414,9 +420,9 @@ class MemberController extends Controller
                 try {
                     $path = $file->store('members', 'public');
                     $data['profile_image'] = $path;
-                    \Log::info('Image uploaded to local storage as fallback', ['path' => $path]);
+                    Log::info('Image uploaded to local storage as fallback', ['path' => $path]);
                 } catch (\Exception $localError) {
-                    \Log::error('Both Supabase and local storage failed', [
+                    Log::error('Both Supabase and local storage failed', [
                         'supabase_error' => $e->getMessage(),
                         'local_error' => $localError->getMessage()
                     ]);
@@ -454,38 +460,104 @@ class MemberController extends Controller
      */
     public function createAccount(Request $request)
     {
+        // Log account creation attempt
+        Log::info('Account creation attempt', [
+            'email' => $request->email,
+            'ip' => $request->ip()
+        ]);
+        
         $request->validate([
             'email' => 'required|email|exists:members,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
         
-        // Find member by email
-        $member = Member::where('email', $request->email)->first();
-        
-        if (!$member) {
-            return back()->with('error', 'Member not found with this email.');
+        DB::beginTransaction();
+        try {
+            // Find member by email
+            $member = Member::where('email', $request->email)->first();
+            
+            if (!$member) {
+                Log::warning('Account creation failed: Member not found', [
+                    'email' => $request->email
+                ]);
+                throw new \Exception('Member not found with this email.');
+            }
+            
+            Log::info('Member found for account creation', [
+                'member_id' => $member->id,
+                'member_name' => $member->full_name,
+                'email' => $member->email
+            ]);
+            
+            // Check if member already has an account
+            if ($member->user_id) {
+                $existingUser = \App\Models\User::find($member->user_id);
+                if ($existingUser) {
+                    Log::warning('Account creation failed: Member already has account', [
+                        'member_id' => $member->id,
+                        'user_id' => $member->user_id,
+                        'email' => $member->email
+                    ]);
+                    throw new \Exception('This member already has an account. Please login.');
+                }
+            }
+            
+            // Check for orphaned user accounts with same email
+            if (\App\Models\User::where('email', $request->email)->exists()) {
+                Log::warning('Account creation failed: Orphaned user account exists', [
+                    'email' => $request->email,
+                    'member_id' => $member->id
+                ]);
+                throw new \Exception('An account with this email already exists. Please login.');
+            }
+            
+            // Create user account
+            $user = \App\Models\User::create([
+                'name' => $member->full_name,
+                'email' => $member->email,
+                'password' => \Hash::make($request->password),
+                'role' => 'member',
+            ]);
+            
+            Log::info('User account created', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'member_id' => $member->id
+            ]);
+            
+            // Link user to member
+            $member->user_id = $user->id;
+            $member->save();
+            
+            Log::info('User successfully linked to member', [
+                'user_id' => $user->id,
+                'member_id' => $member->id,
+                'email' => $member->email
+            ]);
+            
+            DB::commit();
+            
+            // Auto-login
+            Auth::login($user);
+            
+            Log::info('User auto-logged in after account creation', [
+                'user_id' => $user->id,
+                'member_id' => $member->id
+            ]);
+            
+            return redirect()->route('services')->with('success', 'Account created successfully! You can now register for services.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Account creation failed', [
+                'email' => $request->email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', $e->getMessage())->withInput();
         }
-        
-        // Check if member already has an account
-        if ($member->user_id) {
-            return back()->with('error', 'This member already has an account. Please login.');
-        }
-        
-        // Create user account
-        $user = \App\Models\User::create([
-            'name' => $member->full_name,
-            'email' => $member->email,
-            'password' => \Hash::make($request->password),
-            'role' => 'member',
-        ]);
-        
-        // Link user to member
-        $member->update(['user_id' => $user->id]);
-        
-        // Auto-login
-        Auth::login($user);
-        
-        return redirect()->route('services')->with('success', 'Account created successfully! You can now register for services.');
     }
 
     /**

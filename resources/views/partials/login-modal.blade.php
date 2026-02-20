@@ -34,13 +34,13 @@
         {{-- Email --}}
         <div style="margin-bottom:18px;">
           <label for="modal_email"
-                 style="display:block; font-family:'Jost',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:#0c1b3a; margin-bottom:8px;">
+                 style="display:block; font-family:'Jost',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:#0c1b3a; margin-bottom:8px;">
             Email Address <span style="color:#c8973a;">*</span>
           </label>
           <input id="modal_email" type="email" name="email" required autofocus autocomplete="username"
                  value="{{ old('email') }}"
                  placeholder="you@example.com"
-                 style="width:100%; padding:13px 14px; background:#f5ede0; border:1px solid #e2d9cc; font-family:'Jost',sans-serif; font-size:15px; font-weight:300; color:#1a1a2e; outline:none; border-radius:0; transition:all .2s; box-sizing:border-box;"
+                 style="width:100%; padding:12px 14px; background:#f5ede0; border:1px solid #e2d9cc; font-family:'Jost',sans-serif; font-size:13px; font-weight:300; color:#1a1a2e; outline:none; border-radius:0; transition:all .2s; box-sizing:border-box;"
                  onfocus="this.style.background='#ffffff'; this.style.borderColor='#c8973a'; this.style.boxShadow='0 0 0 3px rgba(200,151,58,0.12)';"
                  onblur="this.style.background='#f5ede0'; this.style.borderColor='#e2d9cc'; this.style.boxShadow='none';">
         </div>
@@ -49,12 +49,12 @@
         <div style="margin-bottom:18px;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
             <label for="modal_password"
-                   style="font-family:'Jost',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:#0c1b3a;">
+                   style="font-family:'Jost',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:#0c1b3a;">
               Password <span style="color:#c8973a;">*</span>
             </label>
             @if (Route::has('password.request'))
               <a href="{{ route('password.request') }}"
-                 style="font-family:'Jost',sans-serif; font-size:12px; font-weight:500; color:#c8973a; text-decoration:none;"
+                 style="font-family:'Jost',sans-serif; font-size:11px; font-weight:500; color:#c8973a; text-decoration:none;"
                  onmouseover="this.style.color='#e8b96a'"
                  onmouseout="this.style.color='#c8973a'">Forgot password?</a>
             @endif
@@ -62,7 +62,7 @@
           <div style="position:relative;">
             <input id="modal_password" type="password" name="password" required autocomplete="current-password"
                    placeholder="••••••••"
-                   style="width:100%; padding:13px 40px 13px 14px; background:#f5ede0; border:1px solid #e2d9cc; font-family:'Jost',sans-serif; font-size:15px; font-weight:300; color:#1a1a2e; outline:none; border-radius:0; transition:all .2s; box-sizing:border-box;"
+                   style="width:100%; padding:12px 40px 12px 14px; background:#f5ede0; border:1px solid #e2d9cc; font-family:'Jost',sans-serif; font-size:13px; font-weight:300; color:#1a1a2e; outline:none; border-radius:0; transition:all .2s; box-sizing:border-box;"
                    onfocus="this.style.background='#ffffff'; this.style.borderColor='#c8973a'; this.style.boxShadow='0 0 0 3px rgba(200,151,58,0.12)';"
                    onblur="this.style.background='#f5ede0'; this.style.borderColor='#e2d9cc'; this.style.boxShadow='none';">
             <button type="button" onclick="toggleModalPw()"
@@ -78,14 +78,14 @@
           <input type="checkbox" id="modal_remember" name="remember"
                  style="width:16px; height:16px; accent-color:#0c1b3a; cursor:pointer; border-radius:0; flex-shrink:0;">
           <label for="modal_remember"
-                 style="font-family:'Jost',sans-serif; font-size:13px; font-weight:300; color:#6b7080; cursor:pointer; user-select:none;">
+                 style="font-family:'Jost',sans-serif; font-size:12px; font-weight:300; color:#6b7080; cursor:pointer; user-select:none;">
             Keep me signed in for 30 days
           </label>
         </div>
 
         {{-- Submit --}}
         <button type="submit" id="loginModalBtn"
-                style="width:100%; padding:14px; background:#0c1b3a; color:#e8b96a; font-family:'Jost',sans-serif; font-size:12px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; border:none; cursor:pointer; transition:background .2s; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:0;"
+                style="width:100%; padding:14px; background:#0c1b3a; color:#e8b96a; font-family:'Jost',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; border:none; cursor:pointer; transition:background .2s; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:0;"
                 onmouseover="this.style.background='#142450'"
                 onmouseout="this.style.background='#0c1b3a'"
                 onclick="loginModalLoading(this)">
@@ -105,7 +105,7 @@
         </div>
 
         {{-- Register link --}}
-        <p style="text-align:center; font-family:'Jost',sans-serif; font-size:13px; font-weight:300; color:#6b7080; margin:0;">
+        <p style="text-align:center; font-family:'Jost',sans-serif; font-size:12px; font-weight:300; color:#6b7080; margin:0;">
           New to St. John's?
           <a href="{{ route('register') ?? '#' }}"
              style="font-weight:600; color:#0c1b3a; text-decoration:none; margin-left:4px;"
