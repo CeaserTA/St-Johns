@@ -15,6 +15,17 @@
           success:    "#1a7a4a",  // --green
           "primary-light": "#142450", // --navy2
         },
+        fontSize: {
+          'xs':   ['0.8125rem', { lineHeight: '1.5' }],    // 13px - slightly larger
+          'sm':   ['0.9375rem', { lineHeight: '1.6' }],    // 15px - more readable
+          'base': ['1.0625rem', { lineHeight: '1.75' }],   // 17px - comfortable reading
+          'lg':   ['1.1875rem', { lineHeight: '1.75' }],   // 19px
+          'xl':   ['1.3125rem', { lineHeight: '1.75' }],   // 21px
+          '2xl':  ['1.5625rem', { lineHeight: '1.4' }],    // 25px
+          '3xl':  ['1.9375rem', { lineHeight: '1.3' }],    // 31px
+          '4xl':  ['2.5rem', { lineHeight: '1.2' }],       // 40px
+          '5xl':  ['3.125rem', { lineHeight: '1.1' }],     // 50px
+        },
         fontFamily: {
           display: ["Jost", "sans-serif"],
           sans:    ["Jost", "system-ui", "sans-serif"],

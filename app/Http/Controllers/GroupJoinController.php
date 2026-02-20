@@ -7,6 +7,8 @@ use App\Models\Member;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\NotificationService;
+use App\Notifications\MemberJoinedGroup;
 
 class GroupJoinController extends Controller
 {
@@ -15,7 +17,9 @@ class GroupJoinController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        if (method_exists($this, 'middleware')) {
+            $this->middleware('auth');
+        }
     }
 
     /**
@@ -50,6 +54,19 @@ class GroupJoinController extends Controller
 
         // Prevent duplicate memberships
         $group->members()->syncWithoutDetaching([$member->id]);
+
+        // Send notification to admins
+        try {
+            $notificationService = app(NotificationService::class);
+            $notificationService->notifyAdmins(new MemberJoinedGroup($member, $group));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send group join notification', [
+                'member_id' => $member->id,
+                'group_id' => $group->id,
+                'error' => $e->getMessage()
+            ]);
+            // Don't fail group join if notification fails
+        }
 
         return response()->json([
             'success' => true,

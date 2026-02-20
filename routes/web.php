@@ -25,8 +25,8 @@ Route::get('/dashboard', [MemberController::class, 'index'])
     ->name('dashboard')
     ->middleware('admin');
 
-// Notification routes (requires authentication)
-Route::middleware('auth')->group(function () {
+// Notification routes (requires admin authentication)
+Route::middleware('admin')->group(function () {
     Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
     Route::get('/api/notifications/unread', [NotificationController::class, 'getUnreadNotifications'])->name('notifications.unread');
     Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

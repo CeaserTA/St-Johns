@@ -30,10 +30,8 @@ class Service extends Model
     {
         parent::boot();
 
-        static::created(function ($model) {
-            // Notify admins of new service posted
-            Notification::notifyServicePosted($model);
-        });
+        // Removed automatic notification on service creation
+        // Notifications should be triggered explicitly from controllers
     }
 
     /**

@@ -20,31 +20,20 @@
 
 
     <!-- Scripture Encouragement Section -->
-    <section class="bg-primary/5 border-l-4 border-accent py-6">
-        <div class="container mx-auto px-6 text-center max-w-3xl">
-
-            <!-- Section Heading -->
-            <h2 class="text-2xl md:text-3xl font-bold text-primary mb-4">
-                Give with a Cheerful Heart
-            </h2>
-
-            <!-- Scripture -->
-            <blockquote class="italic text-gray-700 text-lg leading-relaxed">
-                "Each of you should give what you have decided in your heart to give,
-                not reluctantly or under compulsion, for God loves a cheerful giver."
-            </blockquote>
-
-            <!-- Reference -->
-            <cite class="block mt-3 text-sm font-semibold text-accent">
-                — 2 Corinthians 9:7
-            </cite>
-
-            <!-- Optional Encouragement Text -->
-            <p class="mt-4 text-gray-600 text-base">
-                Your generosity helps us serve the community, support ministry work,
-                and spread the love of Christ.
+    <section class="page-hero bg-[#0c1b3a] py-14 px-10 relative overflow-hidden text-center">
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 serif leading-none pointer-events-none select-none" style="font-size:420px; color:rgba(200,151,58,0.04);">✝</div>
+        <div class="relative z-10 max-w-[680px] mx-auto">
+            <p class="eyebrow fade-up text-white justify-center">Stewardship · Generosity · Faith</p>
+            <h1 class="serif fade-up fade-up-1 font-semibold text-white leading-[0.95] tracking-tight mt-4 mb-5"
+                style="font-size:clamp(48px,8vw,84px);">
+                Give with a<br><em class="italic text-[#e8b96a] font-light">Cheerful Heart</em>
+            </h1>
+            <p class="fade-up fade-up-2 text-sm font-light text-white/50 leading-[1.85] max-w-[480px] mx-auto">
+                Your generosity is an act of worship. Every gift — great or small — helps us serve our community, support ministry, and spread the love of Christ.
             </p>
-
+            <p class="fade-up fade-up-3 serif text-[15px] italic text-white/30 mt-5">
+                "God loves a cheerful giver." — 2 Corinthians 9:7
+            </p>
         </div>
     </section>
 

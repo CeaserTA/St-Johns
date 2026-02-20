@@ -10,635 +10,113 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Material+Symbols+Outlined&display=swap" rel="stylesheet">
     @include('partials.theme-config')
 
-<style>
-/* ── TOKENS (same as home) ── */
-:root {
-    --navy:   #0c1b3a;
-    --navy2:  #142450;
-    --gold:   #c8973a;
-    --gold2:  #e8b96a;
-    --cream:  #fdf8f0;
-    --sand:   #f5ede0;
-    --text:   #1a1a2e;
-    --muted:  #6b7080;
-    --border: #e2d9cc;
-    --white:  #ffffff;
-    --red:    #c0392b;
-    --green:  #1a7a4a;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
-.serif { font-family: 'Cormorant Garamond', serif; }
+    <style>
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up   { animation: fadeUp 0.75s ease both; }
+        .fade-up-1 { animation-delay: 0.1s; }
+        .fade-up-2 { animation-delay: 0.25s; }
+        .fade-up-3 { animation-delay: 0.4s; }
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up   { animation: fadeUp 0.75s ease both; }
-.fade-up-1 { animation-delay: 0.1s; }
-.fade-up-2 { animation-delay: 0.25s; }
-.fade-up-3 { animation-delay: 0.4s; }
+        /* Eyebrow pseudo-element */
+        .eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:10px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:#c8973a; }
+        .eyebrow::before { content:''; display:block; width:28px; height:1px; background:#c8973a; }
 
-/* ── EYEBROW ── */
-.eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--gold);
-}
-.eyebrow::before { content:''; display:block; width:28px; height:1px; background:var(--gold); }
+        /* Page hero diagonal stripe pattern */
+        .page-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(201,168,76,0.03) 40px,rgba(201,168,76,0.03) 41px); pointer-events:none; }
 
-/* ── FLASH MESSAGES ── */
-.flash { display:flex; align-items:flex-start; gap:12px; padding:16px 24px; margin:16px 24px; border-radius:2px; font-size:14px; }
-.flash.success { background:#edf7f2; border-left:3px solid var(--green); color:#155d38; }
-.flash.error   { background:#fdf2f0; border-left:3px solid var(--red); color:#8b2020; }
-.flash-title   { font-weight:600; margin-bottom:2px; }
+        /* Service card top-bar pseudo */
+        .service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#c8973a,#e8b96a); transform:scaleX(0); transform-origin:left; transition:transform 0.35s ease; }
+        .service-card:hover::before { transform:scaleX(1); }
 
-/* ════════════════════════════
-   PAGE HERO (short, editorial)
-════════════════════════════ */
-.page-hero {
-    background: var(--navy);
-    padding: 80px 40px 72px;
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-}
-.page-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-        45deg, transparent, transparent 40px,
-        rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 41px
-    );
-    pointer-events: none;
-}
-.page-hero-cross {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 400px;
-    color: rgba(200,151,58,0.04);
-    pointer-events: none;
-    user-select: none;
-    font-family: serif;
-    line-height: 1;
-}
-.page-hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
-.page-hero h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(52px, 8vw, 88px);
-    font-weight: 600;
-    color: #fff;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
-    margin: 14px 0 20px;
-}
-.page-hero h1 em { font-style: italic; color: var(--gold2); font-weight: 300; }
-.page-hero p {
-    font-size: 14px;
-    font-weight: 300;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.8;
-    max-width: 520px;
-    margin: 0 auto 10px;
-}
-.page-hero .verse {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
-    font-style: italic;
-    color: rgba(255,255,255,0.35);
-    margin-top: 24px;
-}
+        /* Register card cross watermark */
+        .register-card::after { content:'✝'; position:absolute; right:-12px; bottom:-28px; font-size:160px; color:rgba(200,151,58,0.05); pointer-events:none; }
 
-/* ════════════════════════════
-   SERVICES GRID
-════════════════════════════ */
-.services-section {
-    padding: 88px 0;
-    background: var(--white);
-}
-.section-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+        /* Modal header cross watermark */
+        .modal-header::after { content:'✝'; position:absolute; right:20px; bottom:-30px; font-size:140px; color:rgba(200,151,58,0.06); pointer-events:none; }
 
-.section-header { text-align: center; margin-bottom: 60px; }
-.section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(34px, 5vw, 52px);
-    font-weight: 600;
-    color: var(--navy);
-    line-height: 1.1;
-    margin: 12px 0 16px;
-}
-.section-desc { font-size: 14px; color: var(--muted); max-width: 500px; margin: 0 auto; line-height: 1.75; font-weight: 300; }
+        /* Btn slide hover */
+        .btn-submit-dark { position:relative; overflow:hidden; }
+        .btn-submit-dark::before { content:''; position:absolute; inset:0; background:#e8b96a; transform:translateX(-100%); transition:transform 0.3s ease; }
+        .btn-submit-dark:hover::before { transform:translateX(0); }
+        .btn-submit-dark span { position:relative; z-index:1; }
 
-/* Service cards */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-.service-card {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 32px 24px 28px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-.service-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold), var(--gold2));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.35s ease;
-}
-.service-card::after {
-    content: '';
-    position: absolute;
-    bottom: -20px; right: -10px;
-    font-size: 90px;
-    opacity: 0.04;
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-.service-card:hover {
-    background: var(--white);
-    box-shadow: 0 16px 48px rgba(12,27,58,0.09);
-    transform: translateY(-3px);
-    border-color: transparent;
-}
-.service-card:hover::before { transform: scaleX(1); }
-.service-card:hover::after  { opacity: 0.07; }
+        /* Select arrows */
+        select.field-select-dark { appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(200,151,58,0.7)'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 18px center; }
+        select.field-input-sm { appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7080'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; }
 
-.service-icon-wrap {
-    width: 56px; height: 56px;
-    margin: 0 auto 20px;
-    background: var(--navy);
-    border-radius: 2px;
-    display: flex; align-items: center; justify-content: center;
-}
-.service-icon-wrap svg { width: 26px; height: 26px; color: var(--gold2); }
+        /* Form divider lines */
+        .form-divider::before, .form-divider::after { content:''; flex:1; height:1px; background:#e2d9cc; }
 
-.service-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 21px;
-    font-weight: 600;
-    color: var(--navy);
-    margin-bottom: 10px;
-    line-height: 1.2;
-}
-.service-desc {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.75;
-    font-weight: 300;
-    margin-bottom: 20px;
-}
-.service-badge-free {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 16px;
-    background: rgba(26,122,74,0.08);
-    border: 1px solid rgba(26,122,74,0.2);
-    color: var(--green);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-.service-fee-wrap {
-    border-top: 1px solid var(--border);
-    padding-top: 16px;
-}
-.service-fee-label {
-    font-size: 9px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 4px;
-    display: block;
-}
-.service-fee-amount {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--navy);
-    line-height: 1;
-}
-.service-schedule {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 12px;
-    font-size: 11px;
-    color: var(--muted);
-    font-weight: 400;
-}
-
-/* ════════════════════════════
-   REGISTRATION SPLIT SECTION
-════════════════════════════ */
-.register-section {
-    padding: 88px 0;
-    background: var(--cream);
-}
-.register-grid {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    align-items: center;
-}
-
-/* Left: copy */
-.register-copy { }
-.register-copy p {
-    font-size: 14px;
-    font-weight: 300;
-    color: #4a4f5e;
-    line-height: 1.85;
-    margin-bottom: 14px;
-}
-.register-copy .verse {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 15px;
-    color: var(--gold);
-    margin-top: 24px;
-    padding-left: 16px;
-    border-left: 2px solid var(--gold);
-    line-height: 1.65;
-}
-
-/* Right: form card */
-.register-card {
-    background: var(--navy);
-    border-radius: 2px;
-    overflow: hidden;
-    box-shadow: 0 24px 64px rgba(12,27,58,0.18);
-    position: relative;
-}
-.register-card::after {
-    content: '✝';
-    position: absolute;
-    right: -12px; bottom: -28px;
-    font-size: 160px;
-    color: rgba(200,151,58,0.05);
-    pointer-events: none;
-}
-.register-card-top {
-    padding: 28px 32px 22px;
-    border-bottom: 1px solid rgba(200,151,58,0.15);
-}
-.register-card-top h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 4px;
-}
-.register-card-top p {
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    font-weight: 300;
-}
-.register-card-body { padding: 28px 32px 32px; position: relative; z-index: 1; }
-
-/* Auth info box */
-.auth-info-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-    background: rgba(200,151,58,0.1);
-    border: 1px solid rgba(200,151,58,0.2);
-    margin-bottom: 20px;
-}
-.auth-info-box .material-symbols-outlined { font-size: 18px; color: var(--gold); flex-shrink: 0; }
-.auth-info-box span { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 300; }
-.auth-info-box strong { color: var(--gold2); font-weight: 500; }
-
-/* Select field (dark) */
-.field-select-dark {
-    width: 100%;
-    padding: 14px 18px;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
-    font-family: 'Jost', sans-serif;
-    font-size: 14px;
-    border-radius: 0;
-    outline: none;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(200,151,58,0.7)'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 18px center;
-    transition: border-color 0.2s;
-}
-.field-select-dark:focus { border-color: var(--gold); }
-.field-select-dark option { background: var(--navy2); color: #fff; }
-
-/* Submit button */
-.btn-submit-dark {
-    width: 100%;
-    margin-top: 18px;
-    padding: 16px 32px;
-    background: var(--gold);
-    color: var(--navy);
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    position: relative;
-    overflow: hidden;
-}
-.btn-submit-dark::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gold2);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-}
-.btn-submit-dark:hover::before { transform: translateX(0); }
-.btn-submit-dark span { position: relative; z-index: 1; }
-
-/* Login prompt (not authed) */
-.login-prompt {
-    padding: 20px 24px;
-    background: rgba(200,151,58,0.07);
-    border: 1px solid rgba(200,151,58,0.18);
-}
-.login-prompt p {
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 300;
-    margin-bottom: 16px;
-}
-.login-prompt-btns { display: flex; gap: 12px; }
-.btn-lp-solid {
-    flex: 1;
-    padding: 12px;
-    background: var(--gold);
-    color: var(--navy);
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s;
-    text-decoration: none;
-    text-align: center;
-    display: flex; align-items: center; justify-content: center;
-}
-.btn-lp-solid:hover { background: var(--gold2); }
-.btn-lp-outline {
-    flex: 1;
-    padding: 12px;
-    background: transparent;
-    color: rgba(255,255,255,0.6);
-    border: 1px solid rgba(255,255,255,0.18);
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    text-align: center;
-    display: flex; align-items: center; justify-content: center;
-}
-.btn-lp-outline:hover { border-color: var(--gold); color: var(--gold2); }
-
-/* ════════════════════════════
-   PAYMENT MODAL
-════════════════════════════ */
-.modal-overlay {
-    position: fixed; inset: 0; z-index: 999;
-    background: rgba(12,27,58,0.72);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center; justify-content: center;
-    padding: 20px; overflow-y: auto;
-}
-.modal-overlay.open { display: flex; }
-
-.modal-box {
-    position: relative;
-    background: var(--white);
-    width: 100%; max-width: 640px;
-    border-radius: 2px;
-    overflow: hidden;
-    box-shadow: 0 32px 100px rgba(0,0,0,0.3);
-    animation: fadeUp 0.35s ease both;
-}
-.modal-close {
-    position: absolute; top: 18px; right: 20px;
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: rgba(255,255,255,0.7); font-size: 20px;
-    transition: all 0.2s; z-index: 10;
-}
-.modal-close:hover { background: rgba(255,255,255,0.2); color: #fff; }
-
-.modal-header {
-    background: var(--navy);
-    padding: 40px 44px 32px;
-    position: relative; overflow: hidden;
-}
-.modal-header::after {
-    content: '✝';
-    position: absolute; right: 20px; bottom: -30px;
-    font-size: 140px; color: rgba(200,151,58,0.06);
-    pointer-events: none;
-}
-.modal-header h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px; font-weight: 600; color: #fff; margin: 10px 0 6px;
-}
-.modal-header p { font-size: 13px; color: rgba(255,255,255,0.45); font-weight: 300; }
-
-.modal-body { padding: 36px 44px; max-height: 70vh; overflow-y: auto; }
-
-/* Service detail strip */
-.service-detail-strip {
-    background: var(--sand);
-    border: 1px solid var(--border);
-    padding: 18px 20px;
-    margin-bottom: 28px;
-    display: flex; gap: 24px;
-}
-.sd-item { }
-.sd-label { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
-.sd-value { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--navy); }
-.sd-value.fee { color: var(--gold); }
-.sd-value.ref { font-family: 'Jost', monospace; font-size: 13px; font-weight: 500; }
-
-/* Payment method tabs */
-.pay-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-.pay-method {
-    border: 1px solid var(--border);
-    padding: 16px 18px;
-    display: flex; align-items: flex-start; gap: 14px;
-    transition: border-color 0.2s;
-}
-.pay-method:hover { border-color: var(--gold); }
-.pay-method-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
-.pay-method-title { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
-.pay-method-detail { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.55; }
-
-/* Form divider */
-.form-divider {
-    display: flex; align-items: center; gap: 14px;
-    margin: 24px 0; color: var(--muted); font-size: 11px;
-    letter-spacing: 0.12em; text-transform: uppercase;
-}
-.form-divider::before, .form-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-}
-
-/* Form fields (light modal) */
-.field-label-sm { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
-.field-input-sm {
-    width: 100%; padding: 12px 16px;
-    background: var(--cream); border: 1px solid var(--border);
-    font-family: 'Jost', sans-serif; font-size: 14px; color: var(--text);
-    transition: all 0.2s; outline: none; border-radius: 0;
-}
-.field-input-sm:focus { background: var(--white); border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,151,58,0.1); }
-.field-hint { font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 300; }
-
-select.field-input-sm {
-    appearance: none; cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7080'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 16px center;
-}
-textarea.field-input-sm { resize: none; }
-
-.modal-actions { display: flex; gap: 14px; margin-top: 24px; }
-.btn-modal-submit {
-    flex: 1; padding: 15px;
-    background: var(--navy); color: var(--gold2);
-    font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    border: none; cursor: pointer; transition: background 0.2s;
-}
-.btn-modal-submit:hover { background: var(--navy2); }
-.btn-modal-cancel {
-    padding: 15px 28px;
-    background: transparent; color: var(--muted);
-    border: 1px solid var(--border);
-    font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-}
-.btn-modal-cancel:hover { border-color: var(--navy); color: var(--navy); }
-
-.modal-note {
-    margin-top: 20px; padding: 14px 18px;
-    background: var(--sand); border-left: 3px solid var(--gold);
-    font-size: 12px; color: var(--muted); line-height: 1.6; font-weight: 300;
-}
-.modal-note strong { color: var(--navy); font-weight: 600; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-    .services-grid { grid-template-columns: repeat(2, 1fr); }
-    .register-grid { grid-template-columns: 1fr; gap: 40px; }
-}
-@media (max-width: 640px) {
-    .services-grid { grid-template-columns: 1fr; }
-    .section-inner, .register-grid { padding: 0 20px; }
-    .page-hero { padding: 60px 20px 52px; }
-    .modal-header { padding: 28px 24px 22px; }
-    .modal-body { padding: 24px; }
-    .service-detail-strip { flex-wrap: wrap; gap: 14px; }
-}
-</style>
+        body  { font-family:'Jost', sans-serif; }
+        .serif { font-family:'Cormorant Garamond', serif; }
+    </style>
 </head>
 
-<body>
+<body class="bg-[#fdf8f0] text-[#1a1a2e] overflow-x-hidden">
+
 @include('partials.navbar')
 @include('partials.announcement')
 
 {{-- Flash messages --}}
 @if ($message = Session::get('success'))
-    <div class="flash success" role="alert">
-        <span class="material-symbols-outlined" style="font-size:18px; flex-shrink:0; color:var(--green);">check_circle</span>
-        <div><div class="flash-title">Success</div>{{ $message }}</div>
+    <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 bg-[#edf7f2] border-l-4 border-[#1a7a4a] text-[#155d38] text-sm" role="alert">
+        <span class="material-symbols-outlined flex-shrink-0 text-[#1a7a4a]" style="font-size:18px;">check_circle</span>
+        <div><div class="font-semibold mb-0.5">Success</div>{{ $message }}</div>
     </div>
 @endif
 @if ($message = Session::get('error'))
-    <div class="flash error" role="alert">
-        <span class="material-symbols-outlined" style="font-size:18px; flex-shrink:0; color:var(--red);">error</span>
-        <div><div class="flash-title">Error</div>{{ $message }}</div>
+    <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 bg-[#fdf2f0] border-l-4 border-[#c0392b] text-[#8b2020] text-sm" role="alert">
+        <span class="material-symbols-outlined flex-shrink-0 text-[#c0392b]" style="font-size:18px;">error</span>
+        <div><div class="font-semibold mb-0.5">Error</div>{{ $message }}</div>
     </div>
 @endif
-
-{{-- Member Registration Required Message --}}
 @if(session('show_member_registration'))
-    <div class="flash" role="alert" style="background:#e8f4ff; border-left:3px solid #3b82f6; color:#1e40af;">
-        <span class="material-symbols-outlined" style="font-size:18px; flex-shrink:0; color:#3b82f6;">info</span>
+    <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 bg-[#e8f4ff] border-l-4 border-blue-500 text-blue-800 text-sm" role="alert">
+        <span class="material-symbols-outlined flex-shrink-0 text-blue-500" style="font-size:18px;">info</span>
         <div>
-            <div class="flash-title">Member Registration Required</div>
-            <p style="margin-top:4px;">You must register as a church member before creating an account. Please visit our church office or contact us to complete your member registration.</p>
+            <div class="font-semibold mb-1">Member Registration Required</div>
+            <p>You must register as a church member before creating an account. Please visit our church office or contact us to complete your member registration.</p>
             @if(session('prefill_email'))
-                <p style="margin-top:8px; font-size:12px; opacity:0.8;">Email: {{ session('prefill_email') }}</p>
+                <p class="mt-2 text-xs opacity-80">Email: {{ session('prefill_email') }}</p>
             @endif
         </div>
     </div>
 @endif
 
 {{-- ═══════════════ PAGE HERO ═══════════════ --}}
-<section class="page-hero">
-    <div class="page-hero-cross">✝</div>
-    <div class="page-hero-inner">
-        <p class="eyebrow fade-up fade-up-1" style="justify-content:center; color:var(--gold);">Worship · Sacraments · Community</p>
-        <h1 class="fade-up fade-up-2">Our<br><em>Services</em></h1>
-        <p class="fade-up fade-up-2">
+<section class="page-hero bg-[#0c1b3a] py-14 px-10 relative overflow-hidden text-center">
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[400px] leading-none pointer-events-none select-none serif"
+         style="color:rgba(200,151,58,0.04);">✝</div>
+    <div class="relative z-10 max-w-[700px] mx-auto">
+        <p class="eyebrow fade-up fade-up-1 justify-center">Worship · Sacraments · Community</p>
+        <h1 class="serif fade-up fade-up-2 font-semibold text-white leading-[0.95] tracking-tight mt-3.5 mb-5"
+            style="font-size:clamp(52px,8vw,88px);">
+            Our<br><em class="italic text-[#e8b96a] font-light">Services</em>
+        </h1>
+        <p class="fade-up fade-up-2 text-sm font-light text-white/50 leading-[1.8] max-w-[520px] mx-auto mb-2.5">
             Every service is an invitation to encounter the living God. From the beauty of the Holy Eucharist to the comfort of reconciliation — we walk with you in every season.
         </p>
-        <p class="verse fade-up fade-up-3">"Come to me, all you who are weary and burdened, and I will give you rest." — Matthew 11:28</p>
+        <p class="fade-up fade-up-3 serif text-[15px] italic text-white/35 mt-6">
+            "Come to me, all you who are weary and burdened, and I will give you rest." — Matthew 11:28
+        </p>
     </div>
 </section>
 
 {{-- ═══════════════ SERVICES GRID ═══════════════ --}}
-<section class="services-section">
-    <div class="section-inner">
-        <div class="section-header">
-            <p class="eyebrow" style="justify-content:center; margin-bottom:14px;">Sacraments & Spiritual Care</p>
-            <h2 class="section-title">What We Offer</h2>
-            <p class="section-desc">Sacred moments — celebrated with reverence, warmth, and the full community of faith.</p>
+<section class="bg-white py-14">
+    <div class="max-w-[1200px] mx-auto px-10">
+
+        <div class="text-center mb-12">
+            <p class="eyebrow justify-center mb-3.5">Sacraments & Spiritual Care</p>
+            <h2 class="serif font-semibold text-[#0c1b3a] leading-[1.1] mt-3 mb-4"
+                style="font-size:clamp(34px,5vw,52px);">What We Offer</h2>
+            <p class="text-sm text-[#6b7080] max-w-[500px] mx-auto leading-[1.75] font-light">
+                Sacred moments — celebrated with reverence, warmth, and the full community of faith.
+            </p>
         </div>
 
         @php
@@ -650,45 +128,46 @@ textarea.field-input-sm { resize: none; }
                 'M12 3v1m0 16v1m8.66-13l-.87.5M4.21 17.5l-.87.5M20.66 17.5l-.87-.5M4.21 6.5l-.87-.5M21 12h-1M4 12H3',
                 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z',
             ];
-            $scheduleIcons = ['📅','⛪','🕊️','🙏','✝️','🎵'];
         @endphp
 
-        <div class="services-grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             @forelse($services as $index => $service)
-                <div class="service-card fade-up" style="animation-delay:{{ $index * 0.07 }}s;">
-                    <div class="service-icon-wrap">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="service-card bg-[#fdf8f0] border border-[#e2d9cc] rounded-[2px] px-6 py-8 text-center relative overflow-hidden transition-all duration-300 hover:bg-white hover:shadow-[0_16px_48px_rgba(12,27,58,0.09)] hover:-translate-y-[3px] hover:border-transparent fade-up"
+                     style="animation-delay:{{ $index * 0.07 }}s;">
+
+                    <div class="w-14 h-14 mx-auto mb-5 bg-[#0c1b3a] rounded-[2px] flex items-center justify-center">
+                        <svg class="w-[26px] h-[26px] text-[#e8b96a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $svgPaths[$index % count($svgPaths)] }}" />
                         </svg>
                     </div>
 
-                    <div class="service-name">{{ $service->name }}</div>
-                    <p class="service-desc">{{ $service->description }}</p>
+                    <div class="serif text-[21px] font-semibold text-[#0c1b3a] mb-2.5 leading-[1.2]">{{ $service->name }}</div>
+                    <p class="text-[13px] text-[#6b7080] leading-[1.75] font-light mb-5">{{ $service->description }}</p>
 
                     @if($service->isFree())
-                        <div class="service-badge-free">
+                        <div class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[rgba(26,122,74,0.08)] border border-[rgba(26,122,74,0.2)] text-[#1a7a4a] text-[10px] font-bold tracking-[0.16em] uppercase">
                             <span class="material-symbols-outlined" style="font-size:13px;">check_circle</span>
                             No Fee
                         </div>
                     @else
-                        <div class="service-fee-wrap">
-                            <span class="service-fee-label">Registration Fee</span>
-                            <div class="service-fee-amount">{{ $service->formatted_fee }}</div>
+                        <div class="border-t border-[#e2d9cc] pt-4">
+                            <span class="block text-[9px] tracking-[0.18em] uppercase text-[#6b7080] mb-1">Registration Fee</span>
+                            <div class="serif text-[32px] font-bold text-[#0c1b3a] leading-none">{{ $service->formatted_fee }}</div>
                         </div>
                     @endif
 
                     @if($service->schedule)
-                        <div class="service-schedule">
-                            <span class="material-symbols-outlined" style="font-size:13px; color:var(--gold);">calendar_month</span>
+                        <div class="inline-flex items-center gap-1.5 mt-3 text-[11px] text-[#6b7080]">
+                            <span class="material-symbols-outlined text-[#c8973a]" style="font-size:13px;">calendar_month</span>
                             {{ $service->schedule }}
                         </div>
                     @endif
                 </div>
             @empty
-                <div style="grid-column:1/-1; text-align:center; padding:64px 0;">
-                    <div style="font-size:48px; margin-bottom:16px; opacity:.3;">⛪</div>
-                    <p style="font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--muted);">No services listed yet</p>
-                    <p style="font-size:13px; color:#bbb; margin-top:6px;">Please check back soon.</p>
+                <div class="col-span-full text-center py-16">
+                    <div class="text-5xl opacity-30 mb-4">⛪</div>
+                    <p class="serif text-[22px] text-[#6b7080]">No services listed yet</p>
+                    <p class="text-[13px] text-[#bbb] mt-1.5">Please check back soon.</p>
                 </div>
             @endforelse
         </div>
@@ -696,68 +175,85 @@ textarea.field-input-sm { resize: none; }
 </section>
 
 {{-- ═══════════════ REGISTRATION SECTION ═══════════════ --}}
-<section class="register-section">
-    <div class="register-grid">
+<section class="bg-[#fdf8f0] py-14">
+    <div class="max-w-[1200px] mx-auto px-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
         {{-- Left: copy --}}
-        <div class="register-copy fade-up">
-            <p class="eyebrow" style="margin-bottom:16px;">You Are Welcome Here</p>
-            <h2 class="section-title" style="text-align:left; margin-bottom:24px;">
-                Register for a<br><em style="font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--gold);">Church Service</em>
+        <div class="fade-up">
+            <p class="eyebrow mb-4">You Are Welcome Here</p>
+            <h2 class="serif font-semibold text-[#0c1b3a] leading-[1.1] mb-6"
+                style="font-size:clamp(34px,5vw,52px);">
+                Register for a<br>
+                <em class="italic text-[#c8973a] font-light">Church Service</em>
             </h2>
-            <p>We are overjoyed that you're considering joining us at <strong>St. John's Parish Church Entebbe</strong>. Every service is a sacred moment we are honoured to share with you.</p>
-            <p>Whether it's baptism, confirmation, holy matrimony, or spiritual counseling — we are here to walk beside you every step of the way.</p>
-            <div class="verse">"Where two or three are gathered in my name, there am I among them." — Matthew 18:20</div>
-
-            {{-- Values mini-list --}}
-            <div style="margin-top:40px; display:flex; flex-direction:column; gap:16px;">
+            <p class="text-sm font-light text-[#4a4f5e] leading-[1.85] mb-3.5">
+                We are overjoyed that you're considering joining us at <strong>St. John's Parish Church Entebbe</strong>. Every service is a sacred moment we are honoured to share with you.
+            </p>
+            <p class="text-sm font-light text-[#4a4f5e] leading-[1.85]">
+                Whether it's baptism, confirmation, holy matrimony, or spiritual counseling — we are here to walk beside you every step of the way.
+            </p>
+            <div class="serif italic text-[15px] text-[#c8973a] mt-6 pl-4 border-l-2 border-[#c8973a] leading-[1.65]">
+                "Where two or three are gathered in my name, there am I among them." — Matthew 18:20
+            </div>
+            <div class="mt-8 flex flex-col gap-4">
                 @foreach(['Warm, prayerful atmosphere in every service','Trained clergy & counselors to guide you','Discreet, confidential pastoral care'] as $item)
-                <div style="display:flex; align-items:center; gap:14px;">
-                    <div style="width:8px; height:8px; background:var(--gold); border-radius:50%; flex-shrink:0;"></div>
-                    <span style="font-size:13.5px; color:#4a4f5e; font-weight:300;">{{ $item }}</span>
-                </div>
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-2 h-2 bg-[#c8973a] rounded-full flex-shrink-0"></div>
+                        <span class="text-[13.5px] text-[#4a4f5e] font-light">{{ $item }}</span>
+                    </div>
                 @endforeach
             </div>
         </div>
 
         {{-- Right: form card --}}
-        <div class="register-card fade-up fade-up-2">
-            <div class="register-card-top">
-                <p class="eyebrow" style="color:var(--gold); margin-bottom:10px;">Service Registration</p>
-                <h3>Let Us Know<br>You're Coming</h3>
-                <p>Complete the form and our team will confirm your booking.</p>
+        <div class="register-card fade-up fade-up-2 bg-[#0c1b3a] rounded-[2px] overflow-hidden shadow-[0_24px_64px_rgba(12,27,58,0.18)] relative">
+            <div class="px-8 pt-7 pb-5 border-b border-[rgba(200,151,58,0.15)]">
+                <p class="eyebrow mb-2.5">Service Registration</p>
+                <h3 class="serif text-[24px] font-semibold text-white mb-1">Let Us Know<br>You're Coming</h3>
+                <p class="text-[12px] text-white/40 font-light">Complete the form and our team will confirm your booking.</p>
             </div>
-            <div class="register-card-body">
+            <div class="px-8 py-7 relative z-10">
                 <form action="{{ route('service.register') }}" method="POST">
                     @csrf
                     @auth
-                        <div class="auth-info-box">
-                            <span class="material-symbols-outlined">person</span>
-                            <span>Registering as <strong>{{ Auth::user()->member->full_name ?? Auth::user()->name }}</strong></span>
+                        <div class="flex items-center gap-3 p-3.5 mb-5 bg-[rgba(200,151,58,0.1)] border border-[rgba(200,151,58,0.2)]">
+                            <span class="material-symbols-outlined text-[#c8973a] flex-shrink-0" style="font-size:18px;">person</span>
+                            <span class="text-[13px] text-white/70 font-light">
+                                Registering as <strong class="text-[#e8b96a] font-medium">{{ Auth::user()->member->full_name ?? Auth::user()->name }}</strong>
+                            </span>
                         </div>
 
-                        <label class="field-label-sm" style="color:rgba(255,255,255,0.45); margin-bottom:8px;">Select a Service</label>
-                        <select name="service_id" required class="field-select-dark">
+                        <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-white/45 mb-2">Select a Service</label>
+                        <select name="service_id" required
+                                class="field-select-dark w-full px-4 py-3.5 bg-white/[0.07] border border-white/[0.12] text-white/85 font-[Jost] text-sm outline-none transition-colors duration-200 focus:border-[#c8973a]">
                             <option value="" disabled selected>Choose a service…</option>
                             @foreach($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->name }}{{ !$service->isFree() ? '  ·  ' . $service->formatted_fee : '  ·  Free' }}</option>
+                                <option value="{{ $service->id }}" style="background:#142450; color:#fff;">
+                                    {{ $service->name }}{{ !$service->isFree() ? '  ·  ' . $service->formatted_fee : '  ·  Free' }}
+                                </option>
                             @endforeach
                         </select>
 
-                        <button type="submit" class="btn-submit-dark">
+                        <button type="submit" class="btn-submit-dark w-full mt-4 py-4 px-8 bg-[#c8973a] text-[#0c1b3a] font-[Jost] text-xs font-semibold tracking-[0.2em] uppercase border-0 cursor-pointer flex items-center justify-center gap-2.5">
                             <span>Register for Service</span>
-                            <span class="material-symbols-outlined" style="font-size:18px; position:relative; z-index:1;">arrow_forward</span>
+                            <span class="material-symbols-outlined relative z-10" style="font-size:18px;">arrow_forward</span>
                         </button>
 
-                        <p style="font-size:11px; color:rgba(255,255,255,0.25); text-align:center; margin-top:16px; font-weight:300;">
+                        <p class="text-[11px] text-white/25 text-center mt-4 font-light">
                             Our team will reach out to confirm your registration within 24hrs.
                         </p>
                     @else
-                        <div class="login-prompt">
-                            <p>Please log in to register for a service. Don't have an account? Create one in seconds.</p>
-                            <div class="login-prompt-btns">
-                                <button onclick="showLoginModal()" class="btn-lp-solid">Log In</button>
-                                <a href="#" onclick="showQuickAccountModal(); return false;" class="btn-lp-outline">Create Account</a>
+                        <div class="p-5 bg-[rgba(200,151,58,0.07)] border border-[rgba(200,151,58,0.18)]">
+                            <p class="text-[13px] text-white/60 font-light mb-4">Please log in to register for a service. Don't have an account? Create one in seconds.</p>
+                            <div class="flex gap-3">
+                                <button onclick="showLoginModal()"
+                                        class="flex-1 py-3 bg-[#c8973a] text-[#0c1b3a] font-[Jost] text-xs font-semibold tracking-[0.14em] uppercase border-0 cursor-pointer transition-colors duration-200 flex items-center justify-center hover:bg-[#e8b96a]">
+                                    Log In
+                                </button>
+                                <a href="#" onclick="showQuickAccountModal(); return false;"
+                                   class="flex-1 py-3 bg-transparent text-white/60 border border-white/[0.18] font-[Jost] text-xs font-medium tracking-[0.12em] uppercase transition-all duration-200 flex items-center justify-center hover:border-[#c8973a] hover:text-[#e8b96a] no-underline">
+                                    Create Account
+                                </a>
                             </div>
                         </div>
                     @endauth
@@ -769,75 +265,81 @@ textarea.field-input-sm { resize: none; }
 </section>
 
 {{-- ═══════════════ PAYMENT MODAL ═══════════════ --}}
-<div id="paymentModal" class="modal-overlay">
-    <div class="modal-box">
-        <button onclick="closePaymentModal()" class="modal-close">×</button>
+<div id="paymentModal" class="fixed inset-0 z-[999] bg-[rgba(12,27,58,0.72)] backdrop-blur-sm hidden items-center justify-center p-5 overflow-y-auto">
+    <div class="relative bg-white w-full max-w-[640px] rounded-[2px] overflow-hidden shadow-[0_32px_100px_rgba(0,0,0,0.3)]">
 
-        <div class="modal-header">
-            <p class="eyebrow" style="color:var(--gold);">Payment</p>
-            <h3>Complete Your<br>Registration</h3>
-            <p>Submit payment proof to confirm your booking.</p>
+        <button onclick="closePaymentModal()"
+                class="absolute top-4 right-5 w-9 h-9 bg-white/10 border border-white/20 rounded-full flex items-center justify-center cursor-pointer text-white/70 text-xl transition-all duration-200 hover:bg-white/20 hover:text-white z-10">×</button>
+
+        <div class="modal-header bg-[#0c1b3a] px-11 pt-10 pb-8 relative overflow-hidden">
+            <p class="eyebrow mb-2.5">Payment</p>
+            <h3 class="serif text-[32px] font-semibold text-white leading-[1.1] mt-2.5 mb-1.5">Complete Your<br>Registration</h3>
+            <p class="text-[13px] text-white/45 font-light">Submit payment proof to confirm your booking.</p>
         </div>
 
-        <div class="modal-body">
+        <div class="px-11 py-9 max-h-[70vh] overflow-y-auto">
+
             {{-- Service detail strip --}}
-            <div class="service-detail-strip">
-                <div class="sd-item">
-                    <span class="sd-label">Service</span>
-                    <span class="sd-value" id="modal-service-name">—</span>
+            <div class="bg-[#f5ede0] border border-[#e2d9cc] px-5 py-4 mb-7 flex gap-6 flex-wrap">
+                <div>
+                    <span class="block text-[9px] tracking-[0.18em] uppercase text-[#6b7080] mb-0.5">Service</span>
+                    <span id="modal-service-name" class="serif text-[17px] font-semibold text-[#0c1b3a]">—</span>
                 </div>
-                <div class="sd-item">
-                    <span class="sd-label">Fee</span>
-                    <span class="sd-value fee" id="modal-service-fee">—</span>
+                <div>
+                    <span class="block text-[9px] tracking-[0.18em] uppercase text-[#6b7080] mb-0.5">Fee</span>
+                    <span id="modal-service-fee" class="serif text-[17px] font-semibold text-[#c8973a]">—</span>
                 </div>
-                <div class="sd-item">
-                    <span class="sd-label">Registration</span>
-                    <span class="sd-value ref" id="modal-registration-id">—</span>
+                <div>
+                    <span class="block text-[9px] tracking-[0.18em] uppercase text-[#6b7080] mb-0.5">Registration</span>
+                    <span id="modal-registration-id" class="text-[13px] font-medium text-[#0c1b3a]">—</span>
                 </div>
             </div>
 
             {{-- Payment methods --}}
-            <label class="field-label-sm" style="margin-bottom:14px;">How to Pay</label>
-            <div class="pay-methods">
-                <div class="pay-method">
-                    <div class="pay-method-icon">📱</div>
+            <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-3.5">How to Pay</label>
+            <div class="flex flex-col gap-2.5 mb-7">
+                <div class="border border-[#e2d9cc] px-4 py-4 flex items-start gap-3.5 transition-colors duration-200 hover:border-[#c8973a]">
+                    <div class="text-[22px] flex-shrink-0 mt-0.5">📱</div>
                     <div>
-                        <div class="pay-method-title">Mobile Money</div>
-                        <div class="pay-method-detail">
+                        <div class="text-[13px] font-semibold text-[#0c1b3a] mb-1">Mobile Money</div>
+                        <div class="text-[12px] text-[#6b7080] font-light leading-[1.55]">
                             MTN: <strong>0772-567-789</strong> (St. John's Church)<br>
                             Airtel: <strong>0752-666-024</strong> (St. John's Church)
                         </div>
                     </div>
                 </div>
-                <div class="pay-method">
-                    <div class="pay-method-icon">🏦</div>
+                <div class="border border-[#e2d9cc] px-4 py-4 flex items-start gap-3.5 transition-colors duration-200 hover:border-[#c8973a]">
+                    <div class="text-[22px] flex-shrink-0 mt-0.5">🏦</div>
                     <div>
-                        <div class="pay-method-title">Bank Transfer</div>
-                        <div class="pay-method-detail">
+                        <div class="text-[13px] font-semibold text-[#0c1b3a] mb-1">Bank Transfer</div>
+                        <div class="text-[12px] text-[#6b7080] font-light leading-[1.55]">
                             Stanbic Bank Uganda<br>
                             A/C Name: <strong>St. John's Parish Church Entebbe</strong><br>
                             A/C No: <strong>9030XXXXXXXX</strong>
                         </div>
                     </div>
                 </div>
-                <div class="pay-method">
-                    <div class="pay-method-icon">💵</div>
+                <div class="border border-[#e2d9cc] px-4 py-4 flex items-start gap-3.5 transition-colors duration-200 hover:border-[#c8973a]">
+                    <div class="text-[22px] flex-shrink-0 mt-0.5">💵</div>
                     <div>
-                        <div class="pay-method-title">Cash at Office</div>
-                        <div class="pay-method-detail">Mon–Fri, 9:00 AM – 5:00 PM · St. John's Parish, Entebbe</div>
+                        <div class="text-[13px] font-semibold text-[#0c1b3a] mb-1">Cash at Office</div>
+                        <div class="text-[12px] text-[#6b7080] font-light leading-[1.55]">Mon–Fri, 9:00 AM – 5:00 PM · St. John's Parish, Entebbe</div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-divider">Submit Proof</div>
+            <div class="form-divider flex items-center gap-3.5 my-6 text-[#6b7080] text-[11px] tracking-[0.12em] uppercase">Submit Proof</div>
 
-            <form id="paymentProofForm" style="display:flex; flex-direction:column; gap:18px;">
+            <form id="paymentProofForm" class="flex flex-col gap-[18px]">
                 @csrf
                 <input type="hidden" id="proof-registration-id" name="registration_id">
 
                 <div>
-                    <label class="field-label-sm">Payment Method Used <span style="color:var(--gold);">*</span></label>
-                    <select name="payment_method" required class="field-input-sm">
+                    <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">
+                        Payment Method Used <span class="text-[#c8973a]">*</span>
+                    </label>
+                    <select name="payment_method" required
+                            class="field-input-sm w-full px-4 py-3 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)]">
                         <option value="">Select payment method…</option>
                         <option value="mobile_money">Mobile Money (MTN / Airtel)</option>
                         <option value="bank_transfer">Bank Transfer</option>
@@ -846,24 +348,36 @@ textarea.field-input-sm { resize: none; }
                 </div>
 
                 <div>
-                    <label class="field-label-sm">Transaction Reference <span style="color:var(--gold);">*</span></label>
-                    <input type="text" name="transaction_reference" required class="field-input-sm" placeholder="e.g. MTN123456789">
-                    <p class="field-hint">Enter the transaction ID from your mobile money or bank receipt.</p>
+                    <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">
+                        Transaction Reference <span class="text-[#c8973a]">*</span>
+                    </label>
+                    <input type="text" name="transaction_reference" required
+                           class="w-full px-4 py-3 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]"
+                           placeholder="e.g. MTN123456789">
+                    <p class="text-[11px] text-[#6b7080] mt-1.5 font-light">Enter the transaction ID from your mobile money or bank receipt.</p>
                 </div>
 
                 <div>
-                    <label class="field-label-sm">Additional Notes</label>
-                    <textarea name="payment_notes" rows="2" class="field-input-sm" placeholder="Any extra information…"></textarea>
+                    <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Additional Notes</label>
+                    <textarea name="payment_notes" rows="2"
+                              class="w-full px-4 py-3 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] resize-none placeholder-[#b0b5c0]"
+                              placeholder="Any extra information…"></textarea>
                 </div>
 
-                <div class="modal-actions">
-                    <button type="submit" class="btn-modal-submit">Submit Proof</button>
-                    <button type="button" onclick="closePaymentModal()" class="btn-modal-cancel">Pay Later</button>
+                <div class="flex gap-3.5 mt-2">
+                    <button type="submit"
+                            class="flex-1 py-[15px] bg-[#0c1b3a] text-[#e8b96a] font-[Jost] text-xs font-semibold tracking-[0.18em] uppercase border-0 cursor-pointer transition-colors duration-200 hover:bg-[#142450]">
+                        Submit Proof
+                    </button>
+                    <button type="button" onclick="closePaymentModal()"
+                            class="px-7 py-[15px] bg-transparent text-[#6b7080] border border-[#e2d9cc] font-[Jost] text-xs font-medium tracking-[0.12em] uppercase cursor-pointer transition-all duration-200 hover:border-[#0c1b3a] hover:text-[#0c1b3a]">
+                        Pay Later
+                    </button>
                 </div>
             </form>
 
-            <div class="modal-note">
-                <strong>Note:</strong> Your registration is confirmed. Payment verification may take up to 24 hours — we'll send a confirmation once approved.
+            <div class="mt-5 px-4 py-3.5 bg-[#f5ede0] border-l-4 border-[#c8973a] text-[12px] text-[#6b7080] leading-[1.6] font-light">
+                <strong class="text-[#0c1b3a] font-semibold">Note:</strong> Your registration is confirmed. Payment verification may take up to 24 hours — we'll send a confirmation once approved.
             </div>
         </div>
     </div>
@@ -877,50 +391,37 @@ textarea.field-input-sm { resize: none; }
 <script>
 let currentRegistrationData = null;
 
-// Auto-show modal if session says so
 @if(session('show_payment_modal') && session('registration_data'))
     document.addEventListener('DOMContentLoaded', function () {
         showPaymentModal(@json(session('registration_data')));
     });
 @endif
 
-// Auto-show quick account modal after member registration
 @if(session('show_account_creation'))
     document.addEventListener('DOMContentLoaded', function () {
-        // Small delay to ensure modal is loaded
         setTimeout(function() {
             if (typeof showQuickAccountModal === 'function') {
                 showQuickAccountModal();
-                // Pre-fill email if provided in session
                 @if(session('prefill_email'))
                     const emailInput = document.getElementById('quickAccountEmail');
-                    if (emailInput) {
-                        emailInput.value = '{{ session('prefill_email') }}';
-                    }
+                    if (emailInput) emailInput.value = '{{ session('prefill_email') }}';
                 @endif
             }
         }, 300);
     });
 @endif
 
-// Handle show_member_registration flash message
 @if(session('show_member_registration'))
     document.addEventListener('DOMContentLoaded', function () {
-        // Show member registration modal if available
         setTimeout(function() {
             if (typeof showMemberRegistrationModal === 'function') {
                 showMemberRegistrationModal();
-                // Pre-fill email if provided in session
                 @if(session('prefill_email'))
                     const emailInput = document.querySelector('#memberRegistrationModal input[name="email"]');
-                    if (emailInput) {
-                        emailInput.value = '{{ session('prefill_email') }}';
-                    }
+                    if (emailInput) emailInput.value = '{{ session('prefill_email') }}';
                 @endif
-                // Show informational message
                 showToast('Please register as a church member first before creating an account.', 'info');
             } else {
-                // Fallback: just show the toast message if modal function doesn't exist
                 showToast('Please register as a church member first before creating an account.', 'info');
             }
         }, 300);
@@ -929,16 +430,20 @@ let currentRegistrationData = null;
 
 function showPaymentModal(data) {
     currentRegistrationData = data;
-    document.getElementById('modal-service-name').textContent  = data.service_name;
-    document.getElementById('modal-service-fee').textContent   = data.service_fee;
+    document.getElementById('modal-service-name').textContent    = data.service_name;
+    document.getElementById('modal-service-fee').textContent     = data.service_fee;
     document.getElementById('modal-registration-id').textContent = '#' + data.registration_id;
-    document.getElementById('proof-registration-id').value      = data.registration_id;
-    document.getElementById('paymentModal').classList.add('open');
+    document.getElementById('proof-registration-id').value       = data.registration_id;
+    const modal = document.getElementById('paymentModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
 
 function closePaymentModal() {
-    document.getElementById('paymentModal').classList.remove('open');
+    const modal = document.getElementById('paymentModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     document.body.style.overflow = '';
     document.getElementById('paymentProofForm').reset();
 }
@@ -946,16 +451,14 @@ function closePaymentModal() {
 document.getElementById('paymentModal').addEventListener('click', function (e) {
     if (e.target === this) closePaymentModal();
 });
-
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePaymentModal(); });
 
 document.getElementById('paymentProofForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const submit = this.querySelector('.btn-modal-submit');
+    const submit = this.querySelector('[type=submit]');
     const orig   = submit.textContent;
     submit.disabled = true;
     submit.textContent = 'Submitting…';
-
     try {
         const res  = await fetch('{{ route("service.payment.proof") }}', {
             method: 'POST',
@@ -980,21 +483,12 @@ document.getElementById('paymentProofForm').addEventListener('submit', async fun
 
 function showToast(msg, type = 'success') {
     const t = document.createElement('div');
-    let styles = '';
-    if (type === 'success') {
-        styles = 'background:#0c1b3a; color:#e8b96a; border-left:3px solid #c8973a;';
-    } else if (type === 'error') {
-        styles = 'background:#fff; color:#c0392b; border-left:3px solid #c0392b; box-shadow:0 8px 24px rgba(0,0,0,.12);';
-    } else if (type === 'info') {
-        styles = 'background:#fff; color:#0c1b3a; border-left:3px solid #3b82f6; box-shadow:0 8px 24px rgba(0,0,0,.12);';
-    }
-    
-    t.style.cssText = `
-        position:fixed; top:24px; right:24px; z-index:9999;
-        padding:16px 22px; min-width:280px; font-family:'Jost',sans-serif;
-        font-size:13px; border-radius:2px; animation: fadeUp .3s ease both;
-        ${styles}
-    `;
+    const styles = {
+        success: 'background:#0c1b3a; color:#e8b96a; border-left:3px solid #c8973a;',
+        error:   'background:#fff; color:#c0392b; border-left:3px solid #c0392b; box-shadow:0 8px 24px rgba(0,0,0,.12);',
+        info:    'background:#fff; color:#0c1b3a; border-left:3px solid #3b82f6; box-shadow:0 8px 24px rgba(0,0,0,.12);',
+    };
+    t.style.cssText = `position:fixed; top:24px; right:24px; z-index:9999; padding:16px 22px; min-width:280px; font-family:'Jost',sans-serif; font-size:13px; border-radius:2px; animation:fadeUp .3s ease both; ${styles[type] || styles.success}`;
     t.textContent = msg;
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 5000);

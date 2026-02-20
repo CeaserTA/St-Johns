@@ -220,3 +220,25 @@ html {
 }
 
 
+
+/* Improved Base Font Sizes for Readability */
+body {
+    font-size: 17px; /* Increased from default 16px */
+    line-height: 1.75;
+}
+
+/* Ensure paragraphs are readable */
+p {
+    font-size: 1.0625rem; /* 17px */
+    line-height: 1.75;
+}
+
+/* Increase button text size */
+button, .btn {
+    font-size: 0.9375rem; /* 15px */
+}
+
+/* Increase form input text size */
+input, select, textarea {
+    font-size: 1rem; /* 16px minimum for mobile to prevent zoom */
+}

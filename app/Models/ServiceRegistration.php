@@ -36,10 +36,8 @@ class ServiceRegistration extends Model
     {
         parent::boot();
 
-        static::created(function ($model) {
-            // Notify admins of new service registration
-            Notification::notifyServiceRegistration($model);
-        });
+        // Removed automatic notification on service registration creation
+        // Notifications should be triggered explicitly from controllers
     }
 
     /**

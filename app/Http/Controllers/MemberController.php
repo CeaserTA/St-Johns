@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Services\NotificationService;
+use App\Notifications\NewMemberRegistered;
 
 class MemberController extends Controller
 {
@@ -272,6 +274,18 @@ class MemberController extends Controller
         try {
             $member = Member::create($data);
             Log::info('Member created successfully', ['member_id' => $member->id, 'member_name' => $member->full_name]);
+            
+            // Send notification to admins
+            try {
+                $notificationService = app(NotificationService::class);
+                $notificationService->notifyAdmins(new NewMemberRegistered($member));
+            } catch (\Exception $e) {
+                Log::error('Failed to send member registration notification', [
+                    'member_id' => $member->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Don't fail member creation if notification fails
+            }
         } catch (\Exception $e) {
             Log::error('Error creating member', [
                 'error' => $e->getMessage(),
