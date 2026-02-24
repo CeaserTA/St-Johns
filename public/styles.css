@@ -242,3 +242,12 @@ button, .btn {
 input, select, textarea {
     font-size: 1rem; /* 16px minimum for mobile to prevent zoom */
 }
+
+/* Font Family Overrides */
+.serif {
+    font-family: 'Playfair Display', serif;
+}
+
+body {
+    font-family: 'Merriweather', serif;
+}

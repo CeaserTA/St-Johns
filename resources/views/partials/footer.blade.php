@@ -1,104 +1,137 @@
-<!-- Footer - 4 Columns with Social & Newsletter in Column 4 -->
-<footer class="bg-primary text-white py-6">
-  <div class="max-w-7xl mx-auto px-5">
+{{-- ═══════════════════════════════════════════════
+     resources/views/partials/footer.blade.php
+     St. John's Parish Church · Entebbe
+═══════════════════════════════════════════════ --}}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center md:text-left">
+<footer class="relative bg-primary overflow-hidden">
 
-      <!-- Column 1: Logo + Tagline -->
-      <div class="space-y-3">
-        <a href="{{ route('home') }}"
-          class="flex items-center justify-center md:justify-start gap-4 hover:opacity-90 transition">
-          <img src="assets/Logo Final.png" alt="St. John's Parish Church Logo" class="h-14 w-auto object-contain">
-          <div class="leading-tight">
-            <h3 class="text-xl font-bold">St. John's Parish Church</h3>
-            <p class="text-xs font-semibold text-accent uppercase tracking-widest">Entebbe</p>
+  {{-- Decorative cross watermark --}}
+  <div class="absolute right-[3%] bottom-0 text-[18rem] leading-none text-accent/[0.035] pointer-events-none select-none font-serif" aria-hidden="true">✝</div>
+
+  {{-- Top gold bar --}}
+  <div class="h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"></div>
+
+  {{-- Main content --}}
+  <div class="relative z-10 max-w-6xl mx-auto px-4 pt-10 pb-6">
+
+    {{-- 4-column grid --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+      {{-- ── Col 1: Brand ── --}}
+      <div class="lg:col-span-1">
+
+        <a href="{{ route('home') }}" class="flex items-center gap-3 mb-4 group">
+          <img src="{{ asset('assets/Logo Final.png') }}"
+               alt="St. John's Parish Church Logo"
+               class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity">
+          <div>
+            <h2 class="font-sans text-sm font-bold text-white leading-tight">St. John's Parish Church</h2>
+            <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent mt-0.5">Entebbe</p>
           </div>
         </a>
-        <p class="text-sm text-white/70 max-w-xs mx-auto md:mx-0">
-          Growing in faith together as a welcoming Anglican family since 1948.
+
+        <p class="text-xs text-white/50 leading-relaxed font-light mb-4">
+          A welcoming community rooted in faith, service, and the love of Christ. All are welcome here.
         </p>
-      </div>
 
-      <!-- Column 2: Quick Links -->
-      <div>
-        <h4 class="text-accent font-bold text-lg mb-3">Quick Links</h4>
-        <ul class="space-y-2 text-sm">
-          <li><a href="{{ route('home') }}" class="hover:text-accent transition">Home</a></li>
-          <li><a href="{{ route('services') }}" class="hover:text-accent transition">Services</a></li>
-          <li><a href="{{ route('updates') }}" class="hover:text-accent transition">Updates</a></li>
-          <li>
-            <a href="#" class="hover:text-accent transition font-medium">Give / Tithe ❤️</a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Column 3: Contact Info -->
-      <div>
-        <h4 class="text-accent font-bold text-lg mb-3">Contact Info</h4>
-        <ul class="space-y-2 text-sm text-white/70">
-          <li class="flex items-center justify-center md:justify-start gap-3">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
-            </svg>
-            Church Road, Entebbe
-          </li>
-          <li class="flex items-center justify-center md:justify-start gap-3">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548 1.548a8.083 8.083 0 006.208 6.208l1.548-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-            </svg>
-            +256 703 558 174
-          </li>
-          <li class="flex items-center justify-center md:justify-start gap-3">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-            </svg>
-            info@stjohnsentebbe.org
-          </li>
-        </ul>
-        <a href="{{ route('login') }}"
-          class="mt-6 inline-block px-6 py-2.5 bg-secondary text-white font-bold rounded-full hover:bg-secondary/90 transition text-sm">
-          Admin Portal
-        </a>
-      </div>
-
-      <!-- Column 4: Stay Connected – Social Media + Newsletter -->
-      <div class="space-y-3">
-        <h4 class="text-accent font-bold text-lg text-center md:text-left">Stay Connected</h4>
-        
-        <!-- Social Media Icons Row -->
-        <div class="flex justify-center md:justify-start gap-6">
-          <!-- Facebook -->
-          <a href="https://facebook.com/StJohnsEntebbe" target="_blank"
-            class="text-white hover:text-accent transition-all duration-300 transform hover:scale-125"
-            aria-label="Follow us on Facebook">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-            </svg>
-          </a>
-
-          <!-- YouTube -->
-          <a href="https://youtube.com/@StJohnsEntebbe" target="_blank"
-            class="text-white hover:text-accent transition-all duration-300 transform hover:scale-125"
-            aria-label="Subscribe on YouTube">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.418-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.194V8.806L15.194 12Z" />
-            </svg>
-          </a>
-
-          <!-- Instagram -->
-          <a href="https://instagram.com/stjohnsentebbe" target="_blank"
-            class="text-white hover:text-accent transition-all duration-300 transform hover:scale-125"
-            aria-label="Follow us on Instagram">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" />
-            </svg>
-          </a>
+        {{-- Service time badge --}}
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
+          <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
+          <span class="text-xs font-medium text-white/65">Sunday Service · 9:00 AM</span>
         </div>
+      </div>
 
-        <!-- Newsletter – Below Social Icons -->
-        <div class="pt-4">
-          <p class="text-xs text-white/80 mb-3">Receive weekly updates & sermons</p>
+      {{-- ── Col 2: Quick Links ── --}}
+      <div>
+        <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-accent mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li>
+            <a href="{{ route('home') }}" class="group flex items-center gap-2.5 text-xs text-white/55 hover:text-white transition-colors duration-200">
+              <span class="inline-block w-3 h-px bg-accent/40 group-hover:w-5 group-hover:bg-accent transition-all duration-200 rounded-full flex-shrink-0"></span>
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('services') }}" class="group flex items-center gap-2.5 text-xs text-white/55 hover:text-white transition-colors duration-200">
+              <span class="inline-block w-3 h-px bg-accent/40 group-hover:w-5 group-hover:bg-accent transition-all duration-200 rounded-full flex-shrink-0"></span>
+              Services
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('updates') }}" class="group flex items-center gap-2.5 text-xs text-white/55 hover:text-white transition-colors duration-200">
+              <span class="inline-block w-3 h-px bg-accent/40 group-hover:w-5 group-hover:bg-accent transition-all duration-200 rounded-full flex-shrink-0"></span>
+              Announcements
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('giving.index') }}" class="group flex items-center gap-2.5 text-xs text-white/55 hover:text-white transition-colors duration-200">
+              <span class="inline-block w-3 h-px bg-accent/40 group-hover:w-5 group-hover:bg-accent transition-all duration-200 rounded-full flex-shrink-0"></span>
+              Give Online
+            </a>
+          </li>
+          <li>
+            <a href="#" class="group flex items-center gap-2.5 text-xs text-white/55 hover:text-white transition-colors duration-200">
+              <span class="inline-block w-3 h-px bg-accent/40 group-hover:w-5 group-hover:bg-accent transition-all duration-200 rounded-full flex-shrink-0"></span>
+              About Us
+            </a>
+          </li>
+          <li>
+            <a href="#" class="group flex items-center gap-2.5 text-xs text-white/55 hover:text-white transition-colors duration-200">
+              <span class="inline-block w-3 h-px bg-accent/40 group-hover:w-5 group-hover:bg-accent transition-all duration-200 rounded-full flex-shrink-0"></span>
+              Ministries
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {{-- ── Col 3: Contact ── --}}
+      <div>
+        <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-accent mb-4">Contact Us</h3>
+        <ul class="space-y-3">
+
+          <li class="flex items-start gap-2.5">
+            <svg class="w-3.5 h-3.5 text-accent/60 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="text-xs text-white/50 leading-relaxed">Entebbe Municipality,<br>Central Region, Uganda</span>
+          </li>
+
+          <li class="flex items-center gap-2.5">
+            <svg class="w-3.5 h-3.5 text-accent/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            <a href="tel:+256000000000" class="text-xs text-white/50 hover:text-white transition-colors">+256 000 000 000</a>
+          </li>
+
+          <li class="flex items-center gap-2.5">
+            <svg class="w-3.5 h-3.5 text-accent/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <a href="mailto:info@stjohnsentebbe.org" class="text-xs text-white/50 hover:text-white transition-colors">info@stjohnsentebbe.org</a>
+          </li>
+
+          <li class="flex items-start gap-2.5">
+            <svg class="w-3.5 h-3.5 text-accent/60 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="text-xs text-white/50 leading-relaxed">
+              <span class="block">Sun: 9:00 AM – 12:00 PM</span>
+              <span class="block">Wed: Prayer Night 6:30 PM</span>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+
+      {{-- ── Col 4: Newsletter + Social ── --}}
+      <div>
+        <h3 class="text-[10px] font-bold uppercase tracking-[0.18em] text-accent mb-4">Stay Connected</h3>
+
+        <p class="text-xs text-white/45 mb-3 leading-relaxed">
+          Get our weekly bulletin and parish announcements delivered to you.
+        </p>
+        <p class="text-xs text-white/80 mb-3">Receive weekly updates & sermons</p>
           <form id="newsletter-form" class="flex flex-col gap-2">
             @csrf
             <input type="email" 
@@ -121,20 +154,86 @@
             </button>
             <div id="newsletter-message" class="hidden text-xs mt-1"></div>
           </form>
+
+        {{-- Social --}}
+        <div class="mt-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Follow Us</span>
+            <div class="flex-1 h-px bg-white/[0.08]"></div>
+          </div>
+          <div class="flex items-center gap-2">
+
+            {{-- Facebook --}}
+            <a href="#" aria-label="Facebook"
+               class="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.07] border border-white/10 text-white/45 hover:-translate-y-1 hover:bg-accent/20 hover:text-accent-light hover:border-accent/35 transition-all duration-200">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            </a>
+
+            {{-- WhatsApp --}}
+            <a href="#" aria-label="WhatsApp"
+               class="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.07] border border-white/10 text-white/45 hover:-translate-y-1 hover:bg-accent/20 hover:text-accent-light hover:border-accent/35 transition-all duration-200">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.523 5.845L0 24l6.335-1.494A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.516-5.163-1.415L3 21.5l.943-3.73A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+              </svg>
+            </a>
+
+            {{-- YouTube --}}
+            <a href="#" aria-label="YouTube"
+               class="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.07] border border-white/10 text-white/45 hover:-translate-y-1 hover:bg-accent/20 hover:text-accent-light hover:border-accent/35 transition-all duration-200">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            </a>
+
+          <!-- Instagram -->
+          <a href="https://instagram.com/stjohnsentebbe" target="_blank"
+            class="text-white hover:text-accent transition-all duration-300 transform hover:scale-125"
+            aria-label="Follow us on Instagram">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" />
+            </svg>
+          </a>
         </div>
+
+        <!-- Newsletter – Below Social Icons -->
+        <div class="pt-4">
+          
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>{{-- /grid --}}
+
+    {{-- Gold divider --}}
+    <div class="my-6 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent"></div>
+
+    {{-- Bottom bar --}}
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+
+      <p class="text-[11px] text-white/30 font-light">
+        © {{ date('Y') }} St. John's Parish Church, Entebbe. All rights reserved.
+      </p>
+
+      <div class="flex items-center gap-1.5 text-[11px] text-white/20">
+        <svg class="w-3 h-3 text-secondary/50" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+        </svg>
+        <span>Crafted for the Parish Community</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="#" class="text-[11px] text-white/30 hover:text-white/60 transition-colors">Privacy Policy</a>
+        <span class="text-white/15">·</span>
+        <a href="#" class="text-[11px] text-white/30 hover:text-white/60 transition-colors">Terms of Use</a>
       </div>
 
     </div>
 
-    <!-- Bottom Bar – Auto-updating year -->
-    <div class="border-t border-white/10 mt-6 pt-3 text-sm text-white/60 flex flex-col md:flex-row justify-between items-center">
-      <span>
-        © {{ now()->year }} St. John's Parish Church Entebbe. All Rights Reserved.
-      </span>
-      <span class="mt-2 md:mt-0">Made with ❤️ in Uganda</span>
-    </div>
   </div>
-@include('partials.login-modal')
 </footer>
 
 <!-- Newsletter Subscription Script -->

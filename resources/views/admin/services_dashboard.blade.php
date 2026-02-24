@@ -4,95 +4,88 @@
 @section('header_title', 'Services')
 
 @section('content')
-    @php
-        // Services and service registrations should be provided by the controller/route
-        // Collections available here: $services, $serviceRegistrations
-    @endphp
 
-    <!-- Manage Services – Blue Theme & Interactive Hover -->
-    <div class="max-w-full mx-auto">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-            <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
-                <svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    {{-- ═══════════════════════════════════════════════════
+         MANAGE SERVICES TABLE
+    ═══════════════════════════════════════════════════ --}}
+    <div class="mb-7">
+
+        {{-- Section toolbar --}}
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
-                Manage Services
-            </h2>
-
+                <h2 class="font-display font-black text-xl text-primary">Manage Services</h2>
+            </div>
             <button id="addServiceBtn"
-                    class="bg-secondary hover:bg-accent text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    class="bg-secondary hover:bg-secondary/90 text-white px-5 py-2.5 rounded-xl text-sm font-semibold
+                           flex items-center gap-2 shadow-sm hover:shadow-card transition-all duration-200 shrink-0">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                 </svg>
                 Add Service
             </button>
         </div>
 
-        <div class="bg-white dark:bg-background-dark rounded-2xl shadow-lg border border-l-2 border-primary overflow-hidden">
+        {{-- Table card --}}
+        <div class="card-base overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200/70 dark:divide-gray-700/70">
-                    <thead class="bg-primary/5 dark:bg-primary/10 border-b border-primary/30 dark:border-primary/40">
+                <table class="min-w-full">
+                    <thead class="bg-sand/60 border-b border-border">
                         <tr>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
-                                Title
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
-                                Schedule
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
-                                Fee
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
-                                Description
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
-                                Actions
-                            </th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Title</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Schedule</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Fee</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Description</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100/80 dark:divide-gray-700/60">
+                    <tbody class="divide-y divide-border/60">
                         @forelse($services as $service)
-                            <tr class="group hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-md hover:-translate-y-1 hover:border-x hover:border-primary/30 dark:hover:border-primary/40 transition-all duration-200">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-text-dark group-hover:text-primary transition-colors">
-                                    {{ $service->name ?? $service->title ?? '—' }}
+                            <tr class="group hover:bg-sand/40 transition-colors duration-150">
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm font-semibold text-primary">{{ $service->name ?? $service->title ?? '—' }}</p>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-text-muted-dark group-hover:text-primary/90 transition-colors">
-                                    {{ $service->schedule ?? '—' }}
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm text-primary">{{ $service->schedule ?? '—' }}</p>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <td class="px-5 py-3.5 whitespace-nowrap">
                                     @if($service->is_free)
-                                        <span class="px-3 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 text-xs font-semibold rounded-full">
-                                            FREE
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-success/10 text-success border border-success/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-success"></span>FREE
                                         </span>
                                     @else
-                                        <span class="font-semibold text-secondary group-hover:text-secondary/90 transition-colors">
-                                            {{ $service->formatted_fee ?? '—' }}
-                                        </span>
+                                        <span class="text-sm font-semibold text-secondary">{{ $service->formatted_fee ?? '—' }}</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-700 dark:text-text-muted-dark group-hover:text-primary/90 transition-colors">
-                                    <div class="max-w-xs truncate">
-                                        {{ $service->description ?? '—' }}
-                                    </div>
+                                <td class="px-5 py-3.5 max-w-[220px]">
+                                    <p class="text-sm text-primary truncate">{{ $service->description ?? '—' }}</p>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
-                                        <button class="edit-btn px-3.5 py-1.5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-yellow-200/50 dark:border-yellow-700/40 hover:border-yellow-300 dark:hover:border-yellow-600/60 group-hover:scale-105">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <div class="flex items-center gap-1.5">
+                                        <button class="edit-btn p-2 rounded-lg text-accent/60 hover:text-accent hover:bg-accent/10 transition-all duration-150"
+                                                title="Edit"
+                                                data-id="{{ $service->id }}"
+                                                data-title="{{ $service->name ?? $service->title ?? '' }}"
+                                                data-schedule="{{ $service->schedule ?? '' }}"
+                                                data-fee="{{ $service->fee ?? 0 }}"
+                                                data-is-free="{{ $service->is_free ? '1' : '0' }}"
+                                                data-description="{{ $service->description ?? '' }}">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
-                                            Edit
                                         </button>
-
-                                        <form method="POST" action="{{ route('admin.services.destroy', $service->id) }}" style="display:inline;">
+                                        <form method="POST" action="{{ route('admin.services.destroy', $service->id) }}" class="inline"
+                                              onsubmit="return confirm('Delete this service?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="delete-btn px-3.5 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-red-200/50 dark:border-red-700/40 hover:border-red-300 dark:hover:border-red-600/60 group-hover:scale-105"
-                                                    onclick="return confirm('Are you sure you want to delete this service?')">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            <button type="submit"
+                                                    title="Delete"
+                                                    class="p-2 rounded-lg text-secondary/50 hover:text-secondary hover:bg-secondary/8 transition-all duration-150">
+                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
-                                                Delete
                                             </button>
                                         </form>
                                     </div>
@@ -100,151 +93,173 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-10 text-center text-gray-500 dark:text-text-muted-dark text-sm">
-                                    No services added yet.
-                                    <button id="addServiceBtnEmpty" class="ml-2 text-accent hover:underline font-medium">
-                                        Add your first service
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Service Registrations – Modern, Intuitive & Sacred -->
-    <div class="max-w-full mx-auto mt-8">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-primary flex items-center gap-3">
-                <svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Service Registrations
-            </h2>
-        </div>
-
-        <div class="bg-white dark:bg-background-dark rounded-2xl shadow-lg border border-l-2 border-primary overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200/70 dark:divide-gray-700/70">
-                    <thead class="bg-primary/5 dark:bg-primary/10 border-b border-primary/30 dark:border-primary/40">
-                        <tr>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Full Name
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Email
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Phone Number
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Service
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Amount
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Payment Status
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Transaction Ref
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider border-r border-primary/20 dark:border-primary/30">
-                                Registered On
-                            </th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-primary uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100/80 dark:divide-gray-700/60">
-                        @forelse($serviceRegistrations ?? [] as $reg)
-                            <tr class="group hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-md hover:-translate-y-1 hover:border-x hover:border-primary/30 dark:hover:border-primary/40 transition-all duration-200">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-text-dark group-hover:text-primary transition-colors border-r border-gray-100/50 dark:border-gray-700/40">
-                                    {{ $reg->guest_full_name ?? $reg->member->full_name ?? '' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-text-muted-dark group-hover:text-primary/90 transition-colors border-r border-gray-100/50 dark:border-gray-700/40">
-                                    {{ $reg->guest_email ?? $reg->member->email ?? '' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-text-muted-dark group-hover:text-primary/90 transition-colors border-r border-gray-100/50 dark:border-gray-700/40">
-                                    {{ $reg->guest_phone ?? $reg->member->phone ?? '' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-text-muted-dark group-hover:text-primary/90 transition-colors border-r border-gray-100/50 dark:border-gray-700/40">
-                                    {{ $reg->service->name ?? '' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold group-hover:text-primary/90 transition-colors border-r border-gray-100/50 dark:border-gray-700/40">
-                                    @if($reg->service && $reg->service->isFree())
-                                        <span class="px-3 py-1 bg-green-100/80 dark:bg-green-900/40 text-green-800 dark:text-green-300 text-xs font-semibold rounded-full">
-                                            FREE
-                                        </span>
-                                    @else
-                                        {{ $reg->service->formatted_fee ?? '' }}
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm border-r border-gray-100/50 dark:border-gray-700/40">
-                                    @php
-                                        $statusColors = [
-                                            'paid' => 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300',
-                                            'pending' => 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300',
-                                            'failed' => 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300',
-                                            'refunded' => 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-text-muted-dark',
-                                        ];
-                                        $colorClass = $statusColors[$reg->payment_status] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-text-muted-dark';
-                                    @endphp
-                                    <span class="px-3 py-1 {{ $colorClass }} text-xs font-semibold rounded-full uppercase">
-                                        {{ $reg->payment_status }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-text-muted-dark group-hover:text-primary/90 transition-colors border-r border-gray-100/50 dark:border-gray-700/40">
-                                    @if($reg->transaction_reference)
-                                        <span class="font-mono text-xs">{{ $reg->transaction_reference }}</span>
-                                        <br><span class="text-xs text-gray-500 dark:text-text-muted-dark">
-                                            {{ ucfirst(str_replace('_', ' ', $reg->payment_method ?? '')) }}
-                                        </span>
-                                    @else
-                                        <span class="text-gray-400 dark:text-gray-600">—</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-text-muted-dark border-r border-gray-100/50 dark:border-gray-700/40">
-                                    {{ optional($reg->created_at)->format('Y-m-d') ?? '' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
-                                        @if($reg->payment_status === 'pending')
-                                            <button onclick="confirmPayment({{ $reg->id }})"
-                                                    class="px-3.5 py-1.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-green-200/50 dark:border-green-700/40 hover:border-green-300 dark:hover:border-green-600/60 group-hover:scale-105">
-                                                Confirm
-                                            </button>
-                                            <button onclick="rejectPayment({{ $reg->id }})"
-                                                    class="px-3.5 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition duration-200 text-xs flex items-center gap-1 border border-red-200/50 dark:border-red-700/40 hover:border-red-300 dark:hover:border-red-600/60 group-hover:scale-105">
-                                                Reject
-                                            </button>
-                                        @elseif($reg->payment_status === 'paid')
-                                            <span class="text-green-600 dark:text-green-400 text-xs flex items-center gap-1">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Verified
-                                            </span>
-                                        @elseif($reg->payment_status === 'failed')
-                                            <span class="text-red-600 dark:text-red-400 text-xs flex items-center gap-1">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                                Rejected
-                                            </span>
-                                        @else
-                                            <span class="text-gray-400 dark:text-gray-600 text-xs">—</span>
-                                        @endif
+                                <td colspan="5" class="px-6 py-14 text-center">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <div class="w-12 h-12 rounded-2xl bg-sand border border-border flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-semibold text-primary">No services added yet</p>
+                                        <button id="addServiceBtnEmpty"
+                                                class="text-xs text-accent hover:underline font-semibold">
+                                            Add your first service
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- ═══════════════════════════════════════════════════
+         SERVICE REGISTRATIONS TABLE
+    ═══════════════════════════════════════════════════ --}}
+    <div>
+
+        {{-- Section toolbar --}}
+        <div class="flex items-center gap-3 mb-5">
+            <svg class="w-5 h-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <h2 class="font-display font-black text-xl text-primary">Service Registrations</h2>
+            @if(isset($serviceRegistrations))
+                <span class="text-xs font-semibold text-muted bg-sand border border-border px-2.5 py-1 rounded-full">
+                    {{ $serviceRegistrations->count() }} total
+                </span>
+            @endif
+        </div>
+
+        {{-- Table card --}}
+        <div class="card-base overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-sand/60 border-b border-border">
+                        <tr>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Name</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Email</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Phone</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Service</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Amount</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Status</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Ref</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Registered</th>
+                            <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/60">
+                        @forelse($serviceRegistrations ?? [] as $reg)
+                            <tr class="group hover:bg-sand/40 transition-colors duration-150">
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm font-semibold text-primary">
+                                        {{ $reg->guest_full_name ?? $reg->member->full_name ?? '—' }}
+                                    </p>
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm text-primary">{{ $reg->guest_email ?? $reg->member->email ?? '—' }}</p>
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm text-primary">{{ $reg->guest_phone ?? $reg->member->phone ?? '—' }}</p>
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm text-primary">{{ $reg->service->name ?? '—' }}</p>
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    @if($reg->service && $reg->service->isFree())
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-success/10 text-success border border-success/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-success"></span>FREE
+                                        </span>
+                                    @else
+                                        <span class="text-sm font-semibold text-primary">{{ $reg->service->formatted_fee ?? '—' }}</span>
+                                    @endif
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    @php
+                                        $statusMap = [
+                                            'paid'     => 'bg-success/10 text-success border-success/20',
+                                            'pending'  => 'bg-accent/10 text-accent border-accent/20',
+                                            'failed'   => 'bg-secondary/10 text-secondary border-secondary/20',
+                                            'refunded' => 'bg-muted/10 text-muted border-border',
+                                        ];
+                                        $cls = $statusMap[$reg->payment_status] ?? 'bg-sand text-muted border-border';
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $cls }} uppercase">
+                                        {{ $reg->payment_status }}
+                                    </span>
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    @if($reg->transaction_reference)
+                                        <p class="text-xs font-mono text-primary">{{ $reg->transaction_reference }}</p>
+                                        <p class="text-xs text-muted mt-0.5">{{ ucfirst(str_replace('_', ' ', $reg->payment_method ?? '')) }}</p>
+                                    @else
+                                        <span class="text-muted text-xs">—</span>
+                                    @endif
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    <p class="text-sm text-primary">{{ optional($reg->created_at)->format('M d, Y') ?? '—' }}</p>
+                                </td>
+
+                                <td class="px-5 py-3.5 whitespace-nowrap">
+                                    @if($reg->payment_status === 'pending')
+                                        <div class="flex items-center gap-1.5">
+                                            <button onclick="confirmPayment({{ $reg->id }})"
+                                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold
+                                                           bg-success/10 text-success border border-success/20
+                                                           hover:bg-success hover:text-white hover:border-success
+                                                           transition-all duration-150">
+                                                Confirm
+                                            </button>
+                                            <button onclick="rejectPayment({{ $reg->id }})"
+                                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold
+                                                           bg-secondary/8 text-secondary border border-secondary/20
+                                                           hover:bg-secondary hover:text-white hover:border-secondary
+                                                           transition-all duration-150">
+                                                Reject
+                                            </button>
+                                        </div>
+                                    @elseif($reg->payment_status === 'paid')
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-success">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Verified
+                                        </span>
+                                    @elseif($reg->payment_status === 'failed')
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Rejected
+                                        </span>
+                                    @else
+                                        <span class="text-muted text-xs">—</span>
+                                    @endif
+                                </td>
+
+                            </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-6 py-12 text-center text-gray-500 dark:text-text-muted-dark text-sm">
-                                    No service registrations yet.
+                                <td colspan="9" class="px-6 py-14 text-center">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <div class="w-12 h-12 rounded-2xl bg-sand border border-border flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-semibold text-primary">No registrations yet</p>
+                                        <p class="text-xs text-muted">Registrations will appear here once members sign up for services.</p>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
@@ -254,178 +269,200 @@
         </div>
     </div>
 
+    {{-- ═══════════════════════════════════════════════════
+         MODAL: ADD / EDIT SERVICE
+    ═══════════════════════════════════════════════════ --}}
+    <div id="editModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-primary/60 backdrop-blur-sm" id="modalBackdrop"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="relative bg-white rounded-2xl shadow-card-hover w-full max-w-lg modal-enter">
 
-    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-xl">
-            <h3 class="text-xl font-bold mb-4" id="modalTitle">Edit Service</h3>
-            <form id="editForm" method="POST">
-                @csrf
-                <div id="methodField"></div>
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <input name="name" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" />
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
+                {{-- Modal header --}}
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border">
+                    <h3 id="modalTitle" class="font-display font-bold text-lg text-primary">Add New Service</h3>
+                    <button id="cancelEdit" class="p-2 rounded-xl text-muted hover:text-primary hover:bg-sand transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Modal body --}}
+                <div class="p-6">
+                    <form id="editForm" method="POST" class="space-y-4">
+                        @csrf
+                        <div id="methodField"></div>
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Schedule</label>
-                            <input name="schedule" required
-                                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" />
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                                Service Name <span class="text-secondary">*</span>
+                            </label>
+                            <input name="name" required
+                                   class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                          placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                                   placeholder="e.g. Sunday Service"/>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Fee (UGX)</label>
-                            <input name="fee" id="feeInput" type="number" step="0.01" min="0" value="0"
-                                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" />
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                                    Schedule <span class="text-secondary">*</span>
+                                </label>
+                                <input name="schedule" required
+                                       class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                              placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                                       placeholder="e.g. Sundays 9am"/>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Fee (UGX)</label>
+                                <input name="fee" id="feeInput" type="number" step="0.01" min="0" value="0"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                              focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"/>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <label class="flex items-center">
+
+                        <label class="flex items-center gap-3 cursor-pointer select-none">
                             <input type="checkbox" name="is_free" value="1"
-                                class="rounded border-gray-300 text-primary focus:ring-primary">
-                            <span class="ml-2 text-sm text-gray-700">This service is free</span>
+                                   class="w-4 h-4 rounded border-border text-accent focus:ring-accent/20"/>
+                            <span class="text-sm text-primary font-medium">This service is free of charge</span>
                         </label>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea name="description" rows="4" required
-                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"></textarea>
-                    </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                                Description <span class="text-secondary">*</span>
+                            </label>
+                            <textarea name="description" rows="3" required
+                                      class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                             placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none"
+                                      placeholder="Brief description of this service…"></textarea>
+                        </div>
+
+                        {{-- Actions --}}
+                        <div class="flex justify-end gap-3 pt-2 border-t border-border">
+                            <button type="button" id="cancelEditBtn"
+                                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-muted border border-border
+                                           hover:border-primary/30 hover:text-primary bg-sand transition-all duration-200">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary
+                                           hover:bg-primary-light shadow-sm hover:shadow transition-all duration-200">
+                                Save Service
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="mt-4 flex justify-end gap-3">
-                    <button type="button" id="cancelEdit" class="px-4 py-2 border rounded">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
-                </div>
-            </form>
+
+            </div>
         </div>
     </div>
 
+    <style>
+        .modal-enter { animation: modalIn .25s cubic-bezier(.4,0,.2,1) both; }
+        @keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    </style>
+
     <script>
-        const addServiceBtn = document.getElementById('addServiceBtn');
-        const editModal = document.getElementById('editModal');
-        const editForm = document.getElementById('editForm');
-        const cancelEdit = document.getElementById('cancelEdit');
-        const modalTitle = document.getElementById('modalTitle');
+        /* ── Modal helpers ────────────────────────────── */
+        const editModal   = document.getElementById('editModal');
+        const editForm    = document.getElementById('editForm');
+        const modalTitle  = document.getElementById('modalTitle');
         const methodField = document.getElementById('methodField');
-        let currentServiceId = null;
-        let isAddingNew = false;
 
-        function openModalWithData(btn) {
-            isAddingNew = false;
-            currentServiceId = btn.dataset.id;
-            modalTitle.textContent = 'Edit Service';
-            const name = btn.dataset.title || '';
-            const schedule = btn.dataset.schedule || '';
-            const fee = btn.dataset.fee || '0';
-            const isFree = btn.dataset.isFree === '1';
-            const description = btn.dataset.description || '';
+        function openModal()  { editModal.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); }
+        function closeModal() { editModal.classList.add('hidden');    document.body.classList.remove('overflow-hidden'); }
 
-            editForm.elements['name'].value = name;
-            editForm.elements['schedule'].value = schedule;
-            editForm.elements['fee'].value = fee;
-            editForm.elements['is_free'].checked = isFree;
-            editForm.elements['description'].value = description;
-
-            editForm.action = `/admin/services/${currentServiceId}`;
-            methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
-
-            editModal.classList.remove('hidden');
-            editModal.classList.add('flex');
-        }
-
+        /* ── Add service ──────────────────────────────── */
         function openAddModal() {
-            isAddingNew = true;
-            currentServiceId = null;
             modalTitle.textContent = 'Add New Service';
             editForm.reset();
             editForm.action = '/admin/services';
             methodField.innerHTML = '';
+            openModal();
+        }
 
-            editModal.classList.remove('hidden');
-            editModal.classList.add('flex');
+        document.getElementById('addServiceBtn').addEventListener('click', openAddModal);
+
+        const emptyBtn = document.getElementById('addServiceBtnEmpty');
+        if (emptyBtn) emptyBtn.addEventListener('click', openAddModal);
+
+        /* ── Edit service ─────────────────────────────── */
+        function openModalWithData(btn) {
+            modalTitle.textContent = 'Edit Service';
+            editForm.elements['name'].value        = btn.dataset.title       || '';
+            editForm.elements['schedule'].value    = btn.dataset.schedule    || '';
+            editForm.elements['fee'].value         = btn.dataset.fee         || '0';
+            editForm.elements['is_free'].checked   = btn.dataset.isFree === '1';
+            editForm.elements['description'].value = btn.dataset.description || '';
+            editForm.action   = `/admin/services/${btn.dataset.id}`;
+            methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
+            openModal();
         }
 
         function attachEditListeners() {
-            const editBtns = document.querySelectorAll('.edit-btn');
-            editBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    openModalWithData(e.currentTarget);
-                });
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => openModalWithData(btn));
             });
         }
-
-        // Initial attachment
         attachEditListeners();
 
-        addServiceBtn.addEventListener('click', openAddModal);
-        cancelEdit.addEventListener('click', () => {
-            editModal.classList.add('hidden');
-            editModal.classList.remove('flex');
-        });
+        /* ── Close triggers ───────────────────────────── */
+        document.getElementById('cancelEdit').addEventListener('click', closeModal);
+        document.getElementById('cancelEditBtn').addEventListener('click', closeModal);
+        document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-        editForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            editForm.submit();
-        });
+        editForm.addEventListener('submit', e => { e.preventDefault(); editForm.submit(); });
 
-        // Payment confirmation functions
-        async function confirmPayment(registrationId) {
-            if (!confirm('Confirm this payment? This will mark the registration as paid.')) {
-                return;
-            }
-
+        /* ── Payment actions ──────────────────────────── */
+        async function confirmPayment(id) {
+            if (!confirm('Confirm this payment? This will mark the registration as paid.')) return;
             try {
-                const response = await fetch(`/admin/service-registrations/${registrationId}/confirm-payment`, {
+                const res  = await fetch(`/admin/service-registrations/${id}/confirm-payment`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content || '{{ csrf_token() }}'
-                    }
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    alert('Payment confirmed successfully!');
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + (data.message || 'Failed to confirm payment'));
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
+                const data = await res.json();
+                if (data.success) { showToast('Payment confirmed!', 'success'); setTimeout(() => location.reload(), 1200); }
+                else showToast(data.message || 'Failed to confirm payment.', 'error');
+            } catch { showToast('An error occurred.', 'error'); }
         }
 
-        async function rejectPayment(registrationId) {
+        async function rejectPayment(id) {
             const reason = prompt('Reason for rejection (optional):');
-            if (reason === null) return; // User cancelled
-
+            if (reason === null) return;
             try {
-                const response = await fetch(`/admin/service-registrations/${registrationId}/reject-payment`, {
+                const res  = await fetch(`/admin/service-registrations/${id}/reject-payment`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content || '{{ csrf_token() }}'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify({ reason })
                 });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    alert('Payment rejected.');
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + (data.message || 'Failed to reject payment'));
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
+                const data = await res.json();
+                if (data.success) { showToast('Payment rejected.', 'error'); setTimeout(() => location.reload(), 1200); }
+                else showToast(data.message || 'Failed to reject payment.', 'error');
+            } catch { showToast('An error occurred.', 'error'); }
         }
 
-        // Make functions globally available
+        /* ── Toast ────────────────────────────────────── */
+        function showToast(msg, type) {
+            const t = document.createElement('div');
+            t.className = `fixed top-5 right-5 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-card-hover text-sm font-semibold border
+                ${type === 'success'
+                    ? 'bg-success/10 border-success/30 text-success'
+                    : 'bg-secondary/10 border-secondary/30 text-secondary'}`;
+            t.innerHTML = `
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    ${type === 'success'
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'}
+                </svg>
+                <span>${msg}</span>`;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+
         window.confirmPayment = confirmPayment;
-        window.rejectPayment = rejectPayment;
+        window.rejectPayment  = rejectPayment;
     </script>
+
 @endsection

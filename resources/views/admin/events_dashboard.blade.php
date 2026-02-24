@@ -4,664 +4,698 @@
 @section('header_title', 'Events & Announcements Manager')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-<style>
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    display: inline-block;
-    vertical-align: middle;
-}
-.filled-icon {
-    font-variation-settings: 'FILL' 1;
-}
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 32px;
-    height: 16px;
-}
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #cbd5e1;
-    transition: .3s;
-    border-radius: 16px;
-}
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 0;
-    bottom: 0;
-    background-color: white;
-    transition: .3s;
-    border-radius: 50%;
-    border: 2px solid #cbd5e1;
-}
-input:checked + .toggle-slider {
-    background-color: #0d59f2;
-}
-input:checked + .toggle-slider:before {
-    transform: translateX(16px);
-    border-color: #0d59f2;
-}
+    {{-- ═══════════════════════════════════════════════════
+         KPI CARDS
+    ═══════════════════════════════════════════════════ --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-7">
 
-</style>
-
-<!-- Stats Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <span class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
-                <span class="material-symbols-outlined">campaign</span>
-            </span>
+        <div class="card-base card-hover group">
+            <div class="h-1 bg-primary rounded-t-2xl"></div>
+            <div class="p-5 flex items-start justify-between">
+                <div>
+                    <p class="card-muted uppercase tracking-widest font-semibold">Total Active</p>
+                    <p class="card-number text-primary">{{ $stats['active'] ?? 0 }}</p>
+                    <p class="card-muted mt-1.5">Live right now</p>
+                </div>
+                <div class="card-icon-container bg-primary/8 group-hover:bg-primary/15 mt-1 shrink-0">
+                    <svg class="card-icon text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                    </svg>
+                </div>
+            </div>
         </div>
-        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Active</p>
-        <p class="text-2xl font-bold mt-1">{{ $stats['active'] ?? 0 }}</p>
+
+        <div class="card-base card-hover group">
+            <div class="h-1 bg-accent rounded-t-2xl"></div>
+            <div class="p-5 flex items-start justify-between">
+                <div>
+                    <p class="card-muted uppercase tracking-widest font-semibold">Upcoming Events</p>
+                    <p class="card-number text-accent">{{ $stats['upcoming'] ?? 0 }}</p>
+                    <p class="card-muted mt-1.5">Scheduled ahead</p>
+                </div>
+                <div class="card-icon-container bg-accent/10 group-hover:bg-accent/20 mt-1 shrink-0">
+                    <svg class="card-icon text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-base card-hover group">
+            <div class="h-1 bg-accent rounded-t-2xl"></div>
+            <div class="p-5 flex items-start justify-between">
+                <div>
+                    <p class="card-muted uppercase tracking-widest font-semibold">Pinned Items</p>
+                    <p class="card-number text-accent">{{ $stats['pinned'] ?? 0 }}</p>
+                    <p class="card-muted mt-1.5">Featured at top</p>
+                </div>
+                <div class="card-icon-container bg-accent/10 group-hover:bg-accent/20 mt-1 shrink-0">
+                    <svg class="card-icon text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-base card-hover group">
+            <div class="h-1 bg-primary/25 rounded-t-2xl"></div>
+            <div class="p-5 flex items-start justify-between">
+                <div>
+                    <p class="card-muted uppercase tracking-widest font-semibold">Total Items</p>
+                    <p class="card-number text-primary">{{ $stats['total'] ?? 0 }}</p>
+                    <p class="card-muted mt-1.5">All time</p>
+                </div>
+                <div class="card-icon-container bg-primary/8 group-hover:bg-primary/15 mt-1 shrink-0">
+                    <svg class="card-icon text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <span class="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
-                <span class="material-symbols-outlined">event_upcoming</span>
-            </span>
-        </div>
-        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Upcoming Events</p>
-        <p class="text-2xl font-bold mt-1">{{ $stats['upcoming'] ?? 0 }}</p>
-    </div>
+    {{-- ═══════════════════════════════════════════════════
+         EVENTS TABLE
+    ═══════════════════════════════════════════════════ --}}
+    <div class="card-base overflow-hidden mb-7">
 
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <span class="p-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 rounded-lg">
-                <span class="material-symbols-outlined filled-icon">grade</span>
-            </span>
-        </div>
-        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Pinned Items</p>
-        <p class="text-2xl font-bold mt-1">{{ $stats['pinned'] ?? 0 }}</p>
-    </div>
+        {{-- Toolbar --}}
+        <div class="px-5 py-4 border-b border-border flex flex-wrap items-center justify-between gap-4">
 
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <span class="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg">
-                <span class="material-symbols-outlined">event</span>
-            </span>
-        </div>
-        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Items</p>
-        <p class="text-2xl font-bold mt-1">{{ $stats['total'] ?? 0 }}</p>
-    </div>
-</div>
+            {{-- Type tabs --}}
+            <div class="flex items-center gap-1 bg-sand border border-border rounded-xl p-1">
+                <a href="{{ route('admin.events') }}"
+                   class="px-5 py-2 rounded-lg text-xs font-semibold transition-all duration-200
+                          {{ !request('type') ? 'bg-primary text-white shadow-sm' : 'text-muted hover:text-primary' }}">
+                    All
+                </a>
+                <a href="{{ route('admin.events', ['type' => 'event']) }}"
+                   class="px-5 py-2 rounded-lg text-xs font-semibold transition-all duration-200
+                          {{ request('type') === 'event' ? 'bg-primary text-white shadow-sm' : 'text-muted hover:text-primary' }}">
+                    Events
+                </a>
+                <a href="{{ route('admin.events', ['type' => 'announcement']) }}"
+                   class="px-5 py-2 rounded-lg text-xs font-semibold transition-all duration-200
+                          {{ request('type') === 'announcement' ? 'bg-primary text-white shadow-sm' : 'text-muted hover:text-primary' }}">
+                    Announcements
+                </a>
+            </div>
 
-
-<!-- Filters & Table Section -->
-<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-    <!-- Table Header/Filters -->
-    <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-            <a href="{{ route('admin.events') }}" class="px-6 py-1.5 {{ !request('type') ? 'bg-white dark:bg-slate-700 shadow-sm' : '' }} rounded-md text-sm font-bold {{ !request('type') ? 'text-primary' : 'text-slate-500 hover:text-slate-700' }} transition-all">
-                All
-            </a>
-            <a href="{{ route('admin.events', ['type' => 'event']) }}" class="px-6 py-1.5 {{ request('type') === 'event' ? 'bg-white dark:bg-slate-700 shadow-sm' : '' }} rounded-md text-sm font-bold {{ request('type') === 'event' ? 'text-primary' : 'text-slate-500 hover:text-slate-700' }} transition-all">
-                Events
-            </a>
-            <a href="{{ route('admin.events', ['type' => 'announcement']) }}" class="px-6 py-1.5 {{ request('type') === 'announcement' ? 'bg-white dark:bg-slate-700 shadow-sm' : '' }} rounded-md text-sm font-bold {{ request('type') === 'announcement' ? 'text-primary' : 'text-slate-500 hover:text-slate-700' }} transition-all">
-                Announcements
-            </a>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <div class="relative">
-                <select id="categoryFilter" class="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-4 pr-10 py-2 text-sm focus:ring-primary focus:border-primary">
+            {{-- Filters + Create --}}
+            <div class="flex items-center gap-3 flex-wrap">
+                <select id="categoryFilter"
+                        class="px-3 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                               focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                     <option value="">All Categories</option>
                     @foreach(\App\Models\Event::getCategories() as $category)
-                        <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>{{ $category }}</option>
+                        <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
+                            {{ $category }}
+                        </option>
                     @endforeach
                 </select>
-                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
-            </div>
 
-            <div class="relative">
-                <select id="statusFilter" class="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-4 pr-10 py-2 text-sm focus:ring-primary focus:border-primary">
+                <select id="statusFilter"
+                        class="px-3 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                               focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                     <option value="">All Status</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="active"   {{ request('status') === 'active'   ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    <option value="pinned" {{ request('status') === 'pinned' ? 'selected' : '' }}>Pinned</option>
+                    <option value="pinned"   {{ request('status') === 'pinned'   ? 'selected' : '' }}>Pinned</option>
                     <option value="upcoming" {{ request('status') === 'upcoming' ? 'selected' : '' }}>Upcoming</option>
-                    <option value="past" {{ request('status') === 'past' ? 'selected' : '' }}>Past</option>
-                    <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Expired</option>
+                    <option value="past"     {{ request('status') === 'past'     ? 'selected' : '' }}>Past</option>
+                    <option value="expired"  {{ request('status') === 'expired'  ? 'selected' : '' }}>Expired</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
-            </div>
 
-            <button id="addNewBtn" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-md shadow-primary/20 hover:bg-primary/90 transition-all">
-                <span class="material-symbols-outlined text-xl">add</span>
-                Create New
-            </button>
+                <button id="addNewBtn"
+                        class="bg-secondary hover:bg-secondary/90 text-white px-5 py-2.5 rounded-xl text-sm font-semibold
+                               flex items-center gap-2 shadow-sm hover:shadow-card transition-all duration-200 shrink-0">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Create New
+                </button>
+            </div>
+        </div>
+
+        {{-- Table --}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-sand/60 border-b border-border">
+                    <tr>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Title</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Type</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Category</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Date / Time</th>
+                        <th class="px-5 py-3 text-center text-xs font-bold text-primary uppercase tracking-wider">Pinned</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Status</th>
+                        <th class="px-5 py-3 text-right text-xs font-bold text-primary uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/60">
+                    @forelse($events as $event)
+                        <tr class="group hover:bg-sand/40 transition-colors duration-150">
+
+                            {{-- Title --}}
+                            <td class="px-5 py-3.5">
+                                <div class="flex items-center gap-3">
+                                    @if($event->image_url)
+                                        <img src="{{ $event->image_url }}" alt="{{ $event->title }}"
+                                             class="w-10 h-10 rounded-xl object-cover shrink-0 border border-border"/>
+                                    @else
+                                        <div class="w-10 h-10 rounded-xl bg-sand border border-border flex items-center justify-center shrink-0">
+                                            @if($event->is_event)
+                                                <svg class="w-5 h-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                                                </svg>
+                                            @endif
+                                        </div>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-semibold text-primary truncate max-w-[180px]">{{ $event->title }}</p>
+                                        <p class="text-xs text-muted mt-0.5">{{ $event->location ?? 'No location' }}</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Type badge --}}
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                @if($event->is_event)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 uppercase">Event</span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-sand text-muted border border-border uppercase">Announce</span>
+                                @endif
+                            </td>
+
+                            {{-- Category --}}
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <p class="text-sm text-primary">{{ $event->category ?? 'General' }}</p>
+                            </td>
+
+                            {{-- Date --}}
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <p class="text-sm font-medium text-primary">{{ $event->formatted_date ?? 'N/A' }}</p>
+                                @if($event->expires_at)
+                                    <p class="text-xs text-muted mt-0.5">Expires {{ $event->expires_at->format('M d, Y') }}</p>
+                                @endif
+                            </td>
+
+                            {{-- Pin --}}
+                            <td class="px-5 py-3.5 text-center whitespace-nowrap">
+                                <button class="toggle-pin-btn inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent/10 transition-colors"
+                                        data-id="{{ $event->id }}"
+                                        data-pinned="{{ $event->is_pinned ? 'true' : 'false' }}"
+                                        title="{{ $event->is_pinned ? 'Unpin' : 'Pin' }}">
+                                    <svg class="w-4 h-4 pin-icon transition-colors {{ $event->is_pinned ? 'text-accent' : 'text-border' }}"
+                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                                         fill="{{ $event->is_pinned ? 'currentColor' : 'none' }}">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                    </svg>
+                                </button>
+                            </td>
+
+                            {{-- Active toggle — pure Tailwind peer --}}
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <div class="flex items-center gap-2.5">
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox"
+                                               class="toggle-active-btn sr-only peer"
+                                               data-id="{{ $event->id }}"
+                                               {{ $event->is_active ? 'checked' : '' }}>
+                                        <div class="w-9 h-5 rounded-full border-2 border-border bg-sand
+                                                    peer-checked:border-success peer-checked:bg-success/15
+                                                    transition-all duration-200 relative">
+                                            <div class="absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full
+                                                        bg-muted/50 peer-checked:bg-success
+                                                        transition-all duration-200
+                                                        peer-checked:translate-x-4 toggle-knob">
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <span class="status-text text-xs font-semibold {{ $event->is_active ? 'text-success' : 'text-muted' }}"
+                                          data-id="{{ $event->id }}">
+                                        {{ $event->is_active ? 'Live' : 'Draft' }}
+                                    </span>
+                                </div>
+                            </td>
+
+                            {{-- Actions --}}
+                            <td class="px-5 py-3.5 whitespace-nowrap text-right">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button class="edit-btn p-2 rounded-lg text-accent/60 hover:text-accent hover:bg-accent/10 transition-all duration-150"
+                                            data-id="{{ $event->id }}" title="Edit">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="delete-btn p-2 rounded-lg text-secondary/50 hover:text-secondary hover:bg-secondary/8 transition-all duration-150"
+                                            data-id="{{ $event->id }}" title="Delete">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-6 py-14 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="w-12 h-12 rounded-2xl bg-sand border border-border flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-primary">No events or announcements found</p>
+                                    <button id="addNewBtnEmpty" class="text-xs text-accent hover:underline font-semibold">Create your first item</button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
+    {{-- ═══════════════════════════════════════════════════
+         REGISTRATIONS TABLE
+    ═══════════════════════════════════════════════════ --}}
+    <div class="card-base overflow-hidden">
 
-    <!-- Data Table -->
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50 dark:bg-slate-800/50">
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Title</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Type</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Category</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Date/Time</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800 text-center">Pinned</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Status</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800 text-right w-48">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
-                @forelse($events as $event)
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-3">
-                            @if($event->image_url)
-                            <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                                <img class="w-full h-full object-cover" src="{{ $event->image_url }}" alt="{{ $event->title }}"/>
-                            </div>
-                            @else
-                            <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
-                                <span class="material-symbols-outlined">{{ $event->is_event ? 'event' : 'campaign' }}</span>
-                            </div>
-                            @endif
-                            <div>
-                                <p class="text-sm font-semibold">{{ $event->title }}</p>
-                                <p class="text-xs text-slate-500">{{ $event->location ?? 'No location' }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $event->is_event ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' }}">
-                            {{ strtoupper($event->type) }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
-                        {{ $event->category ?? 'General' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <p class="text-xs font-medium">{{ $event->formatted_date ?? 'N/A' }}</p>
-                        @if($event->expires_at)
-                        <p class="text-[10px] text-slate-400">Expires: {{ $event->expires_at->format('M d, Y') }}</p>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                        <button class="toggle-pin-btn" data-id="{{ $event->id }}" data-pinned="{{ $event->is_pinned ? 'true' : 'false' }}">
-                            <span class="material-symbols-outlined {{ $event->is_pinned ? 'text-yellow-500 filled-icon' : 'text-slate-300 dark:text-slate-700' }} cursor-pointer hover:text-yellow-500 transition-colors">grade</span>
-                        </button>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-2">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="toggle-active-btn" data-id="{{ $event->id }}" {{ $event->is_active ? 'checked' : '' }}>
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <span class="status-text text-[11px] font-bold {{ $event->is_active ? 'text-slate-500' : 'text-slate-400' }}" data-id="{{ $event->id }}">
-                                {{ $event->is_active ? 'Live' : 'Draft' }}
-                            </span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <button class="edit-btn flex items-center gap-1 px-3 py-1.5 text-slate-600 hover:text-primary hover:bg-primary/10 rounded-md text-sm font-medium transition-colors" data-id="{{ $event->id }}">
-                                <span class="material-symbols-outlined text-lg">edit</span>
-                                <span>Edit</span>
-                            </button>
-                            <button class="delete-btn flex items-center gap-1 px-3 py-1.5 text-slate-600 hover:text-red-500 hover:bg-red-50 rounded-md text-sm font-medium transition-colors" data-id="{{ $event->id }}">
-                                <span class="material-symbols-outlined text-lg">delete</span>
-                                <span>Delete</span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="px-6 py-12 text-center text-slate-500">
-                        <span class="material-symbols-outlined text-4xl mb-2 block">event_busy</span>
-                        <p class="text-sm">No events or announcements found</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Event Registrations Section -->
-<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mt-8">
-    <div class="p-6 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-bold">Event Registrations</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Recent registrations for events</p>
+        <div class="px-5 py-4 border-b border-border flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <div>
+                    <h2 class="font-display font-bold text-lg text-primary">Event Registrations</h2>
+                    <p class="text-xs text-muted mt-0.5">Recent sign-ups for events</p>
+                </div>
             </div>
-            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-bold">
-                {{ $registrations->count() }} Total
+            <span class="text-xs font-semibold text-muted bg-sand border border-border px-2.5 py-1 rounded-full shrink-0">
+                {{ $registrations->count() }} total
             </span>
         </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-sand/60 border-b border-border">
+                    <tr>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Name</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Contact</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Event</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Type</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider">Registered</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/60">
+                    @forelse($registrations as $registration)
+                        <tr class="group hover:bg-sand/40 transition-colors duration-150">
+
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold text-primary">
+                                            {{ strtoupper(substr($registration->first_name ?? 'G', 0, 1)) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-primary">{{ $registration->full_name }}</p>
+                                        @if($registration->member_id)
+                                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-success">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-success"></span>Member
+                                            </span>
+                                        @else
+                                            <span class="text-xs text-muted">Guest</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                @if($registration->email)
+                                    <p class="text-sm text-primary">{{ $registration->email }}</p>
+                                @endif
+                                @if($registration->phone)
+                                    <p class="text-xs text-muted mt-0.5">{{ $registration->phone }}</p>
+                                @endif
+                                @if(!$registration->email && !$registration->phone)
+                                    <span class="text-xs text-muted">No contact info</span>
+                                @endif
+                            </td>
+
+                            <td class="px-5 py-3.5 max-w-[200px]">
+                                <p class="text-sm font-medium text-primary truncate">{{ $registration->event->title ?? 'N/A' }}</p>
+                                @if($registration->event)
+                                    <p class="text-xs text-muted mt-0.5">{{ $registration->event->formatted_date ?? 'Date TBD' }}</p>
+                                @endif
+                            </td>
+
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                @if($registration->event)
+                                    @if($registration->event->is_event)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 uppercase">Event</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-sand text-muted border border-border uppercase">Announce</span>
+                                    @endif
+                                @else
+                                    <span class="text-xs text-muted">—</span>
+                                @endif
+                            </td>
+
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <p class="text-sm text-primary">{{ $registration->created_at->diffForHumans() }}</p>
+                            </td>
+
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-14 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="w-12 h-12 rounded-2xl bg-sand border border-border flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-primary">No registrations yet</p>
+                                    <p class="text-xs text-muted">Sign-ups will appear here once members register for events.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Registrations Table -->
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50 dark:bg-slate-800/50">
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Name</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Contact</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Event</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Type</th>
-                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">Registered</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
-                @forelse($registrations as $registration)
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                                {{ strtoupper(substr($registration->first_name ?? 'G', 0, 1)) }}
+    {{-- ═══════════════════════════════════════════════════
+         MODAL: CREATE / EDIT
+    ═══════════════════════════════════════════════════ --}}
+    <div id="eventModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-primary/60 backdrop-blur-sm" id="modalBackdrop"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="relative bg-white rounded-2xl shadow-card-hover w-full max-w-2xl max-h-[90vh] flex flex-col
+                        transition-all duration-200 scale-100 opacity-100">
+
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+                    <h3 id="modalTitle" class="font-display font-bold text-lg text-primary">Create New Event</h3>
+                    <button id="closeModal" class="p-2 rounded-xl text-muted hover:text-primary hover:bg-sand transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="overflow-y-auto flex-1 p-6">
+                    <form id="eventForm" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        @csrf
+                        <div id="methodField"></div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-2">Type</label>
+                            <div class="flex gap-5">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="type" value="event" checked class="w-4 h-4 accent-primary"/>
+                                    <span class="text-sm font-medium text-primary">Event</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="type" value="announcement" class="w-4 h-4 accent-primary"/>
+                                    <span class="text-sm font-medium text-primary">Announcement</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                                Title <span class="text-secondary">*</span>
+                            </label>
+                            <input type="text" name="title" required
+                                   class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                          placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                                   placeholder="Enter title…"/>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Category</label>
+                            <select name="category"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                           focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+                                <option value="">Select category</option>
+                                @foreach(\App\Models\Event::getCategories() as $category)
+                                    <option value="{{ $category }}">{{ $category }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Description</label>
+                            <textarea name="description" rows="3"
+                                      class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                             placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none"
+                                      placeholder="Brief description…"></textarea>
+                        </div>
+
+                        <div id="eventFields" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Date</label>
+                                    <input type="date" name="date"
+                                           class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                                  focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Time</label>
+                                    <input type="time" name="time"
+                                           class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                                  focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"/>
+                                </div>
                             </div>
                             <div>
-                                <p class="text-sm font-semibold">{{ $registration->full_name }}</p>
-                                @if($registration->member_id)
-                                <span class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs">verified</span>
-                                    Member
-                                </span>
-                                @else
-                                <span class="text-xs text-slate-500">Guest</span>
-                                @endif
+                                <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Location</label>
+                                <input type="text" name="location"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                              placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                                       placeholder="e.g. Main Sanctuary"/>
                             </div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm">
-                            @if($registration->email)
-                            <p class="text-slate-600 dark:text-slate-400 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs">mail</span>
-                                {{ $registration->email }}
-                            </p>
-                            @endif
-                            @if($registration->phone)
-                            <p class="text-slate-600 dark:text-slate-400 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs">phone</span>
-                                {{ $registration->phone }}
-                            </p>
-                            @endif
-                            @if(!$registration->email && !$registration->phone)
-                            <p class="text-slate-400 text-xs">No contact info</p>
-                            @endif
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="max-w-xs">
-                            <p class="text-sm font-medium truncate">{{ $registration->event->title ?? 'N/A' }}</p>
-                            @if($registration->event)
-                            <p class="text-xs text-slate-500">{{ $registration->event->formatted_date ?? 'Date TBD' }}</p>
-                            @endif
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        @if($registration->event)
-                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $registration->event->is_event ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' }}">
-                            {{ strtoupper($registration->event->type) }}
-                        </span>
-                        @else
-                        <span class="text-xs text-slate-400">N/A</span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
-                        {{ $registration->created_at->diffForHumans() }}
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-                        <span class="material-symbols-outlined text-4xl mb-2 block">person_off</span>
-                        <p class="text-sm">No registrations yet</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
 
+                        <div id="announcementFields" class="space-y-4 hidden">
+                            <div>
+                                <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Content</label>
+                                <textarea name="content" rows="5"
+                                          class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                                 placeholder-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none"
+                                          placeholder="Full announcement content…"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">Expires At</label>
+                                <input type="datetime-local" name="expires_at"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                              focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"/>
+                            </div>
+                        </div>
 
-<!-- Create/Edit Modal -->
-<div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold" id="modalTitle">Create New Event</h3>
-            <button id="closeModal" class="text-slate-400 hover:text-slate-600">
-                <span class="material-symbols-outlined">close</span>
-            </button>
+                        <div>
+                            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                                Image <span class="text-muted normal-case font-normal">(optional · max 5MB)</span>
+                            </label>
+                            <input type="file" name="image" accept="image/*"
+                                   class="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm text-primary
+                                          file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0
+                                          file:text-xs file:font-semibold file:bg-sand file:text-primary hover:file:bg-border
+                                          transition-all"/>
+                            <p class="text-xs text-muted mt-1">JPEG, PNG, JPG, GIF, WEBP</p>
+                        </div>
+
+                        <div class="flex items-center gap-6">
+                            <label class="flex items-center gap-2.5 cursor-pointer">
+                                <input type="checkbox" name="is_active" value="1" checked
+                                       class="w-4 h-4 rounded border-border accent-primary"/>
+                                <span class="text-sm font-medium text-primary">Active</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer">
+                                <input type="checkbox" name="is_pinned" value="1"
+                                       class="w-4 h-4 rounded border-border accent-primary"/>
+                                <span class="text-sm font-medium text-primary">Pinned</span>
+                            </label>
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-2 border-t border-border">
+                            <button type="button" id="cancelBtn"
+                                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-muted border border-border
+                                           hover:border-primary/30 hover:text-primary bg-sand transition-all duration-200">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary
+                                           hover:bg-primary/90 shadow-sm hover:shadow transition-all duration-200">
+                                Save
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <form id="eventForm" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div id="methodField"></div>
-
-            <div class="space-y-4">
-                <!-- Type Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Type</label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="type" value="event" checked class="text-primary focus:ring-primary">
-                            <span class="text-sm">Event</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="type" value="announcement" class="text-primary focus:ring-primary">
-                            <span class="text-sm">Announcement</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Title -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Title *</label>
-                    <input type="text" name="title" required class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                </div>
-
-                <!-- Category -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Category</label>
-                    <select name="category" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                        <option value="">Select Category</option>
-                        @foreach(\App\Models\Event::getCategories() as $category)
-                            <option value="{{ $category }}">{{ $category }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Description -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Description</label>
-                    <textarea name="description" rows="3" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800"></textarea>
-                </div>
-
-                <!-- Event-specific fields -->
-                <div id="eventFields" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date</label>
-                            <input type="date" name="date" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Time</label>
-                            <input type="time" name="time" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Location</label>
-                        <input type="text" name="location" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                    </div>
-                </div>
-
-                <!-- Announcement-specific fields -->
-                <div id="announcementFields" class="space-y-4 hidden">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Content</label>
-                        <textarea name="content" rows="5" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Expires At</label>
-                        <input type="datetime-local" name="expires_at" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                    </div>
-                </div>
-
-                <!-- Image Upload -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Image <span class="text-xs text-slate-500">(Optional, max 5MB)</span>
-                    </label>
-                    <input type="file" name="image" accept="image/*" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 focus:ring-primary focus:border-primary dark:bg-slate-800">
-                    <p class="text-xs text-slate-500 mt-1">Supported formats: JPEG, PNG, JPG, GIF, WEBP</p>
-                </div>
-
-                <!-- Checkboxes -->
-                <div class="flex gap-6">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="is_active" value="1" checked class="text-primary focus:ring-primary">
-                        <span class="text-sm">Active</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="is_pinned" value="1" class="text-primary focus:ring-primary">
-                        <span class="text-sm">Pinned</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end gap-3">
-                <button type="button" id="cancelBtn" class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors">
-                    Save
-                </button>
-            </div>
-        </form>
     </div>
-</div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('eventModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const eventForm = document.getElementById('eventForm');
-    const methodField = document.getElementById('methodField');
-    const addNewBtn = document.getElementById('addNewBtn');
-    const closeModal = document.getElementById('closeModal');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const typeRadios = document.querySelectorAll('input[name="type"]');
-    const eventFields = document.getElementById('eventFields');
-    const announcementFields = document.getElementById('announcementFields');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const statusFilter = document.getElementById('statusFilter');
+        const modal       = document.getElementById('eventModal');
+        const modalTitle  = document.getElementById('modalTitle');
+        const eventForm   = document.getElementById('eventForm');
+        const methodField = document.getElementById('methodField');
+        const eventFields = document.getElementById('eventFields');
+        const annoFields  = document.getElementById('announcementFields');
 
-    // Toggle type-specific fields
-    function toggleFields() {
-        const selectedType = document.querySelector('input[name="type"]:checked').value;
-        if (selectedType === 'event') {
-            eventFields.classList.remove('hidden');
-            announcementFields.classList.add('hidden');
-        } else {
-            eventFields.classList.add('hidden');
-            announcementFields.classList.remove('hidden');
+        function openModal()  { modal.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); }
+        function closeModal() { modal.classList.add('hidden');    document.body.classList.remove('overflow-hidden'); }
+
+        document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('cancelBtn').addEventListener('click', closeModal);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        function toggleFields() {
+            const type = document.querySelector('input[name="type"]:checked').value;
+            eventFields.classList.toggle('hidden', type !== 'event');
+            annoFields.classList.toggle('hidden',  type === 'event');
         }
-    }
+        document.querySelectorAll('input[name="type"]').forEach(r => r.addEventListener('change', toggleFields));
 
-    typeRadios.forEach(radio => {
-        radio.addEventListener('change', toggleFields);
-    });
+        function openAddModal() {
+            modalTitle.textContent = 'Create New Event / Announcement';
+            eventForm.reset();
+            eventForm.action = '{{ route("admin.events.store") }}';
+            methodField.innerHTML = '';
+            toggleFields();
+            openModal();
+        }
+        document.getElementById('addNewBtn').addEventListener('click', openAddModal);
+        const emptyBtn = document.getElementById('addNewBtnEmpty');
+        if (emptyBtn) emptyBtn.addEventListener('click', openAddModal);
 
-    // Open modal for new item
-    addNewBtn.addEventListener('click', function() {
-        modalTitle.textContent = 'Create New Event/Announcement';
-        eventForm.reset();
-        eventForm.action = '{{ route("admin.events.store") }}';
-        methodField.innerHTML = '';
-        toggleFields();
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    });
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                try {
+                    const res  = await fetch(`/admin/events/${this.dataset.id}`);
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.message);
+                    const ev = data.event;
 
-    // Close modal
-    function closeModalFunc() {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-
-    closeModal.addEventListener('click', closeModalFunc);
-    cancelBtn.addEventListener('click', closeModalFunc);
-
-    // Edit buttons
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const id = this.dataset.id;
-            
-            try {
-                const response = await fetch(`/admin/events/${id}`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    const event = data.event;
-                    
-                    modalTitle.textContent = 'Edit ' + (event.type === 'event' ? 'Event' : 'Announcement');
-                    eventForm.action = `/admin/events/${id}`;
+                    modalTitle.textContent = 'Edit ' + (ev.type === 'event' ? 'Event' : 'Announcement');
+                    eventForm.action = `/admin/events/${this.dataset.id}`;
                     methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
-                    
-                    // Fill form
-                    eventForm.querySelector('[name="title"]').value = event.title || '';
-                    eventForm.querySelector('[name="category"]').value = event.category || '';
-                    eventForm.querySelector('[name="description"]').value = event.description || '';
-                    eventForm.querySelector(`[name="type"][value="${event.type}"]`).checked = true;
-                    
-                    if (event.type === 'event') {
-                        eventForm.querySelector('[name="date"]').value = event.date || '';
-                        eventForm.querySelector('[name="time"]').value = event.time || '';
-                        eventForm.querySelector('[name="location"]').value = event.location || '';
+
+                    eventForm.querySelector('[name="title"]').value       = ev.title       || '';
+                    eventForm.querySelector('[name="category"]').value    = ev.category    || '';
+                    eventForm.querySelector('[name="description"]').value = ev.description || '';
+                    eventForm.querySelector(`[name="type"][value="${ev.type}"]`).checked = true;
+
+                    if (ev.type === 'event') {
+                        eventForm.querySelector('[name="date"]').value     = ev.date     || '';
+                        eventForm.querySelector('[name="time"]').value     = ev.time     || '';
+                        eventForm.querySelector('[name="location"]').value = ev.location || '';
                     } else {
-                        eventForm.querySelector('[name="content"]').value = event.content || '';
-                        if (event.expires_at) {
-                            eventForm.querySelector('[name="expires_at"]').value = event.expires_at;
-                        }
+                        eventForm.querySelector('[name="content"]').value    = ev.content    || '';
+                        eventForm.querySelector('[name="expires_at"]').value = ev.expires_at || '';
                     }
-                    
-                    eventForm.querySelector('[name="is_active"]').checked = event.is_active;
-                    eventForm.querySelector('[name="is_pinned"]').checked = event.is_pinned;
-                    
+
+                    eventForm.querySelector('[name="is_active"]').checked = ev.is_active;
+                    eventForm.querySelector('[name="is_pinned"]').checked  = ev.is_pinned;
+
                     toggleFields();
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                }
-            } catch (error) {
-                console.error('Error fetching event:', error);
-                alert('Error loading event data');
-            }
+                    openModal();
+                } catch { showToast('Error loading event data', 'error'); }
+            });
         });
-    });
 
-    // Delete buttons
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this item?')) {
-                const id = this.dataset.id;
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/events/${id}`;
-                form.innerHTML = `
-                    @csrf
-                    @method('DELETE')
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (!confirm('Delete this item? This cannot be undone.')) return;
+                const f = document.createElement('form');
+                f.method = 'POST';
+                f.action = `/admin/events/${this.dataset.id}`;
+                f.innerHTML = `<input type="hidden" name="_token" value="{{ csrf_token() }}"><input type="hidden" name="_method" value="DELETE">`;
+                document.body.appendChild(f);
+                f.submit();
+            });
         });
-    });
 
-    // Toggle pin
-    document.querySelectorAll('.toggle-pin-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const id = this.dataset.id;
-            
-            try {
-                const response = await fetch(`/admin/events/${id}/toggle-pin`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    const icon = this.querySelector('.material-symbols-outlined');
+        document.querySelectorAll('.toggle-pin-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                try {
+                    const res  = await fetch(`/admin/events/${this.dataset.id}/toggle-pin`, {
+                        method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    });
+                    const data = await res.json();
+                    if (!data.success) throw new Error();
+                    const icon = this.querySelector('.pin-icon');
                     if (data.is_pinned) {
-                        icon.classList.add('text-yellow-500', 'filled-icon');
-                        icon.classList.remove('text-slate-300', 'dark:text-slate-700');
+                        icon.setAttribute('fill', 'currentColor');
+                        icon.classList.remove('text-border');
+                        icon.classList.add('text-accent');
                     } else {
-                        icon.classList.remove('text-yellow-500', 'filled-icon');
-                        icon.classList.add('text-slate-300', 'dark:text-slate-700');
+                        icon.setAttribute('fill', 'none');
+                        icon.classList.add('text-border');
+                        icon.classList.remove('text-accent');
                     }
-                }
-            } catch (error) {
-                console.error('Error toggling pin:', error);
-            }
+                } catch { showToast('Failed to update pin', 'error'); }
+            });
         });
-    });
 
-    // Toggle active
-    document.querySelectorAll('.toggle-active-btn').forEach(checkbox => {
-        checkbox.addEventListener('change', async function() {
-            const id = this.dataset.id;
-            
-            try {
-                const response = await fetch(`/admin/events/${id}/toggle-active`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        document.querySelectorAll('.toggle-active-btn').forEach(checkbox => {
+            checkbox.addEventListener('change', async function () {
+                try {
+                    const res  = await fetch(`/admin/events/${this.dataset.id}/toggle-active`, {
+                        method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    });
+                    const data = await res.json();
+                    if (!data.success) throw new Error();
+                    const label = document.querySelector(`.status-text[data-id="${this.dataset.id}"]`);
+                    if (label) {
+                        label.textContent = data.is_active ? 'Live' : 'Draft';
+                        label.className   = `status-text text-xs font-semibold ${data.is_active ? 'text-success' : 'text-muted'}`;
                     }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Update status text
-                    const statusText = document.querySelector(`.status-text[data-id="${id}"]`);
-                    if (statusText) {
-                        statusText.textContent = data.is_active ? 'Live' : 'Draft';
-                        statusText.className = `status-text text-[11px] font-bold ${data.is_active ? 'text-slate-500' : 'text-slate-400'}`;
-                    }
+                } catch {
+                    this.checked = !this.checked;
+                    showToast('Failed to update status', 'error');
                 }
-            } catch (error) {
-                console.error('Error toggling active:', error);
-                this.checked = !this.checked; // Revert on error
-            }
+            });
         });
-    });
 
-    // Filters
-    categoryFilter.addEventListener('change', function() {
-        const url = new URL(window.location.href);
-        if (this.value) {
-            url.searchParams.set('category', this.value);
-        } else {
-            url.searchParams.delete('category');
-        }
-        window.location.href = url.toString();
-    });
+        ['categoryFilter', 'statusFilter'].forEach(id => {
+            document.getElementById(id)?.addEventListener('change', function () {
+                const url = new URL(window.location.href);
+                const key = id === 'categoryFilter' ? 'category' : 'status';
+                this.value ? url.searchParams.set(key, this.value) : url.searchParams.delete(key);
+                window.location.href = url.toString();
+            });
+        });
 
-    statusFilter.addEventListener('change', function() {
-        const url = new URL(window.location.href);
-        if (this.value) {
-            url.searchParams.set('status', this.value);
-        } else {
-            url.searchParams.delete('status');
-        }
-        window.location.href = url.toString();
+        window.showToast = function (msg, type) {
+            const t = document.createElement('div');
+            t.className = `fixed top-5 right-5 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-card-hover text-sm font-semibold border
+                ${type === 'success'
+                    ? 'bg-success/10 border-success/30 text-success'
+                    : 'bg-secondary/10 border-secondary/30 text-secondary'}`;
+            t.innerHTML = `<svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                ${type === 'success'
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'}
+                </svg><span>${msg}</span>`;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        };
+
     });
-});
-</script>
+    </script>
 
 @endsection

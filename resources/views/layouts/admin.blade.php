@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') - St. John's</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="/styles.css">
     @stack('head')
 </head>
@@ -37,6 +37,12 @@
                     </li>
                 </ul>
             </nav>
+            <div class="p-4">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="w-full px-4 py-2 bg-blue-600 rounded">Logout</button>
+                </form>
+            </div>
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden">
@@ -46,14 +52,32 @@
                 @yield('header-actions')
             </header>
 
-            <!-- Main Area -->
-            <main class="flex-1 p-6 overflow-y-auto bg-gray-50">
-                {{-- Deprecated admin layout. The dashboard has been reverted to its standalone view. --}}
-                {{-- Kept for reference; no active layout markup to avoid interfering with the reverted dashboard. --}}
+        {{-- Main Area --}}
+        <main class="flex-1 overflow-y-auto bg-cream">
+            <div class="w-full px-4 sm:px-6 py-4 sm:py-6">
                 @yield('content')
-        </div>
-    </div>
+            </div>
+        </main>
 
-    @stack('scripts')
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        }
+    });
+</script>
+
+@stack('scripts')
 </body>
 </html>

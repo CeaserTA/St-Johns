@@ -1,516 +1,625 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Give / Tithe ❤️ - St. Johns Church</title>
+    <title>Give / Tithe — St. John's Parish Church Entebbe</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Custom styles for church theme -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Material+Symbols+Outlined&display=swap" rel="stylesheet">
     @include('partials.theme-config')
+<style>
+:root{
+    --navy:#0c1b3a;--navy2:#142450;--gold:#c8973a;--gold2:#e8b96a;
+    --cream:#fdf8f0;--sand:#f5ede0;--text:#1a1a2e;--muted:#6b7080;
+    --border:#e2d9cc;--white:#ffffff;--red:#c0392b;--green:#1a7a4a;
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.fade-up   { animation:fadeUp .75s ease both }
+.fade-up-1 { animation-delay:.1s }
+.fade-up-2 { animation-delay:.2s }
+.fade-up-3 { animation-delay:.32s }
+
+/* Field focus */
+.field {
+    width:100%;padding:12px 16px;
+    background:var(--cream);border:1px solid var(--border);
+    font-family:'Jost',sans-serif;font-size:14px;color:var(--text);
+    transition:all .2s;outline:none;
+}
+.field:focus { background:#fff;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,151,58,.1); }
+.field::placeholder { color:#b5b9c4; }
+
+/* Giving type pills */
+.giving-pill input[type="radio"] { display:none; }
+.giving-pill label {
+    display:block;padding:12px 16px;
+    border:1px solid var(--border);cursor:pointer;
+    font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);transition:all .2s;text-align:center;
+    font-family:'Jost',sans-serif;
+}
+.giving-pill input[type="radio"]:checked + label {
+    background:var(--navy);color:var(--gold2);border-color:var(--navy);
+}
+.giving-pill label:hover { border-color:var(--navy);color:var(--navy); }
+
+/* Amount quick-select pills */
+.amount-pill input[type="radio"] { display:none; }
+.amount-pill label {
+    display:block;padding:10px 14px;
+    border:1px solid var(--border);cursor:pointer;
+    font-size:13px;font-weight:600;color:var(--muted);
+    transition:all .2s;text-align:center;
+    font-family:'Jost',sans-serif;
+}
+.amount-pill input[type="radio"]:checked + label {
+    background:var(--gold);color:var(--navy);border-color:var(--gold);
+}
+.amount-pill label:hover { border-color:var(--gold);color:var(--navy); }
+
+/* Payment method tabs */
+.pay-tab input[type="radio"] { display:none; }
+.pay-tab label {
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:14px 10px;border:1px solid var(--border);cursor:pointer;
+    font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);transition:all .2s;font-family:'Jost',sans-serif;
+}
+.pay-tab input[type="radio"]:checked + label {
+    background:var(--navy);color:var(--gold2);border-color:var(--navy);
+}
+.pay-tab label:hover { border-color:var(--navy);color:var(--navy); }
+.pay-tab label .material-symbols-outlined { font-size:22px; }
+
+/* Info box */
+.info-box { padding:16px 20px;border-left:3px solid var(--gold);background:rgba(200,151,58,.06);font-size:13px;line-height:1.7; }
+.info-box strong { color:var(--navy);font-weight:600; }
+
+/* Submit button shimmer */
+.btn-submit { position:relative;overflow:hidden; }
+.btn-submit::before { content:'';position:absolute;inset:0;background:var(--navy2);transform:translateX(-101%);transition:transform .3s ease; }
+.btn-submit:hover::before { transform:translateX(0); }
+.btn-submit > * { position:relative;z-index:1; }
+
+@media(max-width:640px){
+    .giving-grid { grid-template-columns:repeat(2,1fr)!important; }
+    .pay-grid { grid-template-columns:repeat(2,1fr)!important; }
+}
+</style>
 </head>
 
-<body class="bg-gray-50 min-h-screen">
+<body style="font-family:'Jost',sans-serif;background:var(--cream);color:var(--text);">
 
-    @include('partials.navbar')
-
-
-    <!-- Scripture Encouragement Section -->
-    <section class="page-hero bg-[#0c1b3a] py-14 px-10 relative overflow-hidden text-center">
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 serif leading-none pointer-events-none select-none" style="font-size:420px; color:rgba(200,151,58,0.04);">✝</div>
-        <div class="relative z-10 max-w-[680px] mx-auto">
-            <p class="eyebrow fade-up text-white justify-center">Stewardship · Generosity · Faith</p>
-            <h1 class="serif fade-up fade-up-1 font-semibold text-white leading-[0.95] tracking-tight mt-4 mb-5"
-                style="font-size:clamp(48px,8vw,84px);">
-                Give with a<br><em class="italic text-[#e8b96a] font-light">Cheerful Heart</em>
-            </h1>
-            <p class="fade-up fade-up-2 text-sm font-light text-white/50 leading-[1.85] max-w-[480px] mx-auto">
-                Your generosity is an act of worship. Every gift — great or small — helps us serve our community, support ministry, and spread the love of Christ.
-            </p>
-            <p class="fade-up fade-up-3 serif text-[15px] italic text-white/30 mt-5">
-                "God loves a cheerful giver." — 2 Corinthians 9:7
-            </p>
-        </div>
-    </section>
+@include('partials.navbar')
 
 
-    <!-- Main Content Grid: Form centered -->
+{{-- ══════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════ --}}
+<section class="relative overflow-hidden text-center px-10 py-[72px]"
+         style="background:var(--navy);background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(201,168,76,.03) 40px,rgba(201,168,76,.03) 41px);">
+    <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none leading-none"
+          style="font-size:420px;color:rgba(200,151,58,.04);font-family:serif;">✝</span>
+    <div class="relative z-10 max-w-[680px] mx-auto">
+        <p class="fade-up inline-flex items-center gap-2.5 justify-center mb-3.5 text-[10px] font-semibold tracking-[.22em] uppercase"
+           style="color:var(--gold);">
+            <span style="display:block;width:28px;height:1px;background:var(--gold);"></span>
+            Stewardship · Generosity · Faith
+        </p>
+        <h1 class="fade-up fade-up-1 font-semibold leading-[.95] tracking-[-0.01em] mt-3.5 mb-5"
+            style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,8vw,84px);color:#fff;">
+            Give with a<br><em style="font-style:italic;color:var(--gold2);font-weight:300;">Cheerful Heart</em>
+        </h1>
+        <p class="fade-up fade-up-2 text-[13px] font-light leading-[1.85] max-w-[480px] mx-auto" style="color:rgba(255,255,255,.5);">
+            Your generosity is an act of worship. Every gift — great or small — helps us serve our community, support ministry, and spread the love of Christ.
+        </p>
+        <p class="fade-up fade-up-3 text-[15px] italic mt-5" style="color:rgba(255,255,255,.3);font-family:'Cormorant Garamond',serif;">
+            "God loves a cheerful giver." — 2 Corinthians 9:7
+        </p>
+    </div>
+</section>
+
+
+{{-- ══════════════════════════════════════
+     MAIN CONTENT — 2-col: Form + Sidebar
+══════════════════════════════════════ --}}
+<div class="max-w-[1200px] mx-auto px-10 py-14 max-sm:px-5"
+     style="display:grid;grid-template-columns:1fr 320px;gap:48px;align-items:start;">
+
+    {{-- ════════════════════════
+         LEFT — GIVING FORM
+    ════════════════════════ --}}
     <div>
 
-        <!-- Form – Centered -->
-        <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl p-6 lg:p-8 border-2 border-accent/20">
-            <h2 class="text-2xl md:text-3xl font-bold text-primary text-center mb-4">
-                Let Us Know Your Giving
-            </h2>
-
-            <!-- Messages -->
-            <div id="message-container" class="mb-5 hidden">
-                <div id="success-message"
-                    class="bg-green-50 border border-green-200 text-green-800 px-5 py-3 rounded-xl hidden">
-                    <strong>Thank you!</strong> <span id="success-text"></span>
-                </div>
-                <div id="error-message"
-                    class="bg-red-50 border border-red-200 text-red-800 px-5 py-3 rounded-xl hidden">
-                    <strong>Error:</strong> <span id="error-text"></span>
-                </div>
+        {{-- Messages --}}
+        <div id="message-container" class="mb-6 hidden">
+            <div id="success-message" class="hidden flex items-start gap-3 px-5 py-4 border-l-[3px]"
+                 style="background:#edf7f2;border-color:var(--green);color:#155d38;">
+                <span class="material-symbols-outlined shrink-0" style="font-size:18px;">check_circle</span>
+                <div><div class="font-semibold mb-0.5">Thank you!</div><span id="success-text"></span></div>
             </div>
+            <div id="error-message" class="hidden flex items-start gap-3 px-5 py-4 border-l-[3px]"
+                 style="background:#fdf2f0;border-color:var(--red);color:#8b2020;">
+                <span class="material-symbols-outlined shrink-0" style="font-size:18px;">error</span>
+                <div><div class="font-semibold mb-0.5">Error</div><span id="error-text"></span></div>
+            </div>
+        </div>
 
-            <form id="giving-form" class="space-y-4">
-                @csrf
+        <form id="giving-form">
+            @csrf
 
-                <!-- Guest / Member Info -->
-                @auth
-                    @if(auth()->user()->member)
-                        <div class="bg-green-50 border border-green-200 rounded-2xl p-2 text-center text-sm">
-                            Welcome back, <strong>{{ auth()->user()->member->full_name }}</strong>!
-                            Your giving will be linked to your account.
-                        </div>
-                    @else
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-2 text-center text-sm">
-                            Welcome, {{ auth()->user()->name }}!
-                            Please fill in your details below.
-                        </div>
-                    @endif
-                @endauth
-
-                <!-- Guest Fields -->
-                @if(!auth()->check() || !auth()->user()->member)
-                    <div class="space-y-4">
-                        <h3 class="text-lg font-bold text-primary border-b border-gray-200 pb-2">
-                            Your Information
-                        </h3>
-
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-primary mb-1">Full Name *</label>
-                                <input type="text" name="guest_name" required
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-primary mb-1">Email</label>
-                                <input type="email" name="guest_email"
-                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                    placeholder="For receipt & confirmation">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-primary mb-1">Phone Number</label>
-                            <input type="tel" name="guest_phone"
-                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                placeholder="For mobile money / updates">
-                        </div>
-                    </div>
+            {{-- ── Auth welcome banner ── --}}
+            @auth
+                @if(auth()->user()->member)
+                <div class="flex items-center gap-3 px-5 py-3 mb-6 text-sm"
+                     style="background:rgba(26,122,74,.07);border-left:3px solid var(--green);color:#155d38;">
+                    <span class="material-symbols-outlined" style="font-size:16px;">verified_user</span>
+                    Welcome back, <strong>{{ auth()->user()->member->full_name }}</strong>! Your giving will be linked to your account.
+                </div>
+                @else
+                <div class="flex items-center gap-3 px-5 py-3 mb-6 text-sm"
+                     style="background:rgba(200,151,58,.08);border-left:3px solid var(--gold);color:var(--navy);">
+                    <span class="material-symbols-outlined" style="font-size:16px;">person</span>
+                    Welcome, {{ auth()->user()->name }}! Please fill in your details below.
+                </div>
                 @endif
+            @endauth
 
-                <!-- Giving Details -->
-                <div class="space-y-4">
-                    <h3 class="text-lg font-bold text-primary border-b border-gray-200 pb-2">
-                        Giving Details
-                    </h3>
+            {{-- ── SECTION 1: Your Information (guests only) ── --}}
+            @if(!auth()->check() || !auth()->user()->member)
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="display:inline-block;width:24px;height:1px;background:var(--gold);"></span>
+                    <span style="font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);">Your Information</span>
+                    <div style="flex:1;height:1px;background:var(--border);"></div>
+                </div>
 
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-bold text-primary mb-1">Type of Giving *</label>
-                            <select name="giving_type" required
-                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition">
-                                <option value="">Select type</option>
-                                <option value="tithe">Tithe (10% of income)</option>
-                                <option value="offering">Offering (Freewill gift)</option>
-                                <option value="donation">Donation (Specific cause)</option>
-                                <option value="special_offering">Special Offering</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-primary mb-1">Amount (UGX) *</label>
-                            <input type="number" name="amount" required min="1000" step="100"
-                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                                placeholder="e.g. 50000">
-                            <input type="hidden" name="currency" value="UGX">
-                        </div>
-                    </div>
-
+                <div class="grid grid-cols-2 gap-4 mb-4 max-sm:grid-cols-1">
                     <div>
-                        <label class="block text-sm font-bold text-primary mb-1">Purpose / Designation</label>
-                        <input type="text" name="purpose"
-                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition"
-                            placeholder="e.g. Building Fund, Missions, Youth Ministry">
+                        <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">
+                            Full Name <span style="color:var(--gold);">*</span>
+                        </label>
+                        <input type="text" name="guest_name" required class="field" placeholder="Your full name">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-bold text-primary mb-1">Personal Message / Prayer
-                            Request</label>
-                        <textarea name="notes" rows="2"
-                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-secondary focus:ring-4 focus:ring-secondary/10 transition resize-none"
-                            placeholder="Share your heart or prayer request (optional)"></textarea>
+                        <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">Email</label>
+                        <input type="email" name="guest_email" class="field" placeholder="For receipt & confirmation">
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">Phone Number</label>
+                    <input type="tel" name="guest_phone" class="field" placeholder="For mobile money / updates">
+                </div>
+            </div>
+            @endif
+
+
+            {{-- ── SECTION 2: Type of Giving ── --}}
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="display:inline-block;width:24px;height:1px;background:var(--gold);"></span>
+                    <span style="font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);">Type of Giving</span>
+                    <div style="flex:1;height:1px;background:var(--border);"></div>
+                </div>
+
+                {{-- Giving type pills --}}
+                <div class="giving-grid grid gap-3 mb-5" style="grid-template-columns:repeat(4,1fr);">
+                    <div class="giving-pill">
+                        <input type="radio" name="giving_type" id="gt_tithe" value="tithe" required>
+                        <label for="gt_tithe">
+                            <span class="material-symbols-outlined block mx-auto mb-1" style="font-size:20px;">percent</span>
+                            Tithe
+                        </label>
+                    </div>
+                    <div class="giving-pill">
+                        <input type="radio" name="giving_type" id="gt_offering" value="offering">
+                        <label for="gt_offering">
+                            <span class="material-symbols-outlined block mx-auto mb-1" style="font-size:20px;">volunteer_activism</span>
+                            Offering
+                        </label>
+                    </div>
+                    <div class="giving-pill">
+                        <input type="radio" name="giving_type" id="gt_donation" value="donation">
+                        <label for="gt_donation">
+                            <span class="material-symbols-outlined block mx-auto mb-1" style="font-size:20px;">favorite</span>
+                            Donation
+                        </label>
+                    </div>
+                    <div class="giving-pill">
+                        <input type="radio" name="giving_type" id="gt_special" value="special_offering">
+                        <label for="gt_special">
+                            <span class="material-symbols-outlined block mx-auto mb-1" style="font-size:20px;">stars</span>
+                            Special
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+
+            {{-- ── SECTION 3: Amount ── --}}
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="display:inline-block;width:24px;height:1px;background:var(--gold);"></span>
+                    <span style="font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);">Amount (UGX)</span>
+                    <div style="flex:1;height:1px;background:var(--border);"></div>
+                </div>
+
+                {{-- Quick-select amounts --}}
+                <div class="grid grid-cols-4 gap-2 mb-4 max-sm:grid-cols-2">
+                    <div class="amount-pill"><input type="radio" name="amount_preset" id="amt1" value="10000"><label for="amt1">10,000</label></div>
+                    <div class="amount-pill"><input type="radio" name="amount_preset" id="amt2" value="25000"><label for="amt2">25,000</label></div>
+                    <div class="amount-pill"><input type="radio" name="amount_preset" id="amt3" value="50000"><label for="amt3">50,000</label></div>
+                    <div class="amount-pill"><input type="radio" name="amount_preset" id="amt4" value="100000"><label for="amt4">100,000</label></div>
+                    <div class="amount-pill"><input type="radio" name="amount_preset" id="amt5" value="250000"><label for="amt5">250,000</label></div>
+                    <div class="amount-pill"><input type="radio" name="amount_preset" id="amt6" value="500000"><label for="amt6">500,000</label></div>
+                    <div class="amount-pill col-span-2"><input type="radio" name="amount_preset" id="amt_other" value="other"><label for="amt_other">Other Amount</label></div>
+                </div>
+
+                {{-- Custom amount input --}}
+                <div>
+                    <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">
+                        Enter Amount <span style="color:var(--gold);">*</span>
+                    </label>
+                    <div class="flex">
+                        <span class="flex items-center px-4 text-[13px] font-semibold shrink-0"
+                              style="background:var(--sand);border:1px solid var(--border);border-right:none;color:var(--muted);">UGX</span>
+                        <input type="number" name="amount" id="amount_input" required min="1000" step="100"
+                               class="field flex-1" style="border-left:none;" placeholder="e.g. 50,000">
+                        <input type="hidden" name="currency" value="UGX">
+                    </div>
+                </div>
+            </div>
+
+
+            {{-- ── SECTION 4: Purpose & Notes ── --}}
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="display:inline-block;width:24px;height:1px;background:var(--gold);"></span>
+                    <span style="font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);">Details</span>
+                    <div style="flex:1;height:1px;background:var(--border);"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">Purpose / Designation</label>
+                    <input type="text" name="purpose" class="field"
+                           placeholder="e.g. Building Fund, Missions, Youth Ministry">
+                </div>
+                <div>
+                    <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">
+                        Personal Message / Prayer Request
+                    </label>
+                    <textarea name="notes" rows="3" class="field resize-none"
+                              placeholder="Share your heart or prayer request (optional)"></textarea>
+                </div>
+            </div>
+
+
+            {{-- ── SECTION 5: Payment Method ── --}}
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="display:inline-block;width:24px;height:1px;background:var(--gold);"></span>
+                    <span style="font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);">Payment Method</span>
+                    <div style="flex:1;height:1px;background:var(--border);"></div>
+                </div>
+
+                {{-- Payment method tab pills --}}
+                <div class="pay-grid grid gap-3 mb-6" style="grid-template-columns:repeat(4,1fr);">
+                    <div class="pay-tab">
+                        <input type="radio" name="payment_method" id="pm_cash" value="cash" required>
+                        <label for="pm_cash">
+                            <span class="material-symbols-outlined">payments</span>Cash
+                        </label>
+                    </div>
+                    <div class="pay-tab">
+                        <input type="radio" name="payment_method" id="pm_mobile" value="mobile_money">
+                        <label for="pm_mobile">
+                            <span class="material-symbols-outlined">smartphone</span>Mobile Money
+                        </label>
+                    </div>
+                    <div class="pay-tab">
+                        <input type="radio" name="payment_method" id="pm_bank" value="bank_transfer">
+                        <label for="pm_bank">
+                            <span class="material-symbols-outlined">account_balance</span>Bank Transfer
+                        </label>
+                    </div>
+                    <div class="pay-tab">
+                        <input type="radio" name="payment_method" id="pm_card" value="card">
+                        <label for="pm_card">
+                            <span class="material-symbols-outlined">credit_card</span>Card
+                        </label>
                     </div>
                 </div>
 
-                <!-- Payment Method -->
-                    <div class="payment-method space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Payment Method</h3>
-                        
+                {{-- Cash details --}}
+                <div id="cash-details" class="hidden">
+                    <div class="info-box mb-4">
+                        <strong>Cash Giving</strong><br>
+                        Please bring your cash offering to the church during service or office hours. Your giving will be confirmed immediately upon submission.
+                    </div>
+                </div>
+
+                {{-- Mobile Money details --}}
+                <div id="mobile-money-details" class="hidden">
+                    <div class="info-box mb-4">
+                        <strong>Mobile Money Instructions</strong><br>
+                        Send money to: <strong>0700-123-456</strong> (Church Account)<br>
+                        Then enter your transaction reference below.
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4 max-sm:grid-cols-1">
                         <div>
-                            <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">
-                                How would you like to give? <span class="text-red-500">*</span>
-                            </label>
-                            <select id="payment_method" name="payment_method" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option value="">Select payment method</option>
-                                <option value="cash">Cash (In-person)</option>
-                                <option value="mobile_money">Mobile Money (MTN/Airtel)</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="card">Credit/Debit Card</option>
-                                <option value="check">Check</option>
+                            <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">Provider</label>
+                            <select id="payment_provider" name="payment_provider" class="field" disabled>
+                                <option value="">Select provider</option>
+                                <option value="MTN">MTN Mobile Money</option>
+                                <option value="Airtel">Airtel Money</option>
                             </select>
                         </div>
-
-                        <!-- Payment Details (shown based on method) -->
-                        <div id="payment-details" class="hidden space-y-4">
-                            <!-- Mobile Money Details -->
-                            <div id="mobile-money-details" class="hidden">
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                    <h4 class="font-semibold text-blue-800 mb-2">Mobile Money Instructions</h4>
-                                    <p class="text-blue-700 text-sm mb-3">
-                                        Send money to: <strong>0700-123-456</strong> (Church Account)<br>
-                                        Then enter your transaction reference below.
-                                    </p>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="payment_provider" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Provider
-                                        </label>
-                                        <select id="payment_provider" name="payment_provider" disabled
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                            <option value="">Select provider</option>
-                                            <option value="MTN">MTN Mobile Money</option>
-                                            <option value="Airtel">Airtel Money</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="payment_account" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Your Phone Number
-                                        </label>
-                                        <input type="tel" id="payment_account" name="payment_account" disabled
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                               placeholder="0700-000-000">
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label for="transaction_reference" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Transaction Reference <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="transaction_reference" name="transaction_reference" disabled
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                           placeholder="Enter transaction ID from SMS">
-                                </div>
-                            </div>
-
-                            <!-- Bank Transfer Details -->
-                            <div id="bank-transfer-details" class="hidden">
-                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                                    <h4 class="font-semibold text-green-800 mb-2">Bank Transfer Details</h4>
-                                    <div class="text-green-700 text-sm space-y-1">
-                                        <p><strong>Bank:</strong> Stanbic Bank Uganda</p>
-                                        <p><strong>Account Name:</strong> St. Johns Church</p>
-                                        <p><strong>Account Number:</strong> 9030012345678</p>
-                                        <p><strong>Branch:</strong> Kampala Main Branch</p>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label for="transaction_reference_bank" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Transaction Reference <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="transaction_reference_bank" name="transaction_reference" disabled
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                           placeholder="Bank transaction reference">
-                                </div>
-                            </div>
-
-                            <!-- Cash Details -->
-                            <div id="cash-details" class="hidden">
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                    <h4 class="font-semibold text-yellow-800 mb-2">Cash Giving</h4>
-                                    <p class="text-yellow-700 text-sm">
-                                        Please bring your cash offering to the church during service or office hours. 
-                                        Your giving will be confirmed immediately upon submission.
-                                    </p>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">Your Phone Number</label>
+                            <input type="tel" id="payment_account" name="payment_account" class="field" disabled placeholder="0700-000-000">
                         </div>
                     </div>
-
-                <!-- Submit -->
-                <div class="flex justify-center">
-                    <button type="submit" id="submit-btn"
-                        class="px-6 bg-secondary hover:bg-accent text-white font-bold text-lg py-2 rounded-2xl shadow-xl hover:shadow-accent/30 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-3">
-                        <span id="submit-text">Submit </span>
-                        <span id="submit-loading" class="hidden">
-                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </span>
-                        <svg class="w-6 h-6 group-hover:translate-x-2 transition" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                    <div>
+                        <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">
+                            Transaction Reference <span style="color:var(--gold);">*</span>
+                        </label>
+                        <input type="text" id="transaction_reference" name="transaction_reference" class="field" disabled placeholder="Enter transaction ID from SMS">
+                    </div>
                 </div>
-            </form>
-        </div>
 
-        <!-- Cards – Below form, centered -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mt-8">
-            <!-- Security Card -->
-            <div class="bg-white rounded-3xl p-6 shadow-lg border border-accent/20">
-                <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-3">
-                    <span class="text-accent text-2xl">🔒</span>
-                    Secure & Transparent
-                </h3>
-                <ul class="space-y-2 text-sm text-gray-700">
-                    <li class="flex items-start gap-2">
-                        <span class="text-accent text-lg">✓</span>
-                        All transactions encrypted & secure
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-accent text-lg">✓</span>
-                        Instant digital receipt
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-accent text-lg">✓</span>
-                        Full financial transparency reports
-                    </li>
-                </ul>
+                {{-- Bank Transfer details --}}
+                <div id="bank-transfer-details" class="hidden">
+                    <div class="info-box mb-4">
+                        <strong>Bank Transfer Details</strong><br>
+                        Bank: Stanbic Bank Uganda<br>
+                        Account Name: St. John's Church Entebbe<br>
+                        Account Number: <strong>9030012345678</strong><br>
+                        Branch: Kampala Main Branch
+                    </div>
+                    <div>
+                        <label class="block mb-2" style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);">
+                            Transaction Reference <span style="color:var(--gold);">*</span>
+                        </label>
+                        <input type="text" id="transaction_reference_bank" name="transaction_reference" class="field" disabled placeholder="Bank transaction reference">
+                    </div>
+                </div>
+
+                {{-- Card details --}}
+                <div id="card-details" class="hidden">
+                    <div class="info-box">
+                        <strong>Card Payment</strong><br>
+                        You will be redirected to our secure payment gateway to complete your card transaction.
+                    </div>
+                </div>
             </div>
 
-            <!-- Impact Card -->
-            <div class="bg-white rounded-3xl p-6 shadow-lg border border-accent/20">
-                <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-3">
-                    <span class="text-accent text-2xl">🌟</span>
-                    Your Impact
-                </h3>
-                <ul class="space-y-2 text-sm text-gray-700">
-                    <li class="flex items-start gap-2">
-                        <span class="text-accent text-lg">✓</span>
-                        Local community outreach & food programs
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-accent text-lg">✓</span>
-                        Youth, children & education support
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-accent text-lg">✓</span>
-                        Church maintenance & missions
-                    </li>
-                </ul>
-            </div>
-        </div>
 
+            {{-- ── SUBMIT ── --}}
+            <button type="submit" id="submit-btn"
+                    class="btn-submit w-full flex items-center justify-center gap-3 border-none cursor-pointer transition-all duration-300"
+                    style="padding:17px;background:var(--navy);color:var(--gold2);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;">
+                <span id="submit-text">Submit My Giving</span>
+                <span id="submit-loading" class="hidden">
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+                <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+            </button>
+
+            <p class="text-center mt-4 text-[11px] font-light" style="color:var(--muted);">
+                Your giving is secure and confidential. A receipt will be sent to your email.
+            </p>
+        </form>
     </div>
 
-    <!-- Contact Note -->
-    <div class="text-center mt-8 text-gray-600">
-        <p class="text-lg">
-            Questions? Contact us at
-            <a href="mailto:giving@stjohnsentebbe.org" class="text-secondary font-bold hover:text-accent transition">
+
+    {{-- ════════════════════════
+         RIGHT — SIDEBAR
+    ════════════════════════ --}}
+    <div style="position:sticky;top:24px;">
+
+        {{-- Scripture card --}}
+        <div class="mb-5 relative overflow-hidden" style="background:var(--navy);padding:32px 28px;">
+            <span class="absolute right-3 bottom-[-20px] pointer-events-none leading-none" style="font-size:120px;color:rgba(200,151,58,.06);font-family:serif;">✝</span>
+            <p class="relative z-10 text-[9px] font-bold tracking-[.22em] uppercase mb-3" style="color:var(--gold);">Scripture</p>
+            <blockquote class="relative z-10 font-light italic leading-[1.8] mb-3" style="font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,.85);">
+                "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."
+            </blockquote>
+            <cite class="relative z-10 text-[11px] font-semibold tracking-[.1em] not-italic" style="color:var(--gold);">— 2 Corinthians 9:7</cite>
+        </div>
+
+        {{-- Secure & Transparent --}}
+        <div class="mb-4" style="background:#fff;border:1px solid var(--border);padding:24px;">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center justify-center w-9 h-9 shrink-0" style="background:var(--navy);">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:var(--gold2);">lock</span>
+                </div>
+                <h3 class="font-semibold" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy);">Secure &amp; Transparent</h3>
+            </div>
+            <div class="flex flex-col gap-2.5">
+                @foreach(['All transactions encrypted & secure','Instant digital receipt sent to you','Full financial transparency reports'] as $item)
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined shrink-0 mt-0.5" style="font-size:15px;color:var(--green);">check_circle</span>
+                    <span style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.5;">{{ $item }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Your Impact --}}
+        <div class="mb-4" style="background:#fff;border:1px solid var(--border);padding:24px;">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center justify-center w-9 h-9 shrink-0" style="background:var(--navy);">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:var(--gold2);">volunteer_activism</span>
+                </div>
+                <h3 class="font-semibold" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy);">Your Impact</h3>
+            </div>
+            <div class="flex flex-col gap-2.5">
+                @foreach(['Local community outreach & food programs','Youth, children & education support','Church maintenance & missions'] as $item)
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined shrink-0 mt-0.5" style="font-size:15px;color:var(--gold);">favorite</span>
+                    <span style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.5;">{{ $item }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Contact --}}
+        <div style="background:var(--sand);border:1px solid var(--border);padding:20px;">
+            <p class="text-[9px] font-bold tracking-[.22em] uppercase mb-3" style="color:var(--gold);">Questions?</p>
+            <a href="mailto:giving@stjohnsentebbe.org"
+               class="flex items-center gap-2 mb-2 transition-colors duration-200"
+               style="font-size:13px;color:var(--navy);font-weight:500;"
+               onmouseover="this.style.color='var(--gold)';" onmouseout="this.style.color='var(--navy)';">
+                <span class="material-symbols-outlined" style="font-size:16px;">mail</span>
                 giving@stjohnsentebbe.org
             </a>
-            or call
-            <a href="tel:+256700123456" class="text-secondary font-bold hover:text-accent transition">
+            <a href="tel:+256700123456"
+               class="flex items-center gap-2 transition-colors duration-200"
+               style="font-size:13px;color:var(--navy);font-weight:500;"
+               onmouseover="this.style.color='var(--gold)';" onmouseout="this.style.color='var(--navy)';">
+                <span class="material-symbols-outlined" style="font-size:16px;">phone</span>
                 +256 700 123 456
             </a>
-        </p>
-        <p class="mb-2 text-sm italic text-gray-500">
-            “God loves a cheerful giver” — thank you for your generosity.
-        </p>
-    </div>
-    </div>
-    </section>
+        </div>
 
-    @include('partials.footer')
-</body>
+    </div>{{-- end sidebar --}}
 
-</html>
+</div>{{-- end main grid --}}
 
-<!-- JavaScript for Form Handling -->
+
+{{-- Mobile responsive override --}}
+<style>
+@media(max-width:1024px){
+    .max-w-\\[1200px\\] > div { grid-template-columns:1fr!important; }
+}
+</style>
+
+@include('partials.footer')
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('giving-form');
-        const paymentMethodSelect = document.getElementById('payment_method');
-        const paymentDetails = document.getElementById('payment-details');
-        const submitBtn = document.getElementById('submit-btn');
-        const submitText = document.getElementById('submit-text');
-        const submitLoading = document.getElementById('submit-loading');
+document.addEventListener('DOMContentLoaded', function () {
+    const form            = document.getElementById('giving-form');
+    const submitBtn       = document.getElementById('submit-btn');
+    const submitText      = document.getElementById('submit-text');
+    const submitLoading   = document.getElementById('submit-loading');
 
-        // Show/hide payment details based on method
-        paymentMethodSelect.addEventListener('change', function () {
+    /* ── Payment method tabs ── */
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            // hide all detail panels
+            ['cash-details','mobile-money-details','bank-transfer-details','card-details'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // disable all payment fields
+            ['payment_provider','payment_account','transaction_reference','transaction_reference_bank'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.disabled = true; el.value = ''; }
+            });
+
             const method = this.value;
-            const allDetails = document.querySelectorAll('[id$="-details"]');
 
-            // Hide all payment detail sections
-            allDetails.forEach(detail => detail.classList.add('hidden'));
-            paymentDetails.classList.add('hidden');
-
-            // Clear all payment-specific fields when switching methods
-            document.getElementById('payment_provider').value = '';
-            document.getElementById('payment_account').value = '';
-            document.getElementById('transaction_reference').value = '';
-            document.getElementById('transaction_reference_bank').value = '';
-            
-            // Disable fields that aren't being used
-            document.getElementById('payment_provider').disabled = true;
-            document.getElementById('payment_account').disabled = true;
-            document.getElementById('transaction_reference').disabled = true;
-            document.getElementById('transaction_reference_bank').disabled = true;
-
-            if (method) {
-                paymentDetails.classList.remove('hidden');
-
-                // Show specific payment method details and enable relevant fields
-                if (method === 'mobile_money') {
-                    document.getElementById('mobile-money-details').classList.remove('hidden');
-                    document.getElementById('payment_provider').disabled = false;
-                    document.getElementById('payment_account').disabled = false;
-                    document.getElementById('transaction_reference').disabled = false;
-                } else if (method === 'bank_transfer') {
-                    document.getElementById('bank-transfer-details').classList.remove('hidden');
-                    document.getElementById('transaction_reference_bank').disabled = false;
-                } else if (method === 'cash') {
-                    document.getElementById('cash-details').classList.remove('hidden');
-                }
-            }
-        });
-
-        // Form submission
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Show loading state
-            submitText.classList.add('hidden');
-            submitLoading.classList.remove('hidden');
-            submitBtn.disabled = true;
-
-            // Prepare form data
-            const formData = new FormData(form);
-
-            // Submit via fetch
-            fetch('{{ route("giving.store") }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-                .then(response => {
-                    // Parse JSON regardless of status
-                    return response.json().then(data => ({
-                        status: response.status,
-                        ok: response.ok,
-                        data: data
-                    }));
-                })
-                .then(({status, ok, data}) => {
-                    if (ok && data.success) {
-                        showMessage('success', data.message);
-
-                        // Show next steps if available
-                        if (data.next_steps) {
-                            setTimeout(() => {
-                                showMessage('info', data.next_steps);
-                            }, 2000);
-                        }
-
-                        form.reset();
-                        paymentDetails.classList.add('hidden');
-
-                        // Scroll to top
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    } else {
-                        // Handle validation errors (422) or other errors
-                        let errorMessage = data.message || 'An error occurred. Please try again.';
-
-                        // Handle validation errors
-                        if (data.errors) {
-                            const errorList = Object.entries(data.errors)
-                                .map(([field, messages]) => {
-                                    const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                                    return `<strong>${fieldName}:</strong> ${Array.isArray(messages) ? messages.join(', ') : messages}`;
-                                })
-                                .join('<br>');
-                            errorMessage = `<strong>Validation Errors:</strong><br>${errorList}`;
-                        }
-
-                        showMessage('error', errorMessage);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    let errorMessage = 'An error occurred while processing your giving. Please try again.';
-
-                    // Provide more specific error messages based on error type
-                    if (error.message.includes('Failed to fetch')) {
-                        errorMessage = 'Network error. Please check your internet connection and try again.';
-                    }
-
-                    showMessage('error', errorMessage);
-                })
-                .finally(() => {
-                    // Reset button state
-                    submitText.classList.remove('hidden');
-                    submitLoading.classList.add('hidden');
-                    submitBtn.disabled = false;
+            if (method === 'cash') {
+                document.getElementById('cash-details').classList.remove('hidden');
+            } else if (method === 'mobile_money') {
+                document.getElementById('mobile-money-details').classList.remove('hidden');
+                ['payment_provider','payment_account','transaction_reference'].forEach(id => {
+                    document.getElementById(id).disabled = false;
                 });
+            } else if (method === 'bank_transfer') {
+                document.getElementById('bank-transfer-details').classList.remove('hidden');
+                document.getElementById('transaction_reference_bank').disabled = false;
+            } else if (method === 'card') {
+                document.getElementById('card-details').classList.remove('hidden');
+            }
         });
-
-        function showMessage(type, message) {
-            const container = document.getElementById('message-container');
-            const successDiv = document.getElementById('success-message');
-            const errorDiv = document.getElementById('error-message');
-            const successText = document.getElementById('success-text');
-            const errorText = document.getElementById('error-text');
-
-            // Hide all messages first
-            successDiv.classList.add('hidden');
-            errorDiv.classList.add('hidden');
-
-            // Show appropriate message
-            if (type === 'success') {
-                successText.innerHTML = message.replace(/\n/g, '<br>');
-                successDiv.classList.remove('hidden');
-            } else if (type === 'info') {
-                // Show info messages as success style but with blue color
-                successText.innerHTML = message.replace(/\n/g, '<br>');
-                successDiv.classList.remove('hidden');
-                successDiv.className = successDiv.className.replace('bg-green-100 border-green-400 text-green-700', 'bg-blue-100 border-blue-400 text-blue-700');
-            } else {
-                errorText.innerHTML = message.replace(/\n/g, '<br>');
-                errorDiv.classList.remove('hidden');
-            }
-
-            container.classList.remove('hidden');
-
-            // Scroll to message
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Auto-hide success messages after 8 seconds
-            if (type === 'success' || type === 'info') {
-                setTimeout(() => {
-                    container.classList.add('hidden');
-                }, 8000);
-            }
-        }
     });
+
+    /* ── Quick-amount pills fill the input ── */
+    document.querySelectorAll('input[name="amount_preset"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const input = document.getElementById('amount_input');
+            if (this.value !== 'other') {
+                input.value = this.value;
+            } else {
+                input.value = '';
+                input.focus();
+            }
+        });
+    });
+
+    /* ── Form submit ── */
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitText.classList.add('hidden');
+        submitLoading.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+
+        fetch('{{ route("giving.store") }}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }
+        })
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok && data.success) {
+                showMessage('success', data.message);
+                if (data.next_steps) setTimeout(() => showMessage('info', data.next_steps), 2000);
+                form.reset();
+                ['cash-details','mobile-money-details','bank-transfer-details','card-details'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.classList.add('hidden');
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                let msg = data.message || 'An error occurred. Please try again.';
+                if (data.errors) {
+                    msg = Object.entries(data.errors)
+                        .map(([f, m]) => `<strong>${f.replace(/_/g,' ')}:</strong> ${Array.isArray(m)?m.join(', '):m}`)
+                        .join('<br>');
+                }
+                showMessage('error', msg);
+            }
+        })
+        .catch(() => showMessage('error', 'Network error. Please check your connection and try again.'))
+        .finally(() => {
+            submitText.classList.remove('hidden');
+            submitLoading.classList.add('hidden');
+            submitBtn.disabled = false;
+        });
+    });
+
+    function showMessage(type, message) {
+        const container    = document.getElementById('message-container');
+        const successDiv   = document.getElementById('success-message');
+        const errorDiv     = document.getElementById('error-message');
+
+        successDiv.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+
+        if (type === 'success' || type === 'info') {
+            document.getElementById('success-text').innerHTML = message.replace(/\n/g,'<br>');
+            successDiv.classList.remove('hidden');
+        } else {
+            document.getElementById('error-text').innerHTML = message.replace(/\n/g,'<br>');
+            errorDiv.classList.remove('hidden');
+        }
+
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior:'smooth', block:'center' });
+        if (type !== 'error') setTimeout(() => container.classList.add('hidden'), 8000);
+    }
+});
 </script>
 </body>
-
 </html>

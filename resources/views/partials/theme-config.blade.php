@@ -27,8 +27,9 @@
           '5xl':  ['3.125rem', { lineHeight: '1.1' }],     // 50px
         },
         fontFamily: {
-          display: ["Jost", "sans-serif"],
-          sans:    ["Jost", "system-ui", "sans-serif"],
+          display: ["Playfair Display", "serif"],  // Elegant serif for headings
+          sans:    ["Merriweather", "serif"],      // Readable serif for body text
+          serif:   ["Playfair Display", "serif"],  // For .serif class
         },
         borderRadius: {
           lg:    "0.75rem",
