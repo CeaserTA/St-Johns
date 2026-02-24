@@ -99,13 +99,27 @@
         <!-- Newsletter – Below Social Icons -->
         <div class="pt-4">
           <p class="text-xs text-white/80 mb-3">Receive weekly updates & sermons</p>
-          <form class="flex flex-col gap-2">
-            <input type="email" placeholder="Your email address" required
-              class="px-4 py-2 rounded-lg text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent transition text-sm">
+          <form id="newsletter-form" class="flex flex-col gap-2">
+            @csrf
+            <input type="email" 
+                   id="newsletter-email" 
+                   name="email" 
+                   placeholder="Your email address" 
+                   required
+                   class="px-4 py-2 rounded-lg text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent transition text-sm">
             <button type="submit"
-              class="px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition shadow-md text-sm">
-              Subscribe
+                    id="newsletter-submit"
+                    class="px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              <span id="newsletter-button-text">Subscribe</span>
+              <span id="newsletter-loading" class="hidden">
+                <svg class="animate-spin h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Subscribing...
+              </span>
             </button>
+            <div id="newsletter-message" class="hidden text-xs mt-1"></div>
           </form>
         </div>
       </div>
@@ -122,6 +136,108 @@
   </div>
 @include('partials.login-modal')
 </footer>
+
+<!-- Newsletter Subscription Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('newsletter-form');
+    const emailInput = document.getElementById('newsletter-email');
+    const submitButton = document.getElementById('newsletter-submit');
+    const buttonText = document.getElementById('newsletter-button-text');
+    const loadingSpinner = document.getElementById('newsletter-loading');
+    const messageDiv = document.getElementById('newsletter-message');
+    
+    if (!form) return;
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Clear previous messages
+        messageDiv.classList.add('hidden');
+        messageDiv.textContent = '';
+        
+        // Validate email
+        const email = emailInput.value.trim();
+        if (!email) {
+            showMessage('Please enter your email address', 'error');
+            return;
+        }
+        
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showMessage('Please enter a valid email address', 'error');
+            return;
+        }
+        
+        // Show loading state
+        setLoadingState(true);
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('input[name="_token"]').value;
+        
+        // Submit via AJAX
+        fetch('/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            setLoadingState(false);
+            
+            if (data.success) {
+                showMessage(data.message || 'Successfully subscribed to our newsletter!', 'success');
+                emailInput.value = ''; // Clear the input
+            } else {
+                showMessage(data.message || 'Failed to subscribe. Please try again.', 'error');
+            }
+        })
+        .catch(error => {
+            setLoadingState(false);
+            console.error('Newsletter subscription error:', error);
+            showMessage('An error occurred. Please try again later.', 'error');
+        });
+    });
+    
+    function setLoadingState(isLoading) {
+        if (isLoading) {
+            submitButton.disabled = true;
+            buttonText.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+        } else {
+            submitButton.disabled = false;
+            buttonText.classList.remove('hidden');
+            loadingSpinner.classList.add('hidden');
+        }
+    }
+    
+    function showMessage(message, type) {
+        messageDiv.textContent = message;
+        messageDiv.classList.remove('hidden');
+        
+        if (type === 'success') {
+            messageDiv.classList.remove('text-red-300');
+            messageDiv.classList.add('text-green-300');
+        } else {
+            messageDiv.classList.remove('text-green-300');
+            messageDiv.classList.add('text-red-300');
+        }
+        
+        // Auto-hide success messages after 5 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+    }
+});
+</script>
 
 <!-- My Groups Modal -->
 <div id="myGroupsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">

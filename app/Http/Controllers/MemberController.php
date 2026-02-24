@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Services\NotificationService;
+use App\Services\MailerLiteService;
 use App\Notifications\NewMemberRegistered;
 
 class MemberController extends Controller
@@ -323,6 +324,12 @@ class MemberController extends Controller
             $member->update(['user_id' => $user->id]);
         }
 
+        // Handle newsletter subscription
+        $newsletterSubscribe = $request->boolean('newsletter_subscribe');
+        if ($newsletterSubscribe) {
+            $this->syncNewsletterSubscription($member, true);
+        }
+
         // Auto-login if account was created
         if ($user) {
             Auth::login($user);
@@ -466,7 +473,7 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         $member->delete();
-        return redirect()->route('members')->with('success', 'Member deleted successfully');
+        return redirect()->route('admin.members')->with('success', 'Member deleted successfully');
     }
 
     /**
@@ -625,5 +632,92 @@ class MemberController extends Controller
                 ]
             ], 500);
         }
+    }
+
+    /**
+     * Sync newsletter subscription to MailerLite
+     *
+     * @param Member $member
+     * @param bool $subscribe
+     * @return void
+     */
+    private function syncNewsletterSubscription(Member $member, bool $subscribe): void
+    {
+        // Skip if member doesn't have an email
+        if (empty($member->email)) {
+            Log::channel('mailerlite')->info('Skipping newsletter sync - member has no email', [
+                'member_id' => $member->id,
+            ]);
+            return;
+        }
+
+        try {
+            $mailerLite = app(MailerLiteService::class);
+
+            if ($subscribe) {
+                Log::channel('mailerlite')->info('Member newsletter subscription sync started', [
+                    'member_id' => $member->id,
+                    'email' => $this->redactEmail($member->email),
+                    'source' => 'member_profile',
+                ]);
+
+                // Subscribe to MailerLite with member name and status as custom fields
+                $mailerLite->subscribe($member->email, [
+                    'name' => $member->full_name,
+                    'member_status' => 'member',
+                ]);
+
+                // Update member record
+                $member->subscribeToNewsletter();
+
+                Log::channel('mailerlite')->info('Member newsletter subscription sync successful', [
+                    'member_id' => $member->id,
+                    'email' => $this->redactEmail($member->email),
+                ]);
+            } else {
+                Log::channel('mailerlite')->info('Member newsletter unsubscription sync started', [
+                    'member_id' => $member->id,
+                    'email' => $this->redactEmail($member->email),
+                    'source' => 'member_profile',
+                ]);
+
+                // Unsubscribe from MailerLite
+                $mailerLite->unsubscribe($member->email);
+
+                // Update member record
+                $member->unsubscribeFromNewsletter();
+
+                Log::channel('mailerlite')->info('Member newsletter unsubscription sync successful', [
+                    'member_id' => $member->id,
+                    'email' => $this->redactEmail($member->email),
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::channel('mailerlite')->error('Failed to sync member newsletter subscription', [
+                'member_id' => $member->id,
+                'email' => $this->redactEmail($member->email),
+                'subscribe' => $subscribe,
+                'error' => $e->getMessage(),
+                'exception_class' => get_class($e),
+            ]);
+            
+            // Don't throw the exception - we don't want to fail member creation/update
+            // if newsletter sync fails
+        }
+    }
+
+    /**
+     * Redact email address for logging (keep first 3 chars and domain)
+     *
+     * @param string $email
+     * @return string
+     */
+    private function redactEmail(string $email): string
+    {
+        if (strpos($email, '@') !== false) {
+            [$local, $domain] = explode('@', $email, 2);
+            return substr($local, 0, 3) . '***@' . $domain;
+        }
+        return substr($email, 0, 3) . '***';
     }
 }

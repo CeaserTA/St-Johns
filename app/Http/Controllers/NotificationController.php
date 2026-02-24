@@ -8,6 +8,26 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     /**
+     * Display all notifications page
+     */
+    public function index(Request $request)
+    {
+        $filter = $request->get('filter', 'all'); // all, unread, read
+        
+        $query = auth()->user()->notifications()->orderBy('created_at', 'desc');
+        
+        if ($filter === 'unread') {
+            $query->whereNull('read_at');
+        } elseif ($filter === 'read') {
+            $query->whereNotNull('read_at');
+        }
+        
+        $notifications = $query->paginate(20);
+        
+        return view('admin.notifications.index', compact('notifications', 'filter'));
+    }
+
+    /**
      * Get unread notifications count for the current user
      */
     public function getUnreadCount(): JsonResponse
@@ -68,7 +88,7 @@ class NotificationController extends Controller
     /**
      * Mark all notifications as read
      */
-    public function markAllAsRead(): JsonResponse
+    public function markAllAsRead(Request $request)
     {
         auth()->user()
             ->unreadNotifications()
@@ -76,9 +96,88 @@ class NotificationController extends Controller
 
         $count = auth()->user()->unreadNotifications()->count();
 
+        // If it's an AJAX request, return JSON
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'unread_count' => $count
+            ]);
+        }
+
+        // Otherwise redirect back with success message
+        return redirect()->back()->with('success', 'All notifications marked as read');
+    }
+
+    /**
+     * Show a single notification
+     */
+    public function show(string $id): JsonResponse
+    {
+        $notification = auth()->user()
+            ->notifications()
+            ->where('id', $id)
+            ->first();
+        
+        if (!$notification) {
+            return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
+        }
+
+        // Mark as read when viewed
+        if (!$notification->read_at) {
+            $notification->markAsRead();
+        }
+
         return response()->json([
             'success' => true,
-            'unread_count' => $count
+            'notification' => [
+                'id' => $notification->id,
+                'type' => $notification->data['type'] ?? 'unknown',
+                'title' => $notification->data['title'] ?? '',
+                'message' => $notification->data['message'] ?? '',
+                'action_url' => $notification->data['action_url'] ?? null,
+                'created_at' => $notification->created_at->format('M d, Y \a\t g:i A'),
+                'read_at' => $notification->read_at?->format('M d, Y \a\t g:i A'),
+            ]
+        ]);
+    }
+
+    /**
+     * Delete a single notification
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        $notification = auth()->user()
+            ->notifications()
+            ->where('id', $id)
+            ->first();
+        
+        if ($notification) {
+            $notification->delete();
+            return response()->json(['success' => true, 'message' => 'Notification deleted']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
+    }
+
+    /**
+     * Delete multiple notifications
+     */
+    public function bulkDelete(Request $request): JsonResponse
+    {
+        $request->validate([
+            'notification_ids' => 'required|array',
+            'notification_ids.*' => 'required|string'
+        ]);
+
+        $deleted = auth()->user()
+            ->notifications()
+            ->whereIn('id', $request->notification_ids)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$deleted} notification(s) deleted",
+            'deleted_count' => $deleted
         ]);
     }
 

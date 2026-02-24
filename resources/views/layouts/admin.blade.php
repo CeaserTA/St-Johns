@@ -37,12 +37,6 @@
                     </li>
                 </ul>
             </nav>
-            <div class="p-4">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="w-full px-4 py-2 bg-blue-600 rounded">Logout</button>
-                </form>
-            </div>
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden">

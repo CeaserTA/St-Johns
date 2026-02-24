@@ -518,6 +518,18 @@
                     </div>
                 </div>
 
+                {{-- Newsletter Subscription --}}
+                <div class="bg-[#f5ede0] border border-[#e2d9cc] p-6 mb-7">
+                    <label class="flex items-start gap-3.5 cursor-pointer">
+                        <input type="checkbox" name="newsletter_subscribe" value="1" checked
+                               class="w-[18px] h-[18px] mt-0.5 flex-shrink-0 accent-[#0c1b3a] cursor-pointer">
+                        <div>
+                            <h4 class="text-sm font-semibold text-[#0c1b3a] mb-1">Subscribe to newsletter</h4>
+                            <p class="text-[12px] text-[#6b7080] font-light leading-[1.5]">Receive weekly sermons and church updates via email.</p>
+                        </div>
+                    </label>
+                </div>
+
                 <div id="formNotice" class="hidden p-4 bg-[#edf7f2] border-l-4 border-[#1a7a4a] text-[#155d38] text-sm font-medium mb-5">
                     ✓ Registration submitted — redirecting…
                 </div>

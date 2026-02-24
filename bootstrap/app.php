@@ -16,5 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle rate limiting errors with user-friendly messages
+        $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many attempts. Please try again in a few moments.',
+                ], 429);
+            }
+
+            return back()->with('error', 'Too many attempts. Please try again in a few moments.');
+        });
     })->create();

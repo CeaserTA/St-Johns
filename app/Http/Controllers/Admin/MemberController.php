@@ -198,8 +198,8 @@ class MemberController extends Controller
                 'events_attended' => $member->eventRegistrations ? $member->eventRegistrations->count() : 0,
                 'services_attended' => $member->serviceRegistrations ? $member->serviceRegistrations->count() : 0,
                 'groups_count' => 0, // Will be updated when groups relationship is fixed
-                'member_since_days' => $member->date_joined ? now()->diffInDays($member->date_joined) : null,
-                'age' => $member->date_of_birth ? now()->diffInYears($member->date_of_birth) : null,
+                'member_since_days' => $member->date_joined ? abs($member->date_joined->diffInDays(now(), false)) : null,
+                'age' => $member->age, // Use the model's age accessor which calculates correctly
             ];
 
             // If this is an AJAX request, return JSON

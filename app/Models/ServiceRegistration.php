@@ -57,6 +57,14 @@ class ServiceRegistration extends Model
     }
 
     /**
+     * Get the admin who approved this registration
+     */
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
      * Check if this is a guest registration
      */
     public function isGuest()

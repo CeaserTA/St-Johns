@@ -27,16 +27,24 @@ Route::get('/dashboard', [MemberController::class, 'index'])
 
 // Notification routes (requires admin authentication)
 Route::middleware('admin')->group(function () {
+    // Global search
+    Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'search'])->name('admin.search');
+    
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
     Route::get('/api/notifications/unread', [NotificationController::class, 'getUnreadNotifications'])->name('notifications.unread');
+    Route::get('/api/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
     Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('/api/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::post('/api/notifications/bulk-delete', [NotificationController::class, 'bulkDelete'])->name('notifications.bulk-delete');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/newsletter', [ProfileController::class, 'toggleNewsletterSubscription'])->name('profile.newsletter.toggle');
 });
 
 require __DIR__.'/auth.php';
@@ -137,6 +145,18 @@ Route::middleware('admin')->group(function () {
     Route::post('/admin/qr-codes/giving', [\App\Http\Controllers\QRCodeController::class, 'generateGiving'])->name('qr-codes.generate.giving');
     Route::post('/admin/qr-codes/custom', [\App\Http\Controllers\QRCodeController::class, 'generateCustom'])->name('qr-codes.generate.custom');
     Route::get('/admin/qr-codes/cleanup', [\App\Http\Controllers\QRCodeController::class, 'cleanup'])->name('qr-codes.cleanup');
+
+    // Admin Profile Management
+    Route::get('/admin/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'show'])->name('admin.profile');
+    Route::get('/admin/profile/edit', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::put('/admin/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
+    Route::post('/admin/profile/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('admin.profile.password');
+
+    // Newsletter Subscriber Management
+    Route::get('/admin/subscribers', [\App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('admin.subscribers.index');
+    Route::post('/admin/subscribers', [\App\Http\Controllers\Admin\SubscriptionController::class, 'store'])->name('admin.subscribers.store');
+    Route::delete('/admin/subscribers/{email}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'destroy'])->name('admin.subscribers.destroy');
+    Route::get('/admin/subscribers/export', [\App\Http\Controllers\Admin\SubscriptionController::class, 'export'])->name('admin.subscribers.export');
 });
 
 // QR Code download (public access)
@@ -145,6 +165,18 @@ Route::get('/qr-codes/download/{filename}', [\App\Http\Controllers\QRCodeControl
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services');
 
 
+
+// Newsletter subscription routes
+Route::post('/subscribe', [\App\Http\Controllers\SubscriptionController::class, 'subscribe'])
+    ->name('newsletter.subscribe')
+    ->middleware('throttle:5,1'); // 5 attempts per minute per IP
+
+Route::get('/unsubscribe/{email}', [\App\Http\Controllers\SubscriptionController::class, 'confirmUnsubscribe'])
+    ->name('newsletter.unsubscribe.confirm');
+
+Route::post('/unsubscribe', [\App\Http\Controllers\SubscriptionController::class, 'unsubscribe'])
+    ->name('newsletter.unsubscribe')
+    ->middleware('throttle:5,1'); // 5 attempts per minute per IP
 
 // Public endpoint: allow anyone to register (modal posts here)
 Route::post('/members', [MemberController::class, 'store'])->name('members.store');

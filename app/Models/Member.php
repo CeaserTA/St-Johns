@@ -26,6 +26,8 @@ class Member extends Model
         'date_joined',
         'cell',
         'profile_image',
+        'newsletter_subscribed',
+        'newsletter_subscribed_at',
     ];
 
     // Cast date fields to Carbon instances
@@ -33,6 +35,8 @@ class Member extends Model
         'date_of_birth' => 'date',
         'date_joined' => 'date',
         'deleted_at' => 'datetime',
+        'newsletter_subscribed' => 'boolean',
+        'newsletter_subscribed_at' => 'datetime',
     ];
 
     // Relationships
@@ -133,11 +137,12 @@ class Member extends Model
                 return null;
             }
             
-            if (is_string($this->date_of_birth)) {
-                return now()->diffInYears(\Carbon\Carbon::parse($this->date_of_birth));
-            }
+            $birthDate = is_string($this->date_of_birth) 
+                ? \Carbon\Carbon::parse($this->date_of_birth) 
+                : $this->date_of_birth;
             
-            return now()->diffInYears($this->date_of_birth);
+            // Use diffInYears with absolute value to handle any date issues
+            return abs($birthDate->diffInYears(now(), false));
         } catch (\Exception $e) {
             return null;
         }
@@ -188,6 +193,26 @@ class Member extends Model
     public function hasProfileImage()
     {
         return !empty($this->profile_image);
+    }
+
+    // Newsletter subscription methods
+    public function subscribeToNewsletter(): void
+    {
+        $this->newsletter_subscribed = true;
+        $this->newsletter_subscribed_at = now();
+        $this->save();
+    }
+
+    public function unsubscribeFromNewsletter(): void
+    {
+        $this->newsletter_subscribed = false;
+        $this->newsletter_subscribed_at = null;
+        $this->save();
+    }
+
+    public function isSubscribedToNewsletter(): bool
+    {
+        return (bool) $this->newsletter_subscribed;
     }
 }
 

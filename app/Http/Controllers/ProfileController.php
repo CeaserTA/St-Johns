@@ -7,7 +7,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use App\Services\MailerLiteService;
 
 class ProfileController extends Controller
 {
@@ -113,5 +115,107 @@ class ProfileController extends Controller
         }
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Toggle newsletter subscription for the user's member profile.
+     */
+    public function toggleNewsletterSubscription(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
+    {
+        $user = $request->user();
+
+        // Check if user has a member profile
+        if (!$user->member) {
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You need to have a member profile to manage newsletter subscriptions.'
+                ], 400);
+            }
+            return Redirect::back()
+                ->with('newsletter-error', 'You need to have a member profile to manage newsletter subscriptions.');
+        }
+
+        $member = $user->member;
+
+        // Check if member has an email
+        if (empty($member->email)) {
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You need to have an email address to subscribe to the newsletter.'
+                ], 400);
+            }
+            return Redirect::back()
+                ->with('newsletter-error', 'You need to have an email address to subscribe to the newsletter.');
+        }
+
+        // Get the subscription preference from the request
+        $subscribe = $request->boolean('newsletter_subscribe');
+
+        try {
+            $mailerLite = app(MailerLiteService::class);
+
+            if ($subscribe) {
+                // Subscribe to MailerLite
+                $mailerLite->subscribe($member->email, [
+                    'name' => $member->full_name,
+                    'member_status' => 'member',
+                ]);
+
+                // Update member record
+                $member->subscribeToNewsletter();
+
+                Log::info('Member subscribed to newsletter via profile', [
+                    'member_id' => $member->id,
+                    'email' => $member->email,
+                ]);
+
+                if ($request->wantsJson() || $request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Successfully subscribed to the newsletter!'
+                    ]);
+                }
+                return Redirect::back()
+                    ->with('newsletter-success', 'Successfully subscribed to the newsletter!');
+            } else {
+                // Unsubscribe from MailerLite
+                $mailerLite->unsubscribe($member->email);
+
+                // Update member record
+                $member->unsubscribeFromNewsletter();
+
+                Log::info('Member unsubscribed from newsletter via profile', [
+                    'member_id' => $member->id,
+                    'email' => $member->email,
+                ]);
+
+                if ($request->wantsJson() || $request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Successfully unsubscribed from the newsletter.'
+                    ]);
+                }
+                return Redirect::back()
+                    ->with('newsletter-success', 'Successfully unsubscribed from the newsletter.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to toggle newsletter subscription via profile', [
+                'member_id' => $member->id,
+                'email' => $member->email,
+                'subscribe' => $subscribe,
+                'error' => $e->getMessage(),
+            ]);
+
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update newsletter subscription. Please try again later.'
+                ], 500);
+            }
+            return Redirect::back()
+                ->with('newsletter-error', 'Failed to update newsletter subscription. Please try again later.');
+        }
     }
 }

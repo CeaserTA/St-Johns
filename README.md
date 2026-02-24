@@ -207,7 +207,39 @@ Example: Event registration flow — user posts JSON to `/event-registrations`, 
 
 ---
 
-## 16) Next Steps I Can Do (choose any)
+## 16) Newsletter Subscription System
+
+The application includes a newsletter subscription system integrated with MailerLite API for managing email subscriptions.
+
+**Features:**
+- Footer subscription form for visitors
+- Automatic subscription during member registration
+- Member profile subscription management
+- Admin dashboard for subscriber management
+- CSV export functionality
+- Real-time sync with MailerLite
+
+**Setup & Documentation:**
+See [NEWSLETTER_SETUP.md](NEWSLETTER_SETUP.md) for complete setup instructions, including:
+- MailerLite account setup and API key generation
+- Environment variable configuration
+- Admin subscriber management guide
+- Testing procedures
+- Troubleshooting common issues
+
+**Quick Setup:**
+1. Create a MailerLite account and generate an API key
+2. Create a subscriber group and note the Group ID
+3. Add credentials to `.env`:
+   ```env
+   MAILERLITE_API_KEY=your_api_key_here
+   MAILERLITE_GROUP_ID=your_group_id_here
+   ```
+4. Clear config cache: `php artisan config:clear`
+
+---
+
+## 17) Next Steps I Can Do (choose any)
 
 1. Confirm `admin` middleware registration in `app/Http/Kernel.php`.
 2. Generate `FormRequest` classes and apply them to controllers.

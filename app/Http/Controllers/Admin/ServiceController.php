@@ -118,6 +118,7 @@ class ServiceController extends Controller
             'amount_paid' => $registration->service->fee,
             'paid_at' => now(),
             'receipt_number' => $receiptNumber,
+            'approved_by' => auth()->id(),
         ]);
 
         // Send receipt email

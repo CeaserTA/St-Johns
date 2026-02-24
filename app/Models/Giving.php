@@ -61,6 +61,11 @@ class Giving extends Model
         return $this->belongsTo(User::class, 'confirmed_by');
     }
 
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
     // Accessors & Mutators
     public function getGiverNameAttribute(): string
     {
@@ -145,6 +150,7 @@ class Giving extends Model
             'status' => 'completed',
             'confirmed_at' => now(),
             'confirmed_by' => $confirmedBy?->id,
+            'approved_by' => $confirmedBy?->id,
             'receipt_number' => $this->receipt_number ?: $this->generateReceiptNumber(),
         ]);
     }

@@ -381,6 +381,140 @@
         </div>
     </div>
 
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-background-dark rounded-lg shadow-xl max-w-2xl w-full modal-enter">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-text-dark">Add New Member</h3>
+                    <button onclick="closeAddMemberModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="addMemberForm" action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="p-6 max-h-[70vh] overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Full Name -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Full Name *</label>
+                                <input type="text" name="full_name" required
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Email</label>
+                                <input type="email" name="email"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+
+                            <!-- Phone -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Phone *</label>
+                                <input type="tel" name="phone" required
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+
+                            <!-- Gender -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Gender</label>
+                                <select name="gender"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Date of Birth</label>
+                                <input type="date" name="date_of_birth"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+
+                            <!-- Marital Status -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Marital Status</label>
+                                <select name="marital_status"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                    <option value="">Select Status</option>
+                                    <option value="single">Single</option>
+                                    <option value="married">Married</option>
+                                    <option value="divorced">Divorced</option>
+                                    <option value="widowed">Widowed</option>
+                                </select>
+                            </div>
+
+                            <!-- Cell -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Cell</label>
+                                <input type="text" name="cell"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Address</label>
+                                <textarea name="address" rows="2"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark"></textarea>
+                            </div>
+
+                            <!-- Date Joined -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Date Joined</label>
+                                <input type="date" name="date_joined" value="{{ date('Y-m-d') }}"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+
+                            <!-- Profile Image -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Profile Image</label>
+                                <input type="file" name="profile_image" accept="image/*"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                        <button type="button" onclick="closeAddMemberModal()"
+                            class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-text-muted-dark rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-primary hover:bg-secondary text-white rounded-lg transition-colors">
+                            Add Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Member Modal -->
+    <div id="editMemberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-background-dark rounded-lg shadow-xl max-w-2xl w-full modal-enter">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-text-dark">Edit Member</h3>
+                    <button onclick="closeEditMemberModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="editMemberFormContainer">
+                    <div class="flex justify-center items-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <span class="ml-2 text-gray-600">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Image Lightbox Modal -->
     <div id="image-lightbox" class="fixed inset-0 bg-black bg-opacity-90 hidden z-60 flex items-center justify-center">
         <div class="relative max-w-4xl max-h-full p-4">
@@ -535,6 +669,16 @@
                                 </div>
 
                                 <div class="text-red-500 text-sm mt-1 hidden" id="error-profileImage"></div>
+                            </div>
+
+                            <!-- Newsletter Subscription -->
+                            <div class="md:col-span-2">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" name="newsletter_subscribe" value="1" checked
+                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <span class="text-gray-700 font-medium">Subscribe to newsletter</span>
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1 ml-6">Member will receive weekly sermons and church updates via email</p>
                             </div>
                         </div>
 
@@ -787,6 +931,142 @@
     </style>
 
     <script>
+        // Add Member Modal Functions
+        function openAddMemberModal() {
+            document.getElementById('addMemberModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddMemberModal() {
+            document.getElementById('addMemberModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('addMemberForm').reset();
+        }
+
+        // Edit Member Modal Functions
+        function openEditMemberModal(memberId) {
+            const modal = document.getElementById('editMemberModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Fetch member data
+            fetch(`/admin/members/${memberId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const member = data.member;
+                        const formHtml = `
+                            <form action="/members/${member.id}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="p-6 max-h-[70vh] overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Full Name *</label>
+                                            <input type="text" name="full_name" value="${member.full_name || ''}" required
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Email</label>
+                                            <input type="email" name="email" value="${member.email || ''}"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Phone *</label>
+                                            <input type="tel" name="phone" value="${member.phone || ''}" required
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Gender</label>
+                                            <select name="gender" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                                <option value="">Select Gender</option>
+                                                <option value="male" ${member.gender === 'male' ? 'selected' : ''}>Male</option>
+                                                <option value="female" ${member.gender === 'female' ? 'selected' : ''}>Female</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Date of Birth</label>
+                                            <input type="date" name="date_of_birth" value="${member.date_of_birth || ''}"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Marital Status</label>
+                                            <select name="marital_status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                                <option value="">Select Status</option>
+                                                <option value="single" ${member.marital_status === 'single' ? 'selected' : ''}>Single</option>
+                                                <option value="married" ${member.marital_status === 'married' ? 'selected' : ''}>Married</option>
+                                                <option value="divorced" ${member.marital_status === 'divorced' ? 'selected' : ''}>Divorced</option>
+                                                <option value="widowed" ${member.marital_status === 'widowed' ? 'selected' : ''}>Widowed</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Cell</label>
+                                            <input type="text" name="cell" value="${member.cell || ''}"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Address</label>
+                                            <textarea name="address" rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">${member.address || ''}</textarea>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Date Joined</label>
+                                            <input type="date" name="date_joined" value="${member.date_joined || ''}"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-text-muted-dark mb-1">Profile Image</label>
+                                            <input type="file" name="profile_image" accept="image/*"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-background-dark dark:text-text-dark">
+                                            ${member.has_profile_image ? '<p class="text-xs text-gray-500 mt-1">Current image will be replaced if you upload a new one</p>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                                    <button type="button" onclick="closeEditMemberModal()"
+                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-text-muted-dark rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                        Cancel
+                                    </button>
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-primary hover:bg-secondary text-white rounded-lg transition-colors">
+                                        Update Member
+                                    </button>
+                                </div>
+                            </form>
+                        `;
+                        document.getElementById('editMemberFormContainer').innerHTML = formHtml;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading member:', error);
+                    document.getElementById('editMemberFormContainer').innerHTML = `
+                        <div class="p-6 text-center text-red-600">
+                            Error loading member data. Please try again.
+                        </div>
+                    `;
+                });
+        }
+
+        function closeEditMemberModal() {
+            document.getElementById('editMemberModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Attach event listener to Add Member button
+        document.addEventListener('DOMContentLoaded', function() {
+            const addMemberBtn = document.getElementById('addMemberBtn');
+            if (addMemberBtn) {
+                addMemberBtn.addEventListener('click', openAddMemberModal);
+            }
+
+            // Close modals on outside click
+            document.getElementById('addMemberModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeAddMemberModal();
+            });
+            document.getElementById('editMemberModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeEditMemberModal();
+            });
+        });
+
         function viewMemberDetails(memberId) {
             // Show modal with loading state
             document.getElementById('member-modal').classList.remove('hidden');
@@ -872,7 +1152,7 @@
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900">${member.full_name}</h2>
                             <p class="text-gray-600">${member.user ? 'Has User Account' : 'No User Account'}</p>
-                            ${stats.age ? `<p class="text-sm text-gray-500">Age: ${stats.age} years old</p>` : ''}
+                            ${stats.age ? `<p class="text-sm text-gray-500">Age: ${Math.round(stats.age)} years old</p>` : ''}
                             <p class="text-xs text-blue-600 mt-1" id="imageClickHint-${member.id}" style="display: none;">
                                 <svg class="inline h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -886,7 +1166,7 @@
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             Active Member
                         </span>
-                        ${stats.member_since_days ? `<p class="text-sm text-gray-500 mt-1">Member for ${stats.member_since_days} days</p>` : ''}
+                        ${stats.member_since_days ? `<p class="text-sm text-gray-500 mt-1">Member for ${Math.round(stats.member_since_days)} days</p>` : ''}
                     </div>
                 </div>
 

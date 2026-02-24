@@ -277,6 +277,64 @@
                 </form>
             </div>
 
+            <!-- Newsletter Subscription -->
+            <div class="mb-8">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <h4 class="text-base font-bold text-gray-900">Newsletter Subscription</h4>
+                </div>
+
+                <form id="updateNewsletterForm" method="POST" action="{{ route('profile.newsletter.toggle') }}" class="space-y-4">
+                    @csrf
+                    @method('patch')
+                    
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex-1">
+                            <label for="newsletter_subscribe_modal" class="font-medium text-gray-900 cursor-pointer">
+                                Subscribe to Newsletter
+                            </label>
+                            <p class="text-sm text-gray-600 mt-1">
+                                @if (auth()->user()->member && auth()->user()->member->isSubscribedToNewsletter())
+                                    You are currently subscribed. You will receive weekly sermons and updates.
+                                @else
+                                    Subscribe to receive weekly sermons and church updates via email.
+                                @endif
+                            </p>
+                            @if (auth()->user()->member && auth()->user()->member->newsletter_subscribed_at)
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Subscribed on: {{ auth()->user()->member->newsletter_subscribed_at->format('M d, Y') }}
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="ml-4">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    name="newsletter_subscribe" 
+                                    id="newsletter_subscribe_modal"
+                                    value="1"
+                                    class="sr-only peer"
+                                    {{ (auth()->user()->member && auth()->user()->member->isSubscribedToNewsletter()) ? 'checked' : '' }}
+                                >
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    @if (!auth()->user()->member || !auth()->user()->member->email)
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                            <p class="text-sm text-yellow-800">
+                                You need to have an email address associated with your member profile to subscribe to the newsletter.
+                            </p>
+                        </div>
+                    @endif
+                </form>
+            </div>
+
             <!-- Account Actions -->
             <div>
                 <div class="flex items-center gap-2 mb-4">
@@ -685,6 +743,67 @@ document.getElementById('updatePasswordForm')?.addEventListener('submit', async 
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = originalText;
+    }
+});
+
+// Newsletter Subscription Toggle Handler
+document.getElementById('newsletter_subscribe_modal')?.addEventListener('change', async function(e) {
+    const checkbox = this;
+    const form = document.getElementById('updateNewsletterForm');
+    const isSubscribing = checkbox.checked;
+    
+    console.log('Newsletter toggle clicked. New state:', isSubscribing);
+    
+    // Disable checkbox during request
+    checkbox.disabled = true;
+    
+    // Create FormData and ensure the checkbox value is set correctly
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('input[name="_token"]').value);
+    formData.append('_method', 'PATCH');
+    // Always send the newsletter_subscribe field with the current checkbox state
+    formData.append('newsletter_subscribe', isSubscribing ? '1' : '0');
+    
+    console.log('Sending request with newsletter_subscribe:', isSubscribing ? '1' : '0');
+    
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        console.log('Response:', data);
+        
+        if (response.ok && data.success) {
+            showProfileMessage(data.message || 'Newsletter subscription updated successfully!', 'success');
+            // Update the description text
+            const descriptionText = form.querySelector('.text-sm.text-gray-600');
+            if (descriptionText) {
+                if (isSubscribing) {
+                    descriptionText.textContent = 'You are currently subscribed. You will receive weekly sermons and updates.';
+                } else {
+                    descriptionText.textContent = 'Subscribe to receive weekly sermons and church updates via email.';
+                }
+            }
+        } else {
+            console.error('Request failed:', data);
+            // Revert checkbox state on error
+            checkbox.checked = !checkbox.checked;
+            showProfileMessage(data.message || 'Failed to update newsletter subscription', 'error');
+        }
+    } catch (error) {
+        console.error('Newsletter toggle error:', error);
+        // Revert checkbox state on error
+        checkbox.checked = !checkbox.checked;
+        showProfileMessage('An error occurred. Please try again.', 'error');
+    } finally {
+        checkbox.disabled = false;
     }
 });
 

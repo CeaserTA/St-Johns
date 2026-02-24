@@ -39,7 +39,19 @@ ph<x-guest-layout>
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        
+        <!-- Newsletter Subscription -->
+        <div class="mt-4">
+            <label for="newsletter_subscribe" class="inline-flex items-center">
+                <input id="newsletter_subscribe" type="checkbox" 
+                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" 
+                       name="newsletter_subscribe" 
+                       value="1" 
+                       checked>
+                <span class="ms-2 text-sm text-gray-600">
+                    {{ __('Subscribe to weekly sermons and church updates') }}
+                </span>
+            </label>
+        </div>
 
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
