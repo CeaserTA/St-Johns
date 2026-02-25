@@ -1,264 +1,898 @@
-# St-Johns — Project Analysis & Developer README
+# St. Johns Church Management System
 
-This README contains a comprehensive analysis of the St-Johns Laravel application found in this repository. It documents structure, configuration, routes, controllers, models, views, database schema, middleware, tests, dependencies, runtime flow, pain points, and recommended improvements.
+A comprehensive Laravel-based web application for managing church operations including member registration, event/service management, group coordination, financial giving/tithes, and administrative notifications.
 
-> Note: This file is an automatically generated project analysis prepared to help developers onboard and prioritize next tasks.
+## Table of Contents
 
----
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Technology Stack](#technology-stack)
+- [System Architecture](#system-architecture)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Database Structure](#database-structure)
+- [User Roles & Permissions](#user-roles--permissions)
+- [Core Modules](#core-modules)
+- [External Integrations](#external-integrations)
+- [Development](#development)
+- [Testing](#testing)
 
-## Summary
-- Type: Laravel project (Laravel 12 / PHP ^8.2).
-- Purpose: Church website with public pages, member registration, event/service registrations, and an admin dashboard for managing members, events, services, announcements, and groups.
+## Overview
 
-Key areas: `app/`, `config/`, `database/`, `resources/views/`, `routes/`, `tests/`, `public/`.
+St. Johns Church Management System is a full-featured church administration platform that streamlines member management, event coordination, financial tracking, and communication. The system supports both authenticated members and guest users, with a comprehensive admin dashboard for church leadership.
 
----
+## Key Features
 
-## 1) Project Structure Overview
+### Member Management
+- Member registration with profile management
+- Profile image uploads (Supabase cloud storage)
+- Newsletter subscription integration (MailerLite)
+- Member analytics and engagement metrics
+- Cell group assignment (North, East, South, West)
+- Optional user account linking for portal access
 
-- Root files: `composer.json`, `package.json`, `artisan`, `README.md`.
-- Key folders:
-	- `app/` — application code (controllers, models, middleware, providers, view components).
-	- `config/` — configuration files (`app.php`, `database.php`, `auth.php`, etc.).
-	- `database/` — `migrations/`, `factories/`, `seeders/`.
-	- `public/` — `index.php`, `script.js`, `styles.css`, `assets/`.
-	- `resources/views/` — Blade templates and components.
-	- `routes/` — `web.php`, `auth.php`, `console.php`.
-	- `storage/`, `tests/`, `vendor/`.
+### Event & Service Management
+- Create and manage church events and announcements
+- Event registration for members and guests
+- Service registration with payment tracking
+- Event pinning and expiration dates
+- Bulk operations (delete, activate, deactivate)
+- Image uploads for events
+- QR code generation for easy registration
 
-Deviations / notes:
-- Some migrations and code use camelCase column names (e.g., `dateOfBirth`) instead of Laravel's conventional snake_case. This should be standardized or documented to avoid confusion.
-- Multiple migrations related to `groups` exist; check migration order for correctness.
+### Financial Management (Giving/Tithe System)
+- Multiple giving types: Tithe, Offering, Donation, Special Offering
+- Payment methods: Cash, Mobile Money (MTN/Airtel), Bank Transfer, Card, Check
+- Transaction reference tracking
+- Admin verification and confirmation workflow
+- Automated receipt generation and email delivery
+- Processing fee calculation
+- CSV export for financial reporting
+- Member giving history with yearly totals
+- Dashboard summary with current month statistics
 
----
+### Group Management
+- Cell group creation and management
+- Member approval workflow (Pending → Approved)
+- Group information: Name, description, meeting day, location, image
+- Member listing with approval status
+- Active/inactive group status
 
-## 2) Configuration Files
+### Admin Dashboard
+- Real-time statistics and metrics
+- Member engagement analytics
+- Interactive charts (Bar, Pie, Doughnut)
+- Monthly registration trends
+- Service and event registration tracking
+- Quick access to recent activities
 
-- `composer.json`: PHP ^8.2, `laravel/framework` ^12.0. Dev packages include `laravel/breeze`, `pestphp/pest`, `fakerphp/faker`.
-- `config/app.php`: standard app settings (name, env, debug, timezone, locale, key).
-- `config/database.php`: default `sqlite` connection, configs for mysql/mariadb/pgsql/sqlsrv, Redis settings.
-- `config/auth.php`: default guard `web`, provider `users` -> `App\\Models\\User`.
+### Notification System
+- Database-driven admin notifications
+- Real-time notification count
+- Notification types:
+  - New member registrations
+  - Giving submissions
+  - Service registrations
+  - Payment proof submissions
+  - Group join requests
+- Bulk operations (mark all read, bulk delete)
 
-Important env variables used:
-- `APP_NAME`, `APP_ENV`, `APP_DEBUG`, `APP_KEY`, `APP_URL`
-- `DB_CONNECTION`, `DB_DATABASE`, `DB_HOST`, `DB_USERNAME`, `DB_PASSWORD`
-- Redis: `REDIS_HOST`, `REDIS_PASSWORD`, etc.
+### QR Code Generation
+- Member registration QR codes
+- Event registration QR codes
+- Giving/donation QR codes
+- Custom URL QR codes
+- Downloadable PNG format
 
-Impact: Default `sqlite` is convenient for local dev; production must use a persistent DB. `users` provider and `role` (added via migration) power admin authorization.
+## Technology Stack
 
----
+### Backend
+- **Framework**: Laravel 12.x
+- **PHP**: 8.2+
+- **Database**: MySQL
+- **Authentication**: Laravel Breeze
+- **Queue**: Database driver
+- **Storage**: Supabase (S3-compatible) with local fallback
 
-## 3) Routes
+### Frontend
+- **Templating**: Blade
+- **CSS Framework**: Tailwind CSS
+- **JavaScript**: Alpine.js (via Breeze)
+- **Build Tool**: Vite
+- **Charts**: Chart.js
 
-- Files: `routes/web.php`, `routes/auth.php`.
-- Public routes: `/`, `/index`, `/home`, `/events`, `/services`, member registration `POST /members`, group join `POST /groups/join`, service registration `GET|POST /service-register`, event registration `POST /event-registrations` (AJAX-friendly).
-- Auth routes: registration, login, password reset, email verification (Breeze-style controllers in `app/Http/Controllers/Auth`).
-- Admin routes: prefixed/admin-like routes protected by `middleware('admin')` (requires `EnsureUserIsAdmin`). Admin CRUD endpoints for events, services, announcements, groups, members listing.
+### External Services
+- **MailerLite**: Newsletter subscription management
+- **Supabase**: Cloud storage for member images
+- **Email**: SMTP for receipts and notifications
 
-Request lifecycle (typical): `public/index.php` -> Kernel (global middleware) -> Router (route middleware) -> Controller -> Model -> View/JSON -> Response -> terminating middleware.
+### Development Tools
+- **Testing**: Pest PHP with property-based testing (Eris)
+- **Code Quality**: Laravel Pail for log monitoring
+- **Package Manager**: Composer
+- **Asset Management**: NPM
 
-Note: Ensure `EnsureUserIsAdmin` is registered in `app/Http/Kernel.php` with alias `admin`.
+## System Architecture
 
----
+### Database Design Principles
+- **Referential Integrity**: Foreign key constraints on all relationships
+- **Performance Optimized**: Strategic indexes on frequently queried columns
+- **Data Safety**: Soft deletes on critical entities (Members, Events, Givings)
+- **Scalability**: Normalized structure to support growth
+- **Laravel Conventions**: Follows Laravel naming standards
 
-## 4) Controllers (high level)
-
-Controllers are in `app/Http/Controllers/` and `app/Http/Controllers/Admin/`.
-
-- `MemberController`: member CRUD, dashboard metrics, file uploads (stores images to `public` disk), group attach via pivot.
-- `EventController` / `ServiceController`: public listing and show actions.
-- `EventRegistrationController` / `ServiceRegistrationController`: registration storage and admin listing; `EventRegistrationController@store` returns JSON (AJAX).
-- `GroupJoinController`: public flow for joining a group by email; has `joinFromModal` optional helper.
-- `Auth/*` controllers: Breeze-derived auth logic plus `AdminAuthenticatedSessionController` that enforces `role === 'admin'`.
-- `Admin/*` controllers: CRUD for events, services, groups, announcements; use inline validation and redirect with flash messages.
-
-Notes:
-- Validation is performed inline (`$request->validate()`); consider `FormRequest` classes to centralize validation and authorization.
-- Some admin index controllers return unpaginated `->get()` for lists — convert to pagination for large datasets.
-
----
-
-## 5) Models
-
-Located in `app/Models/`:
-- `User`: `fillable` includes `role`, `casts()` defines `email_verified_at` and `password`.
-- `Member`: `$fillable` uses camelCase fields; `groups()` belongsToMany via `group_member`; mutators normalize `gender` and `maritalStatus`.
-- `Group`: `$fillable` + `members()` pivot.
-- `Service`, `ServiceRegistration` (table `service_registrations`), `Event`, `EventRegistration` (table `event_registrations`), `Announcement`.
-
-Recommendations:
-- Add `$casts` for date/datetime fields.
-- Add missing Eloquent relationships (e.g., `EventRegistration::event()` belongsTo `Event`).
-- Standardize column naming (snake_case preferred) or provide accessors.
-
----
-
-## 6) Views
-
-- Blade templates are in `resources/views/` with layout files in `resources/views/layouts/` and admin pages in `resources/views/admin/`.
-- Tailwind CSS is used (CDN and compiled `styles.css`).
-- Some pages render full HTML while others extend layouts — standardize to `@extends` to avoid duplication.
-- Client-side JS: modals and AJAX for event registrations in `events.blade.php` and registration UI in `index.blade.php`.
-
----
-
-## 7) Database Layer
-
-Migrations in `database/migrations/` include:
-- `users` table (default) and `2025_11_30_add_role_to_users_table.php` to add `role` enum.
-- `members` table (uses camelCase column names), `events`, `services`, `announcements`, `service_registrations`, `event_registrations`, `groups`, `group_member` pivot.
-
-Notes:
-- `group_member` pivot uses `foreignId(...)->constrained()` with cascading deletes.
-- `event_registrations.event_id` is not constrained in migration — consider adding a `foreignId` constraint to maintain referential integrity.
-
-Running migrations locally:
-```bash
-cp .env.example .env
-composer install
-php artisan key:generate
-php artisan migrate
-php artisan db:seed
-php artisan storage:link
-npm install
-npm run dev
+### Key Relationships
+```
+User (1:1 optional) ↔ Member
+Member (1:many) → Givings
+Member (1:many) → EventRegistrations
+Member (1:many) → ServiceRegistrations
+Member (many:many) ↔ Groups (with approval pivot)
+Event (1:many) → EventRegistrations
+Service (1:many) → ServiceRegistrations
+User (1:many) → Events (created_by)
+User (1:many) → Notifications
 ```
 
+### Application Layers
+1. **Routes** (`routes/web.php`): Public and admin route definitions
+2. **Controllers**: Business logic and request handling
+   - Public controllers for member-facing features
+   - Admin controllers for administrative functions
+3. **Models**: Eloquent ORM models with relationships
+4. **Services**: Reusable business logic (MailerLite, Notifications)
+5. **Notifications**: Database notification classes
+6. **Policies**: Authorization logic (e.g., GivingPolicy)
+7. **Middleware**: Authentication and admin role checking
+8. **Views**: Blade templates for UI rendering
+
+## Installation
+
+### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
+- MySQL 5.7+ or MariaDB 10.3+
+- Git
+
+### Quick Setup
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd church-management-system
+
+# Install dependencies and setup
+composer setup
+
+# This runs:
+# - composer install
+# - Copy .env.example to .env
+# - php artisan key:generate
+# - php artisan migrate --force
+# - npm install
+# - npm run build
+```
+
+### Manual Setup
+
+```bash
+# Install PHP dependencies
+composer install
+
+# Install JavaScript dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+
+# Configure your database in .env
+# Then run migrations
+php artisan migrate
+
+# Seed the database (optional)
+php artisan db:seed
+
+# Build frontend assets
+npm run build
+```
+
+## Configuration
+
+### Environment Variables
+
+Edit `.env` file with your configuration:
+
+#### Application
+```env
+APP_NAME="St. Johns Church"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourchurch.com
+```
+
+#### Database
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=church_db
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+#### Mail Configuration
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_FROM_ADDRESS="noreply@yourchurch.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+#### Supabase Storage (for member images)
+```env
+SUPABASE_ACCESS_KEY_ID=your_access_key
+SUPABASE_SECRET_ACCESS_KEY=your_secret_key
+SUPABASE_ENDPOINT=https://your-project.supabase.co/storage/v1/s3
+SUPABASE_PUBLIC_URL=https://your-project.supabase.co/storage/v1/object/public/
+```
+
+#### MailerLite Integration
+```env
+MAILERLITE_API_KEY=your_api_key
+MAILERLITE_GROUP_ID=your_group_id
+```
+
+#### Queue Configuration
+```env
+QUEUE_CONNECTION=database
+```
+
+### Creating Admin User
+
+```bash
+# Run the admin seeder
+php artisan db:seed --class=AdminSeeder
+
+# Or create manually via tinker
+php artisan tinker
+>>> User::create([
+    'name' => 'Admin User',
+    'email' => 'admin@yourchurch.com',
+    'password' => bcrypt('password'),
+    'role' => 'admin'
+]);
+```
+
+## Database Structure
+
+### Core Tables
+
+#### users
+- Authentication and system access
+- Roles: `user`, `admin`
+- Optional 1:1 relationship with members
+
+#### members
+- Church membership records
+- Fields: full_name, date_of_birth, gender, marital_status, phone, email, address, date_joined, cell, profile_image
+- Soft deletes enabled
+- Newsletter subscription tracking
+
+#### events
+- Church events and announcements
+- Fields: title, slug, description, content, type, category, date, time, location, starts_at, ends_at, expires_at, image, is_pinned, is_active
+- Soft deletes enabled
+- Created by admin users
+
+#### services
+- Church services/programs
+- Fields: name, description, schedule, fee, is_free, currency
+- Related to service registrations
+
+#### givings
+- Financial contributions tracking
+- Fields: member_id, guest_name, guest_email, giving_type, amount, currency, purpose, payment_method, transaction_reference, status, receipt_number
+- Soft deletes enabled
+- Admin confirmation workflow
+
+#### groups
+- Cell groups management
+- Fields: name, description, meeting_day, location, is_active, sort_order, icon, image_url, category
+- Many-to-many with members (with approval pivot)
+
+#### event_registrations
+- Event attendance tracking
+- Links members/guests to events
+
+#### service_registrations
+- Service participation tracking
+- Payment proof submission
+- Admin approval workflow
+
+#### notifications
+- Database notifications for admins
+- Polymorphic notification system
+
+### Pivot Tables
+- `group_member`: Links members to groups with approval status
+
+## User Roles & Permissions
+
+### Admin Role
+- Full system access
+- Dashboard with analytics
+- Member management (view, edit, delete)
+- Event/Service CRUD operations
+- Group management with member approval
+- Giving verification and confirmation
+- Notification management
+- Newsletter subscriber management
+- QR code generation
+- Global search functionality
+
+### Member Role (Authenticated Users)
+- Register for events and services
+- Submit giving/donations
+- View personal giving history
+- Manage profile and newsletter subscription
+- Join cell groups (pending approval)
+- Upload profile image
+
+### Guest Role (Unauthenticated)
+- Register for events (with name, email, phone)
+- Register for services
+- Submit giving/donations (with guest details)
+- View public pages (home, events, services)
+
+## Core Modules
+
+### 1. Member Module
+
+**Controllers**: `MemberController`, `ProfileController`
+
+**Key Features**:
+- Member registration form with validation
+- Profile image upload to Supabase
+- Cell group assignment
+- Newsletter subscription toggle
+- Member dashboard with statistics
+- Member listing with search and filters
+- Export functionality
+
+**Routes**:
+```php
+GET  /members/register          // Registration form
+POST /members                   // Store new member
+GET  /profile                   // Edit profile
+PATCH /profile                  // Update profile
+PATCH /profile/newsletter       // Toggle newsletter
+```
+
+### 2. Event Module
+
+**Controllers**: `Admin/EventController`, `EventController`, `EventRegistrationController`
+
+**Key Features**:
+- Event CRUD operations (admin)
+- Event listing with filters (type, category, date)
+- Event registration for members and guests
+- Image uploads for events
+- Pinning and expiration management
+- Bulk operations (delete, activate, deactivate)
+- QR code generation for events
+
+**Routes**:
+```php
+// Public
+GET  /events                    // List events
+GET  /events/{slug}             // View event
+POST /events/{event}/register   // Register for event
+
+// Admin
+GET  /admin/events              // Manage events
+POST /admin/events              // Create event
+PUT  /admin/events/{id}         // Update event
+DELETE /admin/events/{id}       // Delete event
+POST /admin/events/bulk-delete  // Bulk delete
+```
+
+### 3. Service Module
+
+**Controllers**: `Admin/ServiceController`, `ServiceController`, `ServiceRegistrationController`
+
+**Key Features**:
+- Service CRUD operations (admin)
+- Service registration with payment tracking
+- Payment proof submission
+- Admin payment confirmation
+- Receipt generation and email
+- Registration status tracking
+
+**Routes**:
+```php
+// Public
+GET  /services                          // List services
+POST /services/{service}/register       // Register for service
+POST /service-registrations/{id}/payment // Submit payment proof
+
+// Admin
+GET  /admin/services                    // Manage services
+POST /admin/services                    // Create service
+PUT  /admin/services/{id}               // Update service
+DELETE /admin/services/{id}             // Delete service
+POST /admin/services/registrations/{id}/confirm // Confirm payment
+```
+
+### 4. Giving Module
+
+**Controllers**: `GivingController`, `Admin/GivingController`
+
+**Key Features**:
+- Public giving form (members and guests)
+- Multiple payment methods
+- Transaction reference tracking
+- Admin verification workflow
+- Receipt generation with unique receipt numbers
+- Email receipt delivery
+- Giving history for members
+- CSV export for reporting
+- Dashboard summary
+
+**Routes**:
+```php
+// Public
+GET  /give                      // Giving form
+POST /givings                   // Submit giving
+GET  /givings/history           // Member giving history
+
+// Admin
+GET  /admin/givings             // Manage givings
+POST /admin/givings/{id}/verify // Verify giving
+GET  /admin/givings/reports     // Financial reports
+GET  /admin/givings/export      // CSV export
+```
+
+### 5. Group Module
+
+**Controllers**: `Admin/GroupController`, `GroupJoinController`
+
+**Key Features**:
+- Group CRUD operations (admin)
+- Member approval workflow
+- Group listing with active/inactive status
+- Member join requests
+- Approval/rejection by admin
+- Group member listing
+
+**Routes**:
+```php
+// Public
+GET  /groups                    // List groups
+POST /groups/{group}/join       // Join group
+
+// Admin
+GET  /admin/groups              // Manage groups
+POST /admin/groups              // Create group
+PUT  /admin/groups/{id}         // Update group
+DELETE /admin/groups/{id}       // Delete group
+POST /admin/groups/{group}/members/{member}/approve // Approve member
+POST /admin/groups/{group}/members/{member}/reject  // Reject member
+```
+
+### 6. Notification Module
+
+**Controllers**: `NotificationController`
+
+**Key Features**:
+- Real-time notification count
+- Unread notifications listing
+- Mark as read (single/all)
+- Delete notifications (single/bulk)
+- Notification detail view
+- Auto-refresh notification count
+
+**Routes**:
+```php
+GET  /notifications                     // List all notifications
+GET  /api/notifications/unread-count    // Get unread count
+GET  /api/notifications/unread          // Get unread notifications
+POST /api/notifications/{id}/read       // Mark as read
+POST /api/notifications/read-all        // Mark all as read
+DELETE /api/notifications/{id}          // Delete notification
+POST /api/notifications/bulk-delete     // Bulk delete
+```
+
+### 7. QR Code Module
+
+**Controllers**: `QRCodeController`
+
+**Key Features**:
+- Generate QR codes for various purposes
+- Member registration QR codes
+- Event registration QR codes
+- Giving/donation QR codes
+- Custom URL QR codes
+- Downloadable PNG format
+
+**Routes**:
+```php
+GET /qr-code/member-registration    // Member registration QR
+GET /qr-code/event/{event}          // Event registration QR
+GET /qr-code/giving                 // Giving QR
+GET /qr-code/custom                 // Custom URL QR
+```
+
+## External Integrations
+
+### MailerLite Integration
+
+**Service**: `App\Services\MailerLiteService`
+
+**Features**:
+- Subscribe members to newsletter
+- Unsubscribe members from newsletter
+- Custom fields support (member_status)
+- Comprehensive logging
+- Error handling with retries
+
+**Configuration**:
+```php
+// config/mailerlite.php
+'api_key' => env('MAILERLITE_API_KEY'),
+'group_id' => env('MAILERLITE_GROUP_ID'),
+'api_base_url' => 'https://api.mailerlite.com/api/v2/',
+```
+
+**Usage**:
+```php
+use App\Services\MailerLiteService;
+
+$mailerLite = new MailerLiteService();
+
+// Subscribe
+$mailerLite->subscribe('member@example.com', [
+    'name' => 'John Doe',
+    'member_status' => 'member'
+]);
+
+// Unsubscribe
+$mailerLite->unsubscribe('member@example.com');
+```
+
+### Supabase Storage
+
+**Configuration**:
+```php
+// config/filesystems.php
+'supabase' => [
+    'driver' => 's3',
+    'key' => env('SUPABASE_ACCESS_KEY_ID'),
+    'secret' => env('SUPABASE_SECRET_ACCESS_KEY'),
+    'region' => 'auto',
+    'bucket' => 'member-images',
+    'endpoint' => env('SUPABASE_ENDPOINT'),
+    'url' => env('SUPABASE_PUBLIC_URL'),
+],
+```
+
+**Usage**:
+```php
+// Upload member profile image
+Storage::disk('supabase')->put($path, $file);
+
+// Get public URL
+$url = Storage::disk('supabase')->url($path);
+```
+
+### Email System
+
+**Mailable Classes**:
+- `GivingReceiptMail`: Sending giving receipts
+- `ServiceRegistrationReceipt`: Service registration confirmations
+
+**Configuration**: Standard Laravel mail configuration in `.env`
+
+## Development
+
+### Running the Development Server
+
+```bash
+# Start all development services (server, queue, logs, vite)
+composer dev
+
+# This runs concurrently:
+# - php artisan serve (web server)
+# - php artisan queue:listen (queue worker)
+# - php artisan pail (log monitoring)
+# - npm run dev (vite dev server)
+```
+
+### Manual Development Commands
+
+```bash
+# Start web server
+php artisan serve
+
+# Start queue worker
+php artisan queue:listen
+
+# Watch for file changes (Vite)
+npm run dev
+
+# Monitor logs
+php artisan pail
+```
+
+### Database Management
+
+```bash
+# Run migrations
+php artisan migrate
+
+# Rollback migrations
+php artisan migrate:rollback
+
+# Fresh migration with seeding
+php artisan migrate:fresh --seed
+
+# Seed specific seeder
+php artisan db:seed --class=AdminSeeder
+```
+
+### Cache Management
+
+```bash
+# Clear all caches
+php artisan optimize:clear
+
+# Clear specific caches
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+```
+
+### Code Quality
+
+```bash
+# Run tests
+composer test
+
+# Run specific test
+php artisan test --filter=GivingTest
+
+# Generate IDE helper files
+php artisan ide-helper:generate
+php artisan ide-helper:models
+```
+
+## Testing
+
+### Test Framework
+- **Pest PHP**: Modern testing framework
+- **Property-Based Testing**: Using Eris for comprehensive test coverage
+
+### Running Tests
+
+```bash
+# Run all tests
+composer test
+# or
+php artisan test
+
+# Run specific test file
+php artisan test tests/Feature/GivingTest.php
+
+# Run with coverage
+php artisan test --coverage
+
+# Run specific test method
+php artisan test --filter=test_member_can_submit_giving
+```
+
+### Test Structure
+
+```
+tests/
+├── Feature/          # Feature tests (HTTP, database)
+│   ├── GivingTest.php
+│   ├── MemberTest.php
+│   ├── EventTest.php
+│   └── ...
+├── Unit/             # Unit tests (isolated logic)
+│   ├── Services/
+│   └── Models/
+└── TestCase.php      # Base test case
+```
+
+### Property-Based Testing
+
+The system includes property-based testing using Eris for comprehensive validation:
+
+```php
+// Example: Testing giving amount validation
+$this->forAll(
+    Generator\choose(100, 100000000)
+)->then(function ($amount) {
+    $response = $this->post('/givings', [
+        'amount' => $amount,
+        'giving_type' => 'tithe',
+        // ...
+    ]);
+    
+    $response->assertStatus(200);
+});
+```
+
+## Project Structure
+
+```
+church-management-system/
+├── app/
+│   ├── Console/Commands/       # Artisan commands
+│   ├── Http/
+│   │   ├── Controllers/        # Application controllers
+│   │   │   ├── Admin/          # Admin controllers
+│   │   │   └── Auth/           # Authentication controllers
+│   │   ├── Middleware/         # Custom middleware
+│   │   └── Requests/           # Form request validation
+│   ├── Mail/                   # Mailable classes
+│   ├── Models/                 # Eloquent models
+│   ├── Notifications/          # Notification classes
+│   ├── Policies/               # Authorization policies
+│   ├── Services/               # Business logic services
+│   └── View/Components/        # Blade components
+├── bootstrap/                  # Application bootstrap
+├── config/                     # Configuration files
+├── database/
+│   ├── factories/              # Model factories
+│   ├── migrations/             # Database migrations
+│   └── seeders/                # Database seeders
+├── public/                     # Public assets
+├── resources/
+│   ├── css/                    # Stylesheets
+│   ├── js/                     # JavaScript files
+│   └── views/                  # Blade templates
+│       ├── admin/              # Admin views
+│       ├── auth/               # Authentication views
+│       ├── layouts/            # Layout templates
+│       └── partials/           # Reusable partials
+├── routes/
+│   └── web.php                 # Web routes
+├── storage/                    # Application storage
+├── tests/                      # Test files
+├── .env.example                # Environment template
+├── composer.json               # PHP dependencies
+├── package.json                # Node dependencies
+└── README.md                   # This file
+```
+
+## Common Tasks
+
+### Adding a New Admin User
+
+```bash
+php artisan tinker
+>>> User::create(['name' => 'Admin', 'email' => 'admin@church.com', 'password' => bcrypt('password'), 'role' => 'admin']);
+```
+
+### Resetting a User Password
+
+```bash
+php artisan tinker
+>>> $user = User::where('email', 'user@church.com')->first();
+>>> $user->password = bcrypt('newpassword');
+>>> $user->save();
+```
+
+### Exporting Giving Records
+
+Navigate to: `/admin/givings/reports` and click "Export to CSV"
+
+### Viewing Logs
+
+```bash
+# Real-time log monitoring
+php artisan pail
+
+# View log files
+tail -f storage/logs/laravel.log
+```
+
+### Clearing Queue Jobs
+
+```bash
+# Clear failed jobs
+php artisan queue:flush
+
+# Retry failed jobs
+php artisan queue:retry all
+```
+
+## Troubleshooting
+
+### Issue: Images not uploading
+
+**Solution**: Check Supabase configuration in `.env` and ensure bucket permissions are correct.
+
+```bash
+# Test Supabase connection
+php artisan tinker
+>>> Storage::disk('supabase')->put('test.txt', 'test');
+```
+
+### Issue: Queue jobs not processing
+
+**Solution**: Ensure queue worker is running.
+
+```bash
+# Start queue worker
+php artisan queue:listen
+
+# Or use supervisor in production
+```
+
+### Issue: MailerLite subscription failing
+
+**Solution**: Check API key and group ID in `.env`. View logs:
+
+```bash
+tail -f storage/logs/mailerlite.log
+```
+
+### Issue: Permission denied errors
+
+**Solution**: Fix storage permissions.
+
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
+
+## Security Considerations
+
+- All user inputs are validated using Form Requests
+- CSRF protection enabled on all forms
+- SQL injection prevention via Eloquent ORM
+- XSS protection via Blade templating
+- Password hashing using bcrypt
+- Role-based access control (admin middleware)
+- Soft deletes to prevent accidental data loss
+- Transaction reference validation for payments
+- Email verification for sensitive operations
+
+## Performance Optimization
+
+- Database indexes on frequently queried columns
+- Eager loading to prevent N+1 queries
+- Query result caching where appropriate
+- Asset compilation and minification (Vite)
+- Image optimization for uploads
+- Queue system for async operations (emails, notifications)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support, please contact the development team or open an issue in the repository.
+
 ---
 
-## 8) Middleware & Authentication
-
-- `app/Http/Middleware/EnsureUserIsAdmin.php` enforces `auth()->user()->role === 'admin'` and redirects non-admins.
-- Auth uses Breeze-like controllers and Laravel's standard features (email verification, password reset).
-- No policies found in the codebase — authorization is role-based at present.
-
-Recommendation: register `admin` middleware alias in `app/Http/Kernel.php` and add resource policies for fine-grained control.
-
----
-
-## 9) Services, Jobs, Helpers
-
-- No dedicated `Services/` folder or queued jobs/events were found; business logic is implemented primarily in controllers.
-- Blade components (Breeze) exist in `resources/views/components/`.
-
-Recommendation: extract service classes for complex operations (member creation + group attach, file storage) for testability.
-
----
-
-## 10) Testing
-
-- `tests/` includes Pest & PHPUnit tests, primarily covering authentication and profile flows.
-- Coverage for domain-specific flows (member registration, event/service registrations, admin CRUD) appears limited.
-
-Recommendation: add feature tests for member registration, event registration (AJAX), admin CRUD, and pivot operations.
-
----
-
-## 11) Dependencies (from `composer.json`)
-
-- `laravel/framework` ^12.0
-- `laravel/tinker`
-- Dev: `laravel/breeze`, `pestphp/pest`, `fakerphp/faker`, `nunomaduro/collision`, `mockery`
-
----
-
-## 12) How Everything Works Together (High-level)
-
-1. HTTP request enters via `public/index.php`.
-2. Laravel bootstrap -> HTTP Kernel -> Middleware -> Router selects a route.
-3. Route middleware (`auth`, `admin`) run, then controller action executes.
-4. Controller validates input, uses Eloquent models to read/write DB.
-5. Controller returns a Blade view or JSON response.
-6. Response passed to middleware and returned to the client.
-
-Example: Event registration flow — user posts JSON to `/event-registrations`, `EventRegistrationController@store` validates and creates a DB record, returns JSON 201 for the UI.
-
----
-
-## 13) Pain Points & Code Smells (observed)
-
-- Inconsistent DB column naming using camelCase (possible source of bugs).
-- Repeated validation rules across controllers; fat controllers with business logic.
-- Unpaginated admin queries (`->get()` on large tables).
-- Missing foreign key constraints (e.g., `event_registrations.event_id`).
-- Minimal authorization beyond `role` checks; no policies/gates.
-- Some views include complete HTML rather than extending a shared layout.
-
----
-
-## 14) Improvements & Recommendations (prioritized)
-
-1. Standardize DB column naming (or map attributes); prefer snake_case.
-2. Create `FormRequest` classes for validation and authorization.
-3. Move business logic to service classes and thin controllers.
-4. Add foreign keys and indexes; paginate admin listings and eager-load relationships.
-5. Expand tests to cover app-specific flows and add CI to run tests.
-6. Harden security: CSP, rate limits, sanitize inputs, verify file upload restrictions.
-
----
-
-## 15) Quick Action Checklist
-
-- Confirm `admin` middleware alias in `app/Http/Kernel.php`.
-- Add `foreignId()->constrained()` for `event_registrations.event_id` if safe.
-- Convert admin controllers to use pagination and eager loading.
-- Add `FormRequest` classes for `Member`, `Event`, `Service`, `Announcement` operations.
-- Add/extend tests for registration and admin flows.
-
----
-
-## 16) Newsletter Subscription System
-
-The application includes a newsletter subscription system integrated with MailerLite API for managing email subscriptions.
-
-**Features:**
-- Footer subscription form for visitors
-- Automatic subscription during member registration
-- Member profile subscription management
-- Admin dashboard for subscriber management
-- CSV export functionality
-- Real-time sync with MailerLite
-
-**Setup & Documentation:**
-See [NEWSLETTER_SETUP.md](NEWSLETTER_SETUP.md) for complete setup instructions, including:
-- MailerLite account setup and API key generation
-- Environment variable configuration
-- Admin subscriber management guide
-- Testing procedures
-- Troubleshooting common issues
-
-**Quick Setup:**
-1. Create a MailerLite account and generate an API key
-2. Create a subscriber group and note the Group ID
-3. Add credentials to `.env`:
-   ```env
-   MAILERLITE_API_KEY=your_api_key_here
-   MAILERLITE_GROUP_ID=your_group_id_here
-   ```
-4. Clear config cache: `php artisan config:clear`
-
----
-
-## 17) Next Steps I Can Do (choose any)
-
-1. Confirm `admin` middleware registration in `app/Http/Kernel.php`.
-2. Generate `FormRequest` classes and apply them to controllers.
-3. Create a migration to add a foreign key constraint to `event_registrations.event_id`.
-4. Add pagination to admin index methods and update views.
-5. Add feature tests for `MemberController@store` and `EventRegistrationController@store`.
-
-Tell me which of the above you'd like me to implement and I will proceed.
-
----
-
-File references:
-- `app/Http/Controllers/MemberController.php`
-- `app/Http/Middleware/EnsureUserIsAdmin.php`
-- `routes/web.php`
-- `resources/views/events.blade.php`, `resources/views/services.blade.php`, `resources/views/index.blade.php`
-- `database/migrations/*`
-
----
-
-Generated on: 2026-01-03
-
+**Built with ❤️ for St. Johns Church**

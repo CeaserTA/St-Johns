@@ -45,6 +45,47 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/profile/newsletter', [ProfileController::class, 'toggleNewsletterSubscription'])->name('profile.newsletter.toggle');
+    
+    // Test route for debugging MailerLite
+    Route::get('/test-mailerlite', function () {
+        $mailerLite = app(\App\Services\MailerLiteService::class);
+        
+        $testEmail = 'test-' . time() . '@example.com';
+        
+        $results = [];
+        
+        // Test 1: Subscribe with just name
+        try {
+            $mailerLite->subscribe($testEmail, ['name' => 'Test User']);
+            $results['test1_with_name_only'] = 'SUCCESS';
+            
+            // Clean up
+            $mailerLite->unsubscribe($testEmail);
+        } catch (\Exception $e) {
+            $results['test1_with_name_only'] = 'FAILED: ' . $e->getMessage();
+        }
+        
+        // Test 2: Subscribe with member_status
+        $testEmail2 = 'test2-' . time() . '@example.com';
+        try {
+            $mailerLite->subscribe($testEmail2, [
+                'name' => 'Test Member',
+                'member_status' => 'member',
+            ]);
+            $results['test2_with_member_status'] = 'SUCCESS';
+            
+            // Get subscriber to verify fields
+            $subscriber = $mailerLite->getSubscriber($testEmail2);
+            $results['test2_subscriber_fields'] = $subscriber['fields'] ?? 'No fields';
+            
+            // Clean up
+            $mailerLite->unsubscribe($testEmail2);
+        } catch (\Exception $e) {
+            $results['test2_with_member_status'] = 'FAILED: ' . $e->getMessage();
+        }
+        
+        return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+    });
 });
 
 require __DIR__.'/auth.php';

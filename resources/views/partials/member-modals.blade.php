@@ -747,63 +747,65 @@ document.getElementById('updatePasswordForm')?.addEventListener('submit', async 
 });
 
 // Newsletter Subscription Toggle Handler
-document.getElementById('newsletter_subscribe_modal')?.addEventListener('change', async function(e) {
-    const checkbox = this;
-    const form = document.getElementById('updateNewsletterForm');
-    const isSubscribing = checkbox.checked;
+document.addEventListener('DOMContentLoaded', function() {
+    const newsletterCheckbox = document.getElementById('newsletter_subscribe_modal');
     
-    console.log('Newsletter toggle clicked. New state:', isSubscribing);
-    
-    // Disable checkbox during request
-    checkbox.disabled = true;
-    
-    // Create FormData and ensure the checkbox value is set correctly
-    const formData = new FormData();
-    formData.append('_token', document.querySelector('input[name="_token"]').value);
-    formData.append('_method', 'PATCH');
-    // Always send the newsletter_subscribe field with the current checkbox state
-    formData.append('newsletter_subscribe', isSubscribing ? '1' : '0');
-    
-    console.log('Sending request with newsletter_subscribe:', isSubscribing ? '1' : '0');
-    
-    try {
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]').value,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+    if (newsletterCheckbox) {
+        newsletterCheckbox.addEventListener('change', async function(e) {
+            const checkbox = this;
+            const form = document.getElementById('updateNewsletterForm');
+            const newState = checkbox.checked;
+            
+            // Disable checkbox during request
+            checkbox.disabled = true;
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('_token', document.querySelector('input[name="_token"]').value);
+            formData.append('_method', 'PATCH');
+            formData.append('newsletter_subscribe', newState ? '1' : '0');
+            
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showProfileMessage(data.message || 'Newsletter subscription updated!', 'success');
+                    
+                    // Update description text
+                    const descriptionText = form.querySelector('.text-sm.text-gray-600');
+                    if (descriptionText) {
+                        if (newState) {
+                            descriptionText.textContent = 'You are currently subscribed. You will receive weekly sermons and updates.';
+                        } else {
+                            descriptionText.textContent = 'Subscribe to receive weekly sermons and church updates via email.';
+                        }
+                    }
+                } else {
+                    // Revert on error
+                    checkbox.checked = !newState;
+                    const errorMsg = data.message || 'Failed to update subscription. Please try again.';
+                    showProfileMessage(errorMsg, 'error');
+                    console.error('Newsletter API error:', data);
+                }
+            } catch (error) {
+                console.error('Newsletter request failed:', error);
+                // Revert on error
+                checkbox.checked = !newState;
+                showProfileMessage('Connection error. Please check your internet and try again.', 'error');
+            } finally {
+                checkbox.disabled = false;
             }
         });
-        
-        const data = await response.json();
-        console.log('Response:', data);
-        
-        if (response.ok && data.success) {
-            showProfileMessage(data.message || 'Newsletter subscription updated successfully!', 'success');
-            // Update the description text
-            const descriptionText = form.querySelector('.text-sm.text-gray-600');
-            if (descriptionText) {
-                if (isSubscribing) {
-                    descriptionText.textContent = 'You are currently subscribed. You will receive weekly sermons and updates.';
-                } else {
-                    descriptionText.textContent = 'Subscribe to receive weekly sermons and church updates via email.';
-                }
-            }
-        } else {
-            console.error('Request failed:', data);
-            // Revert checkbox state on error
-            checkbox.checked = !checkbox.checked;
-            showProfileMessage(data.message || 'Failed to update newsletter subscription', 'error');
-        }
-    } catch (error) {
-        console.error('Newsletter toggle error:', error);
-        // Revert checkbox state on error
-        checkbox.checked = !checkbox.checked;
-        showProfileMessage('An error occurred. Please try again.', 'error');
-    } finally {
-        checkbox.disabled = false;
     }
 });
 

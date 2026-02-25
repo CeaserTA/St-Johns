@@ -137,18 +137,24 @@
     @include('partials.navbar')
     @include('partials.announcement')
 
-    {{-- Flash messages --}}
+    {{-- Flash messages converted to toast --}}
     @if ($message = Session::get('success'))
-        <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 rounded bg-[#edf7f2] border-l-4 border-[#1a7a4a] text-[#155d38] text-sm" role="alert">
-            <span class="material-symbols-outlined flex-shrink-0 text-[#1a7a4a]" style="font-size:18px;">check_circle</span>
-            <div><div class="font-semibold mb-0.5">Success</div>{{ $message }}</div>
-        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof showToast === 'function') {
+                    showToast('{{ addslashes($message) }}', 'success');
+                }
+            });
+        </script>
     @endif
     @if ($message = Session::get('error'))
-        <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 rounded bg-[#fdf2f0] border-l-4 border-[#c0392b] text-[#8b2020] text-sm" role="alert">
-            <span class="material-symbols-outlined flex-shrink-0 text-[#c0392b]" style="font-size:18px;">error</span>
-            <div><div class="font-semibold mb-0.5">Error</div>{{ $message }}</div>
-        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof showToast === 'function') {
+                    showToast('{{ addslashes($message) }}', 'error');
+                }
+            });
+        </script>
     @endif
 
     <main class="flex-grow w-full">
@@ -408,29 +414,41 @@
                     <div class="grid grid-cols-2 gap-[18px]">
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Full Name<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <input type="text" name="fullname" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]" placeholder="Your full name">
+                            <input type="text" name="fullname" value="{{ old('fullname') }}" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('fullname') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]" placeholder="Your full name">
+                            @error('fullname')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Date of Birth<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <input type="date" name="dateOfBirth" required max="2024-12-31" min="1900-01-01" class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)]">
+                            <input type="date" name="dateOfBirth" value="{{ old('dateOfBirth') }}" required max="{{ date('Y-m-d') }}" min="1900-01-01" class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('dateOfBirth') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)]">
+                            @error('dateOfBirth')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Gender<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <select name="gender" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
+                            <select name="gender" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('gender') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
                                 <option value="">Select gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
+                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
                             </select>
+                            @error('gender')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Marital Status<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <select name="maritalStatus" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
+                            <select name="maritalStatus" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('maritalStatus') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
                                 <option value="">Select status</option>
-                                <option value="single">Single</option>
-                                <option value="married">Married</option>
-                                <option value="divorced">Divorced</option>
-                                <option value="widowed">Widowed</option>
+                                <option value="single" {{ old('maritalStatus') == 'single' ? 'selected' : '' }}>Single</option>
+                                <option value="married" {{ old('maritalStatus') == 'married' ? 'selected' : '' }}>Married</option>
+                                <option value="divorced" {{ old('maritalStatus') == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                <option value="widowed" {{ old('maritalStatus') == 'widowed' ? 'selected' : '' }}>Widowed</option>
                             </select>
+                            @error('maritalStatus')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -444,15 +462,24 @@
                     <div class="grid grid-cols-2 gap-[18px]">
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Phone Number<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <input type="tel" name="phone" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]" placeholder="+256 ...">
+                            <input type="tel" name="phone" value="{{ old('phone') }}" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('phone') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]" placeholder="+256 ...">
+                            @error('phone')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Email Address</label>
-                            <input type="email" name="email" class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]" placeholder="you@example.com">
+                            <input type="email" name="email" value="{{ old('email') }}" class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('email') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.1)] placeholder-[#b0b5c0]" placeholder="you@example.com">
+                            @error('email')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div class="col-span-2">
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Residential Address</label>
-                            <textarea name="address" rows="2" class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] resize-none placeholder-[#b0b5c0]" placeholder="Village & Zone"></textarea>
+                            <textarea name="address" rows="2" class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('address') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a] resize-none placeholder-[#b0b5c0]" placeholder="Village & Zone">{{ old('address') }}</textarea>
+                            @error('address')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -466,17 +493,23 @@
                     <div class="grid grid-cols-2 gap-[18px]">
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Date Joined<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <input type="date" name="dateJoined" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
+                            <input type="date" name="dateJoined" value="{{ old('dateJoined') }}" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('dateJoined') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
+                            @error('dateJoined')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#0c1b3a] mb-2">Cell (Zone)<span class="text-[#c8973a] ml-0.5">*</span></label>
-                            <select name="cell" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border border-[#e2d9cc] font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
+                            <select name="cell" required class="field-input w-full px-4 py-3.5 bg-[#fdf8f0] border @error('cell') border-red-500 @else border-[#e2d9cc] @enderror font-[Jost] text-sm text-[#1a1a2e] outline-none transition-all duration-200 focus:bg-white focus:border-[#c8973a]">
                                 <option value="">Select your cell</option>
-                                <option value="north">North Cell</option>
-                                <option value="east">East Cell</option>
-                                <option value="south">South Cell</option>
-                                <option value="west">West Cell</option>
+                                <option value="north" {{ old('cell') == 'north' ? 'selected' : '' }}>North Cell</option>
+                                <option value="east" {{ old('cell') == 'east' ? 'selected' : '' }}>East Cell</option>
+                                <option value="south" {{ old('cell') == 'south' ? 'selected' : '' }}>South Cell</option>
+                                <option value="west" {{ old('cell') == 'west' ? 'selected' : '' }}>West Cell</option>
                             </select>
+                            @error('cell')
+                                <p class="text-red-600 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -599,9 +632,13 @@
 
 {{-- ═══════════════ TOAST ═══════════════ --}}
 <style>
-.toast { position: fixed; top: 24px; right: 24px; z-index: 9999; padding: 16px 20px; min-width: 280px; font-size: 14px; font-weight: 500; display: flex; align-items: flex-start; gap: 12px; animation: fadeUp 0.3s ease both; border-radius: 2px; }
-.toast.success { background: #0c1b3a; color: #e8b96a; border-left: 3px solid #c8973a; }
-.toast.error   { background: #fff; color: #c0392b; border-left: 3px solid #c0392b; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.toast { position: fixed; top: 24px; left: 24px; z-index: 9999; padding: 16px 20px; min-width: 280px; font-size: 14px; font-weight: 500; display: flex; align-items: flex-start; gap: 12px; animation: slideInLeft 0.3s ease both; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.toast.success { background: #10b981; color: #ffffff; border-left: 4px solid #059669; }
+.toast.error   { background: #ef4444; color: #ffffff; border-left: 4px solid #dc2626; }
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-100px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
 </style>
 
 {{-- ═══════════════ SCRIPTS ═══════════════ --}}
@@ -616,6 +653,18 @@
     document.getElementById('joinBtn')?.addEventListener('click', () => openModal(regModal));
     regModal?.querySelector('[data-modal-close]')?.addEventListener('click', () => closeModal(regModal));
     regModal?.addEventListener('click', e => { if (e.target === regModal) closeModal(regModal); });
+
+    // Reopen modal if there are validation errors
+    @if($errors->any())
+        openModal(regModal);
+        // Scroll to first error
+        setTimeout(() => {
+            const firstError = regModal.querySelector('.text-red-600');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100);
+    @endif
 
     // Password field toggle
     const createAccountCb = document.getElementById('createAccount');

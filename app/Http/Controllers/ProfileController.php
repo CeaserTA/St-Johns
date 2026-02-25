@@ -157,11 +157,39 @@ class ProfileController extends Controller
             $mailerLite = app(MailerLiteService::class);
 
             if ($subscribe) {
-                // Subscribe to MailerLite
-                $mailerLite->subscribe($member->email, [
-                    'name' => $member->full_name,
-                    'member_status' => 'member',
-                ]);
+                // Try to subscribe with member_status first
+                try {
+                    $mailerLite->subscribe($member->email, [
+                        'name' => $member->full_name,
+                        'member_status' => 'member',
+                    ]);
+                } catch (\Exception $e) {
+                    // If subscription with member_status fails, try without it
+                    Log::warning('Subscription with member_status failed, retrying with name only', [
+                        'member_id' => $member->id,
+                        'email' => $member->email,
+                        'error' => $e->getMessage(),
+                    ]);
+                    
+                    // Retry with just name
+                    $mailerLite->subscribe($member->email, [
+                        'name' => $member->full_name,
+                    ]);
+                    
+                    // Try to update with member_status after successful subscription
+                    try {
+                        $mailerLite->updateSubscriber($member->email, [
+                            'member_status' => 'member',
+                        ]);
+                    } catch (\Exception $updateError) {
+                        Log::warning('Could not update member_status field', [
+                            'member_id' => $member->id,
+                            'email' => $member->email,
+                            'error' => $updateError->getMessage(),
+                        ]);
+                        // Don't fail - subscriber is added, just without member_status
+                    }
+                }
 
                 // Update member record
                 $member->subscribeToNewsletter();

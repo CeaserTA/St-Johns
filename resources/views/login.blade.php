@@ -107,7 +107,7 @@
         {{-- Register link --}}
         <p style="text-align:center; font-family:'Jost',sans-serif; font-size:13px; font-weight:300; color:#6b7080; margin:0;">
           New to St. John's?
-          <a href="{{ route('register') ?? '#' }}"
+          <a href="#" onclick="closeLoginModal(); showQuickAccountModal(); return false;"
              style="font-weight:600; color:#0c1b3a; text-decoration:none; margin-left:4px;"
              onmouseover="this.style.color='#c8973a'"
              onmouseout="this.style.color='#0c1b3a'">Create an account →</a>

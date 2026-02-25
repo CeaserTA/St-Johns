@@ -92,18 +92,22 @@
 
 {{-- Flash messages --}}
 @if ($message = Session::get('success'))
-<div class="flex items-start gap-3 mx-6 my-4 px-6 py-4 text-sm border-l-[3px]"
-     style="background:#edf7f2;border-color:var(--green);color:#155d38;" role="alert">
-    <span class="material-symbols-outlined shrink-0" style="font-size:18px;color:var(--green);">check_circle</span>
-    <div><div class="font-semibold mb-0.5">Success</div>{{ $message }}</div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof showToast === 'function') {
+        showToast('{{ addslashes($message) }}', 'success');
+    }
+});
+</script>
 @endif
 @if ($message = Session::get('error'))
-<div class="flex items-start gap-3 mx-6 my-4 px-6 py-4 text-sm border-l-[3px]"
-     style="background:#fdf2f0;border-color:var(--red);color:#8b2020;" role="alert">
-    <span class="material-symbols-outlined shrink-0" style="font-size:18px;color:var(--red);">error</span>
-    <div><div class="font-semibold mb-0.5">Error</div>{{ $message }}</div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof showToast === 'function') {
+        showToast('{{ addslashes($message) }}', 'error');
+    }
+});
+</script>
 @endif
 
 
@@ -726,8 +730,11 @@ document.getElementById('eventForm').addEventListener('submit',async function(e)
 /* ── Toast ── */
 function showToast(msg,type='success'){
     const t=document.createElement('div');
-    t.style.cssText=`position:fixed;top:24px;right:24px;z-index:9999;padding:16px 22px;min-width:280px;font-family:'Jost',sans-serif;font-size:13px;animation:fadeUp .3s ease both;${type==='success'?'background:#0c1b3a;color:#e8b96a;border-left:3px solid #c8973a;':'background:#fff;color:#c0392b;border-left:3px solid #c0392b;box-shadow:0 8px 24px rgba(0,0,0,.12);'}`;
-    t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),5000);
+    const styles={success:'background:#10b981;color:#ffffff;border-left:4px solid #059669;',error:'background:#ef4444;color:#ffffff;border-left:4px solid #dc2626;'};
+    t.style.cssText=`position:fixed;top:24px;left:24px;z-index:9999;padding:16px 22px;min-width:280px;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:slideInLeft .3s ease both;${styles[type]||styles.success}`;
+    t.textContent=msg;document.body.appendChild(t);
+    if(!document.getElementById('toast-anim')){const s=document.createElement('style');s.id='toast-anim';s.textContent='@keyframes slideInLeft{from{opacity:0;transform:translateX(-100px);}to{opacity:1;transform:translateX(0);}}';document.head.appendChild(s);}
+    setTimeout(()=>t.remove(),5000);
 }
 
 /* ── Carousel ── */

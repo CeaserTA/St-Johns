@@ -31,7 +31,7 @@ class MailerLiteService
      * Subscribe an email address to the MailerLite group
      *
      * @param string $email
-     * @param array $fields Additional custom fields (e.g., ['name' => 'John', 'member_status' => 'active'])
+     * @param array $fields Additional custom fields (e.g., ['name' => 'John', 'member_status' => 'member'])
      * @return bool
      */
     public function subscribe(string $email, array $fields = []): bool
@@ -43,6 +43,7 @@ class MailerLiteService
             'email' => $this->redactEmail($email),
             'has_custom_fields' => !empty($fields),
             'field_keys' => array_keys($fields),
+            'field_values' => $fields, // Log actual values to debug
         ]);
 
         try {
@@ -64,6 +65,7 @@ class MailerLiteService
             Log::channel('mailerlite')->error('Subscription operation failed', [
                 'operation_id' => $operationId,
                 'email' => $this->redactEmail($email),
+                'fields_attempted' => $fields,
                 'error' => $e->getMessage(),
                 'exception_class' => get_class($e),
             ]);
@@ -173,6 +175,22 @@ class MailerLiteService
                 'limit' => min($limit, 1000), // MailerLite max is 1000
                 'offset' => $offset,
             ]);
+
+            // Transform fields array from MailerLite format to associative array
+            if (is_array($response)) {
+                foreach ($response as &$subscriber) {
+                    if (isset($subscriber['fields']) && is_array($subscriber['fields'])) {
+                        $transformedFields = [];
+                        foreach ($subscriber['fields'] as $field) {
+                            if (isset($field['key']) && isset($field['value'])) {
+                                $transformedFields[$field['key']] = $field['value'];
+                            }
+                        }
+                        $subscriber['fields'] = $transformedFields;
+                    }
+                }
+                unset($subscriber); // Break reference
+            }
 
             $subscriberCount = is_array($response) ? count($response) : 0;
 
@@ -354,11 +372,14 @@ class MailerLiteService
 
             switch ($statusCode) {
                 case 400:
+                case 422:
                     // Validation error
                     Log::channel('mailerlite')->warning('MailerLite validation error', [
                         'request_id' => $requestId,
                         'endpoint' => $endpoint,
                         'error' => $errorMessage,
+                        'full_error_body' => $errorBody,
+                        'request_data' => $this->redactSensitiveData($data),
                     ]);
                     throw new \Exception("Validation error: {$errorMessage}");
                 
@@ -448,7 +469,12 @@ class MailerLiteService
 
         // Redact email addresses partially (keep first 3 chars and domain)
         if (isset($redacted['email'])) {
-            $redacted['email'] = $this->redactEmail($redacted['email']);
+            if (is_string($redacted['email'])) {
+                $redacted['email'] = $this->redactEmail($redacted['email']);
+            } elseif (is_array($redacted['email'])) {
+                // Handle case where email is an array (shouldn't happen but be defensive)
+                $redacted['email'] = '[email_array]';
+            }
         }
 
         // Recursively redact nested arrays

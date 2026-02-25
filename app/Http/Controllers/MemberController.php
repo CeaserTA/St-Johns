@@ -137,11 +137,11 @@ class MemberController extends Controller
             $request->validate([
                 'fullname' => 'required|string|max:255',
                 // normalize to lowercase in the model; DB enum allows 'male' and 'female'
-                'dateOfBirth' => 'required|date|before:today',
+                'dateOfBirth' => 'required|date|before_or_equal:today',
                 'gender' => 'required|in:male,female',
                 // maritalstatus
                 'maritalStatus' => 'required|in:single,married,divorced,widowed',
-                'phone' => 'nullable|string|max:20',
+                'phone' => 'required|string|max:20',
                 'email' => 'nullable|email|unique:members,email',
                 'address' => 'nullable|string|max:255',
                 // date joined
@@ -150,6 +150,11 @@ class MemberController extends Controller
                 'cell' => 'required|in:north,east,south,west',
                 // image upload validation - simplified and more permissive
                 'profileImage' => 'nullable|image|max:5120', // Just use 'image' rule
+            ], [
+                // Custom error messages
+                'email.unique' => 'This email is already registered. Please use a different email or log in.',
+                'phone.required' => 'Phone number is required.',
+                'dateOfBirth.before_or_equal' => 'Date of birth must be today or earlier.',
             ]);
             
             Log::info('Validation passed successfully');
@@ -661,11 +666,39 @@ class MemberController extends Controller
                     'source' => 'member_profile',
                 ]);
 
-                // Subscribe to MailerLite with member name and status as custom fields
-                $mailerLite->subscribe($member->email, [
-                    'name' => $member->full_name,
-                    'member_status' => 'member',
-                ]);
+                // Try to subscribe with member_status first
+                try {
+                    $mailerLite->subscribe($member->email, [
+                        'name' => $member->full_name,
+                        'member_status' => 'member',
+                    ]);
+                } catch (\Exception $e) {
+                    // If subscription with member_status fails, try without it
+                    Log::channel('mailerlite')->warning('Subscription with member_status failed, retrying with name only', [
+                        'member_id' => $member->id,
+                        'email' => $this->redactEmail($member->email),
+                        'error' => $e->getMessage(),
+                    ]);
+                    
+                    // Retry with just name
+                    $mailerLite->subscribe($member->email, [
+                        'name' => $member->full_name,
+                    ]);
+                    
+                    // Try to update with member_status after successful subscription
+                    try {
+                        $mailerLite->updateSubscriber($member->email, [
+                            'member_status' => 'member',
+                        ]);
+                    } catch (\Exception $updateError) {
+                        Log::channel('mailerlite')->warning('Could not update member_status field', [
+                            'member_id' => $member->id,
+                            'email' => $this->redactEmail($member->email),
+                            'error' => $updateError->getMessage(),
+                        ]);
+                        // Don't fail - subscriber is added, just without member_status
+                    }
+                }
 
                 // Update member record
                 $member->subscribeToNewsletter();
@@ -699,6 +732,7 @@ class MemberController extends Controller
                 'subscribe' => $subscribe,
                 'error' => $e->getMessage(),
                 'exception_class' => get_class($e),
+                'trace' => $e->getTraceAsString(),
             ]);
             
             // Don't throw the exception - we don't want to fail member creation/update

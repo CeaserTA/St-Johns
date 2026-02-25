@@ -61,18 +61,24 @@
 @include('partials.navbar')
 @include('partials.announcement')
 
-{{-- Flash messages --}}
+{{-- Flash messages converted to toast --}}
 @if ($message = Session::get('success'))
-    <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 bg-[#edf7f2] border-l-4 border-[#1a7a4a] text-[#155d38] text-sm" role="alert">
-        <span class="material-symbols-outlined flex-shrink-0 text-[#1a7a4a]" style="font-size:18px;">check_circle</span>
-        <div><div class="font-semibold mb-0.5">Success</div>{{ $message }}</div>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof showToast === 'function') {
+                showToast('{{ addslashes($message) }}', 'success');
+            }
+        });
+    </script>
 @endif
 @if ($message = Session::get('error'))
-    <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 bg-[#fdf2f0] border-l-4 border-[#c0392b] text-[#8b2020] text-sm" role="alert">
-        <span class="material-symbols-outlined flex-shrink-0 text-[#c0392b]" style="font-size:18px;">error</span>
-        <div><div class="font-semibold mb-0.5">Error</div>{{ $message }}</div>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof showToast === 'function') {
+                showToast('{{ addslashes($message) }}', 'error');
+            }
+        });
+    </script>
 @endif
 @if(session('show_member_registration'))
     <div class="flex items-start gap-3 px-6 py-4 mx-6 my-4 bg-[#e8f4ff] border-l-4 border-blue-500 text-blue-800 text-sm" role="alert">
@@ -484,13 +490,22 @@ document.getElementById('paymentProofForm').addEventListener('submit', async fun
 function showToast(msg, type = 'success') {
     const t = document.createElement('div');
     const styles = {
-        success: 'background:#0c1b3a; color:#e8b96a; border-left:3px solid #c8973a;',
-        error:   'background:#fff; color:#c0392b; border-left:3px solid #c0392b; box-shadow:0 8px 24px rgba(0,0,0,.12);',
-        info:    'background:#fff; color:#0c1b3a; border-left:3px solid #3b82f6; box-shadow:0 8px 24px rgba(0,0,0,.12);',
+        success: 'background:#10b981; color:#ffffff; border-left:4px solid #059669;',
+        error:   'background:#ef4444; color:#ffffff; border-left:4px solid #dc2626;',
+        info:    'background:#3b82f6; color:#ffffff; border-left:4px solid #2563eb;',
     };
-    t.style.cssText = `position:fixed; top:24px; right:24px; z-index:9999; padding:16px 22px; min-width:280px; font-family:'Jost',sans-serif; font-size:13px; border-radius:2px; animation:fadeUp .3s ease both; ${styles[type] || styles.success}`;
+    t.style.cssText = `position:fixed; top:24px; left:24px; z-index:9999; padding:16px 22px; min-width:280px; font-family:'Jost',sans-serif; font-size:14px; font-weight:500; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); animation:slideInLeft .3s ease both; ${styles[type] || styles.success}`;
     t.textContent = msg;
     document.body.appendChild(t);
+    
+    // Add animation keyframes if not already present
+    if (!document.getElementById('toast-animations')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animations';
+        style.textContent = '@keyframes slideInLeft { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }';
+        document.head.appendChild(style);
+    }
+    
     setTimeout(() => t.remove(), 5000);
 }
 </script>
