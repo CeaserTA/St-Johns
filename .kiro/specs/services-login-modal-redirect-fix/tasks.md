@@ -1,0 +1,97 @@
+# Implementation Plan
+
+- [x] 1. Write bug condition exploration test
+  - **Property 1: Fault Condition** - Modal Login Without Redirect
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Manual Testing Approach**: This is a UI interaction bug requiring manual testing with browser developer tools
+  - Navigate to `/services` as guest user
+  - Open browser Network tab and Console
+  - Click "Log In" button
+  - Observe: Modal opens AND page immediately redirects to `/login` (bug behavior)
+  - Document the redirect mechanism (network request, JavaScript call, etc.)
+  - Test that modal should remain open without redirect, allowing user to complete authentication
+  - Run test on UNFIXED code
+  - **EXPECTED OUTCOME**: Test FAILS (modal opens but redirect occurs - this is correct, it proves the bug exists)
+  - Document counterexamples found: "Modal opens but page redirects to /login before user can enter credentials"
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 2.1, 2.2, 2.3_
+
+- [x] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Standalone Login Page Access
+  - **IMPORTANT**: Follow observation-first methodology
+  - **Manual Testing Approach**: Test all non-services-page authentication scenarios
+  - Observe behavior on UNFIXED code for non-buggy inputs:
+    - Direct navigation to `/login` displays standalone login page
+    - Admin login redirects to `/dashboard`
+    - Member login redirects to `/services`
+    - Authenticated users accessing `/login` redirect to their dashboard
+  - Write manual test cases capturing observed behavior patterns from Preservation Requirements
+  - Manual testing is appropriate because authentication flows are well-defined and limited in scope
+  - Run tests on UNFIXED code
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed code
+  - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+- [x] 3. Fix for services page login modal redirect
+
+  - [x] 3.1 Investigate and identify root cause
+    - Inspect "Log In" button in `resources/views/services.blade.php` (line 255)
+    - Verify button has `type="button"` attribute to prevent form submission
+    - Check if button is inside a form element that might trigger submission
+    - Review `showLoginModal()` function for navigation calls or errors
+    - Check browser Network tab during modal opening for redirect requests
+    - Verify modal form in `resources/views/partials/login-modal.blade.php` has correct action
+    - Check `routes/web.php` services route for conflicting middleware
+    - Document the exact cause of the redirect
+    - _Bug_Condition: isBugCondition(input) where input.action == 'click_login_button' AND input.page == 'services' AND input.userStatus == 'guest' AND modalOpens(input) AND pageRedirectsTo('/login')_
+    - _Expected_Behavior: modalOpens(result) AND NOT pageRedirects(result) AND userCanCompleteLogin(result)_
+    - _Preservation: Direct /login access, role-based redirects, authentication from other pages must remain unchanged_
+    - _Requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4_
+
+  - [x] 3.2 Implement the fix based on root cause
+    - Apply appropriate fix based on investigation findings:
+      - If button lacks type attribute: Add `type="button"` to prevent form submission
+      - If event bubbling issue: Add `event.preventDefault()` in `showLoginModal()` function
+      - If button inside form: Move button outside form or prevent default behavior
+      - If middleware issue: Adjust route configuration in `routes/web.php`
+      - If JavaScript navigation: Remove or fix navigation calls in modal opening logic
+    - Test fix locally to ensure modal stays open without redirect
+    - _Bug_Condition: isBugCondition(input) from design_
+    - _Expected_Behavior: expectedBehavior(result) from design_
+    - _Preservation: Preservation Requirements from design_
+    - _Requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4_
+
+  - [x] 3.3 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - Modal Login Without Redirect
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Navigate to `/services` as guest user
+    - Click "Log In" button
+    - Verify: Modal opens AND stays open (no redirect to `/login`)
+    - Verify: User can enter credentials in modal
+    - Verify: Modal form submission works correctly
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - _Requirements: 2.1, 2.2, 2.3_
+
+  - [x] 3.4 Verify preservation tests still pass
+    - **Property 2: Preservation** - Standalone Login Page Access
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Test 1: Direct navigation to `/login` displays standalone login page (not modal)
+    - Test 2: Admin login from any page redirects to `/dashboard`
+    - Test 3: Member login from any page redirects to `/services`
+    - Test 4: Authenticated users accessing `/login` redirect to appropriate dashboard
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Confirm all authentication flows still work as before
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+- [x] 4. Checkpoint - Ensure all tests pass
+  - Verify bug condition test passes (modal stays open without redirect)
+  - Verify all preservation tests pass (existing auth flows unchanged)
+  - Test modal login success flow end-to-end
+  - Test modal login failure flow (invalid credentials)
+  - Test modal close and reopen functionality
+  - Ensure all tests pass, ask the user if questions arise

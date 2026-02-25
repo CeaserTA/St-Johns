@@ -99,22 +99,43 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        try {
+            Auth::logout();
 
-        $user->delete();
+            // Delete the user (the boot method in User model will handle member unlinking)
+            $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        // Return JSON for AJAX requests
-        if ($request->wantsJson() || $request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Account deleted successfully.'
+            // Return JSON for AJAX requests
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Account deleted successfully.'
+                ]);
+            }
+
+            return Redirect::to('/')->with('success', 'Your account has been deleted successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting user account', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
-        }
 
-        return Redirect::to('/');
+            // Re-login the user since we logged them out
+            Auth::login($user);
+
+            if ($request->wantsJson() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete account. Please try again or contact support.'
+                ], 500);
+            }
+
+            return Redirect::back()->with('error', 'Failed to delete account. Please try again or contact support.');
+        }
     }
 
     /**

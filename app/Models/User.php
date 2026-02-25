@@ -132,4 +132,22 @@ class User extends Authenticatable
         // Just first letter of name
         return strtoupper(substr($this->name, 0, 1));
     }
+
+    /**
+     * Boot the model and add event listeners.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When deleting a user, handle the member relationship
+        static::deleting(function ($user) {
+            // If user has a member profile, unlink it (set user_id to null)
+            // The foreign key constraint is already set to onDelete('set null')
+            // but we'll explicitly handle it to ensure clean deletion
+            if ($user->member) {
+                $user->member->update(['user_id' => null]);
+            }
+        });
+    }
 }

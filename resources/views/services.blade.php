@@ -252,7 +252,7 @@
                         <div class="p-5 bg-[rgba(200,151,58,0.07)] border border-[rgba(200,151,58,0.18)]">
                             <p class="text-[13px] text-white/60 font-light mb-4">Please log in to register for a service. Don't have an account? Create one in seconds.</p>
                             <div class="flex gap-3">
-                                <button onclick="showLoginModal()"
+                                <button type="button" onclick="showLoginModal()"
                                         class="flex-1 py-3 bg-[#c8973a] text-[#0c1b3a] font-[Jost] text-xs font-semibold tracking-[0.14em] uppercase border-0 cursor-pointer transition-colors duration-200 flex items-center justify-center hover:bg-[#e8b96a]">
                                     Log In
                                 </button>

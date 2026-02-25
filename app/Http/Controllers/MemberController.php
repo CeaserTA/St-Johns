@@ -477,8 +477,18 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
+        // Store user reference before deleting member
+        $user = $member->user;
+        
+        // Soft delete the member
         $member->delete();
-        return redirect()->route('admin.members')->with('success', 'Member deleted successfully');
+        
+        // If member has a linked user account, delete it too
+        if ($user) {
+            $user->delete();
+        }
+        
+        return redirect()->route('admin.members')->with('success', 'Member and associated account deleted successfully');
     }
 
     /**
