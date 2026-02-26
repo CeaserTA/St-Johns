@@ -88,6 +88,7 @@
 <body style="font-family:'Jost',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;">
 
 @include('partials.navbar')
+@include('partials.login-modal')
 @include('partials.announcement')
 
 {{-- Flash messages --}}

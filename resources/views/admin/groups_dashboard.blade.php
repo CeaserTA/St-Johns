@@ -148,9 +148,18 @@
 
         {{-- ── Groups Table ── --}}
         <div class="bg-white rounded-2xl border border-border shadow-card overflow-hidden">
-            <div class="px-6 py-4 border-b border-border flex items-center justify-between">
-                <h2 class="text-lg font-bold text-primary">All Groups</h2>
-                <span class="text-xs text-muted font-medium">{{ $groups->count() }} group{{ $groups->count() !== 1 ? 's' : '' }}</span>
+            <div class="px-6 py-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-lg font-bold text-primary">All Groups</h2>
+                    <span class="text-xs text-muted font-medium">{{ $groups->count() }} group{{ $groups->count() !== 1 ? 's' : '' }}</span>
+                </div>
+                <a href="{{ route('admin.groups.export') }}"
+                   class="bg-accent hover:bg-accent/90 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm hover:shadow-card transition-all duration-200">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4m0-4h4M4 4l5 5m11-1v12m0-12h-4m4 0l-5 5M9 17h6" />
+                    </svg>
+                    Export CSV
+                </a>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full">

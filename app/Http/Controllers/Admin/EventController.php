@@ -8,6 +8,7 @@ use App\Models\EventRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Response;
 
 class EventController extends Controller
 {
@@ -81,6 +82,76 @@ class EventController extends Controller
         ];
 
         return view('admin.events_dashboard', compact('events', 'registrations', 'stats'));
+    }
+
+    /**
+     * Export events / updates to CSV.
+     */
+    public function export(Request $request)
+    {
+        try {
+            $query = Event::query();
+
+            if ($request->type && in_array($request->type, ['event', 'announcement'])) {
+                $query->where('type', $request->type);
+            }
+
+            $events = $query->orderBy('created_at', 'desc')->get();
+
+            $filename = 'updates_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ];
+
+            $callback = function () use ($events) {
+                $handle = fopen('php://output', 'w');
+
+                fputcsv($handle, [
+                    'ID',
+                    'Title',
+                    'Type',
+                    'Category',
+                    'Location',
+                    'Starts At',
+                    'Ends At',
+                    'Is Active',
+                    'Is Pinned',
+                    'Created At',
+                ]);
+
+                foreach ($events as $event) {
+                    fputcsv($handle, [
+                        $event->id,
+                        $event->title,
+                        $event->type,
+                        $event->category,
+                        $event->location,
+                        optional($event->starts_at)->format('Y-m-d H:i:s'),
+                        optional($event->ends_at)->format('Y-m-d H:i:s'),
+                        $event->is_active ? 'Yes' : 'No',
+                        $event->is_pinned ? 'Yes' : 'No',
+                        optional($event->created_at)->format('Y-m-d H:i:s'),
+                    ]);
+                }
+
+                fclose($handle);
+            };
+
+            return Response::stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            \Log::error('Error exporting events CSV', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('admin.events')
+                ->with('error', 'Failed to export updates: ' . $e->getMessage());
+        }
     }
 
     /**

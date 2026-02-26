@@ -130,6 +130,7 @@ Route::middleware('admin')->group(function () {
 Route::middleware('admin')->group(function () {
     // Events & Announcements Management
     Route::get('/admin/events', [EventController::class, 'index'])->name('admin.events');
+    Route::get('/admin/events/export', [EventController::class, 'export'])->name('admin.events.export');
     Route::post('/admin/events', [EventController::class, 'store'])->name('admin.events.store');
     Route::get('/admin/events/{event}', [EventController::class, 'show'])->name('admin.events.show');
     Route::put('/admin/events/{event}', [EventController::class, 'update'])->name('admin.events.update');
@@ -150,6 +151,7 @@ Route::middleware('admin')->group(function () {
     // Groups dashboard and management
     Route::get('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'index'])
         ->name('admin.groups');
+    Route::get('/admin/groups/export', [\App\Http\Controllers\Admin\GroupController::class, 'export'])->name('admin.groups.export');
     Route::get('/admin/groups/{group}/members', [\App\Http\Controllers\Admin\GroupController::class, 'getMembers'])->name('admin.groups.members.get');
     Route::post('/admin/groups', [\App\Http\Controllers\Admin\GroupController::class, 'store'])->name('admin.groups.store');
     Route::put('/admin/groups/{group}', [\App\Http\Controllers\Admin\GroupController::class, 'update'])->name('admin.groups.update');
@@ -161,6 +163,7 @@ Route::middleware('admin')->group(function () {
 
     // Admin dashboard-specific services page
     Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services');
+    Route::get('/admin/services/registrations/export', [ServiceController::class, 'exportRegistrations'])->name('admin.services.registrations.export');
     Route::post('/admin/services', [ServiceController::class, 'store'])->name('admin.services.store');
     Route::put('/admin/services/{service}', [ServiceController::class, 'update'])->name('admin.services.update');
     Route::delete('/admin/services/{service}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
@@ -177,6 +180,7 @@ Route::middleware('admin')->group(function () {
 
     // Admin dashboard-specific members page
     Route::get('/admin/members', [\App\Http\Controllers\Admin\MemberController::class, 'index'])->name('admin.members');
+    Route::get('/admin/members/export', [\App\Http\Controllers\Admin\MemberController::class, 'export'])->name('admin.members.export');
     Route::get('/admin/members/{member}', [\App\Http\Controllers\Admin\MemberController::class, 'show'])->name('admin.members.show');
 
     // QR Code Management

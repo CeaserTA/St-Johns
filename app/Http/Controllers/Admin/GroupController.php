@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class GroupController extends Controller
 {
@@ -27,6 +28,66 @@ class GroupController extends Controller
         ];
 
         return view('admin.groups_dashboard', compact('groups', 'members', 'filterOptions', 'stats'));
+    }
+
+    /**
+     * Export groups and basic membership stats to CSV.
+     */
+    public function export(Request $request)
+    {
+        try {
+            $groups = Group::withCount('members')->ordered()->get();
+
+            $filename = 'groups_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ];
+
+            $callback = function () use ($groups) {
+                $handle = fopen('php://output', 'w');
+
+                fputcsv($handle, [
+                    'ID',
+                    'Name',
+                    'Category',
+                    'Meeting Day',
+                    'Location',
+                    'Is Active',
+                    'Members Count',
+                    'Created At',
+                ]);
+
+                foreach ($groups as $group) {
+                    fputcsv($handle, [
+                        $group->id,
+                        $group->name,
+                        $group->category,
+                        $group->meeting_day,
+                        $group->location,
+                        $group->is_active ? 'Yes' : 'No',
+                        $group->members_count,
+                        optional($group->created_at)->format('Y-m-d H:i:s'),
+                    ]);
+                }
+
+                fclose($handle);
+            };
+
+            return Response::stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            \Log::error('Error exporting groups CSV', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('admin.groups')
+                ->with('error', 'Failed to export groups: ' . $e->getMessage());
+        }
     }
 
     public function getMembers(Group $group)

@@ -94,6 +94,7 @@
 <body style="font-family:'Jost',sans-serif;background:var(--cream);color:var(--text);">
 
 @include('partials.navbar')
+@include('partials.login-modal')
 
 
 {{-- ══════════════════════════════════════

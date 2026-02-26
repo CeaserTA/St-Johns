@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\ServiceRegistration;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Response;
 
 class ServiceController extends Controller
 {
@@ -35,6 +36,74 @@ class ServiceController extends Controller
         ];
 
         return view('admin.services_dashboard', compact('services', 'serviceRegistrations', 'stats'));
+    }
+
+    /**
+     * Export service registrations to CSV.
+     */
+    public function exportRegistrations(Request $request)
+    {
+        try {
+            $registrations = ServiceRegistration::with(['service', 'member'])->latest()->get();
+
+            $filename = 'service_registrations_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ];
+
+            $callback = function () use ($registrations) {
+                $handle = fopen('php://output', 'w');
+
+                fputcsv($handle, [
+                    'ID',
+                    'Service',
+                    'Giver Type',
+                    'Name',
+                    'Email',
+                    'Phone',
+                    'Payment Status',
+                    'Payment Method',
+                    'Transaction Reference',
+                    'Amount',
+                    'Registered At',
+                ]);
+
+                foreach ($registrations as $reg) {
+                    $isMember = (bool) $reg->member_id;
+
+                    fputcsv($handle, [
+                        $reg->id,
+                        optional($reg->service)->name,
+                        $isMember ? 'Member' : 'Guest',
+                        $isMember ? optional($reg->member)->full_name : $reg->guest_full_name,
+                        $isMember ? optional($reg->member)->email : $reg->guest_email,
+                        $isMember ? optional($reg->member)->phone : $reg->guest_phone,
+                        $reg->payment_status,
+                        $reg->payment_method,
+                        $reg->transaction_reference,
+                        $reg->amount_paid,
+                        optional($reg->created_at)->format('Y-m-d H:i:s'),
+                    ]);
+                }
+
+                fclose($handle);
+            };
+
+            return Response::stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            \Log::error('Error exporting service registrations CSV', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('admin.services')
+                ->with('error', 'Failed to export service registrations: ' . $e->getMessage());
+        }
     }
 
     public function store(Request $request)

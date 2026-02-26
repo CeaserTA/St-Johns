@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 
 class MemberController extends Controller
 {
@@ -131,6 +132,98 @@ class MemberController extends Controller
 
             return view('admin.members_dashboard', compact('members', 'filterOptions', 'stats'))
                 ->with('error', 'Error loading members: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export members to CSV for admin dashboard.
+     */
+    public function export(Request $request)
+    {
+        try {
+            $query = Member::query();
+
+            // Reuse basic filters from index so exports match the current view where possible
+            if ($request->search) {
+                $searchTerm = $request->search;
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('full_name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('phone', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('address', 'LIKE', "%{$searchTerm}%");
+                });
+            }
+
+            if ($request->gender && $request->gender !== 'all') {
+                $query->where('gender', $request->gender);
+            }
+
+            if ($request->marital_status && $request->marital_status !== 'all') {
+                $query->where('marital_status', $request->marital_status);
+            }
+
+            if ($request->cell && $request->cell !== 'all') {
+                $query->where('cell', $request->cell);
+            }
+
+            $members = $query->orderBy('full_name')->get();
+
+            $filename = 'members_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ];
+
+            $callback = function () use ($members) {
+                $handle = fopen('php://output', 'w');
+
+                // Header row
+                fputcsv($handle, [
+                    'ID',
+                    'Full Name',
+                    'Email',
+                    'Phone',
+                    'Gender',
+                    'Marital Status',
+                    'Cell',
+                    'Address',
+                    'Date of Birth',
+                    'Date Joined',
+                    'Has User Account',
+                ]);
+
+                foreach ($members as $member) {
+                    fputcsv($handle, [
+                        $member->id,
+                        $member->full_name,
+                        $member->email,
+                        $member->phone,
+                        $member->gender,
+                        $member->marital_status,
+                        $member->cell,
+                        $member->address,
+                        optional($member->date_of_birth)->format('Y-m-d'),
+                        optional($member->date_joined)->format('Y-m-d'),
+                        $member->user_id ? 'Yes' : 'No',
+                    ]);
+                }
+
+                fclose($handle);
+            };
+
+            return Response::stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            \Log::error('Error exporting members CSV', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('admin.members')
+                ->with('error', 'Failed to export members: ' . $e->getMessage());
         }
     }
 

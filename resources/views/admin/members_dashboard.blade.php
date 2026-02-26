@@ -119,6 +119,13 @@
                         </svg>
                         Search
                     </button>
+                    <a href="{{ route('admin.members.export', request()->query()) }}"
+                       class="bg-accent hover:bg-accent/90 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-sm hover:shadow text-sm flex items-center justify-center gap-2 shrink-0">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4m0-4h4M4 4l5 5m11-1v12m0-12h-4m4 0l-5 5M9 17h6" />
+                        </svg>
+                        Export CSV
+                    </a>
                 </div>
 
                 {{-- Filters Grid --}}

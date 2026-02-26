@@ -288,7 +288,7 @@
     ═══════════════════════════════════════════════════ --}}
     <div class="card-base overflow-hidden">
 
-        <div class="px-5 py-4 border-b border-border flex items-center justify-between gap-4">
+        <div class="px-5 py-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <svg class="w-5 h-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -298,9 +298,18 @@
                     <p class="text-xs text-muted mt-0.5">Recent sign-ups for events</p>
                 </div>
             </div>
-            <span class="text-xs font-semibold text-muted bg-sand border border-border px-2.5 py-1 rounded-full shrink-0">
-                {{ $registrations->count() }} total
-            </span>
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold text-muted bg-sand border border-border px-2.5 py-1 rounded-full shrink-0">
+                    {{ $registrations->count() }} total
+                </span>
+                <a href="{{ route('admin.events.export') }}"
+                   class="bg-accent hover:bg-accent/90 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm hover:shadow-card transition-all duration-200">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4m0-4h4M4 4l5 5m11-1v12m0-12h-4m4 0l-5 5M9 17h6" />
+                    </svg>
+                    Export CSV
+                </a>
+            </div>
         </div>
 
         <div class="overflow-x-auto">

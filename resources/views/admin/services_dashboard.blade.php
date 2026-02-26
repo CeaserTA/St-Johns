@@ -121,16 +121,25 @@
     <div>
 
         {{-- Section toolbar --}}
-        <div class="flex items-center gap-3 mb-5">
-            <svg class="w-5 h-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
-            <h2 class="font-display font-black text-xl text-primary">Service Registrations</h2>
-            @if(isset($serviceRegistrations))
-                <span class="text-xs font-semibold text-muted bg-sand border border-border px-2.5 py-1 rounded-full">
-                    {{ $serviceRegistrations->count() }} total
-                </span>
-            @endif
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <h2 class="font-display font-black text-xl text-primary">Service Registrations</h2>
+                @if(isset($serviceRegistrations))
+                    <span class="text-xs font-semibold text-muted bg-sand border border-border px-2.5 py-1 rounded-full">
+                        {{ $serviceRegistrations->count() }} total
+                    </span>
+                @endif
+            </div>
+            <a href="{{ route('admin.services.registrations.export') }}"
+               class="bg-accent hover:bg-accent/90 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm hover:shadow-card transition-all duration-200">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4m0-4h4M4 4l5 5m11-1v12m0-12h-4m4 0l-5 5M9 17h6" />
+                </svg>
+                Export CSV
+            </a>
         </div>
 
         {{-- Table card --}}
